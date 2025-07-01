@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # Project configuration files
 .idea
+
+# Project configuration files
+.idea
