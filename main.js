@@ -10,7 +10,7 @@ app.get("/test-page", (req, res)=>{
 
 app.get("/random", (req, res)=>
 {
-    res.send(Math.random);
+    res.send(Math.random(0,100));
 }
 );
 
