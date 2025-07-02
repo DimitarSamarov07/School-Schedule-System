@@ -9,3 +9,5 @@ class DateModel {
         this.isHoliday = isHoliday;
     }
 }
+
+export default DateModel;
