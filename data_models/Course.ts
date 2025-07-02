@@ -1,5 +1,5 @@
-import Teacher from "./Teacher";
-import Room from "./Room";
+import Teacher from "./Teacher.ts";
+import Room from "./Room.ts";
 
 class Course {
     public id: number;
