@@ -1,11 +1,13 @@
 class Bell {
     id: number;
     name: string;
-    sound: Blob;
+    soundPath: string;
 
-    constructor(id: number, name: string, sound: Blob) {
+    constructor(id: number, name: string, sound: string) {
         this.id = id;
         this.name = name;
-        this.sound = sound;
+        this.soundPath = sound;
     }
 }
+
+export default Bell;

@@ -9,3 +9,5 @@ class Room {
         this.floor = floor;
     }
 }
+
+export default Room;
