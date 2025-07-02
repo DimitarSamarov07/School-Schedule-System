@@ -1,6 +1,12 @@
 {
   "dependencies": {
+    "@types/node": "^24.0.10",
     "express": "^5.1.0",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "tsx": "^4.20.3"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "NODE_OPTIONS='--import=tsx' node main.js"
   }
 }
