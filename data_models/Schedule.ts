@@ -1,7 +1,7 @@
-import Course from "./Course";
-import Class from "./Class";
-import Teacher from "./Teacher";
-import DateModel from "./DateModel";
+import Course from "./Course.ts";
+import Class from "./Class.ts";
+import Teacher from "./Teacher.ts";
+import DateModel from "./DateModel.ts";
 
 class Schedule {
     course: Course;
