@@ -7,6 +7,6 @@
   },
   "type": "module",
   "scripts": {
-    "start": "NODE_OPTIONS='--import=tsx' node main.js"
+    "start": "node --import=tsx main.js"
   }
 }
