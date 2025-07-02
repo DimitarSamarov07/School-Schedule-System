@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Междучасие</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      color: #222;
+    }
+    header {
+      background-color: #7FC4B7 ;
+      color: white;
+      padding: 25px 10px;
+      text-align: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) ;
+    }
+    #clock {
+      font-size: 4em;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+    #break-time {
+      font-size: 3em;
+      font-weight: 700;
+    }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+      font-size: 1.5em;
+    }
+    .next-hour {
+      font-size: 20;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+    .class-line {
+      background-color:#7FC4B7 ;
+      margin: 10px;
+      padding: 15px 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      font-size: 1.3em;
+    }
+    footer {
+      background-color:#7FC4B7 ;
+      color: white;
+      text-align: center;
+      padding: 15px;
+      font-weight: bold;
+      box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1) ;
+
+    }
+    footer a {
+        font-size: 20px ;
+      color: rgb(255, 255, 255);
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div id="clock">00:00</div>
+    <div id="break-time">Голямо междучасие 10:35–10:55</div>
+  </header>
+ 
+  <main>
+    <div class="next-hour">Следващ 4-ти час</div>
+    <div class="class-line"> 11А – ООП – Г. Густинов – зала 25</div>
+
+    <div class="class-line"> 10A - Математика - Д. Стоилова - зала 22</div>
+
+    <div class="class-line"> 9A - Английски - К. Иванова - зала 23</div>
+
+  </main>
+ 
+  <footer>
+    <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+      Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+    </a>
+  </footer>
+ 
+  <script>
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      let m = now.getMinutes();
+ 
+      if (h < 10) h = '0' + h;
+      if (m < 10) m = '0' + m;
+ 
+      document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+ 
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
+
