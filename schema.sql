@@ -20,3 +20,21 @@ CREATE TABLE IF NOT EXISTS Courses (
     FOREIGN KEY (Teacher) REFERENCES Teachers(T_ID),
     FOREIGN KEY (Room) REFERENCES Rooms(R_ID)
 );
+
+CREATE TABLE IF NOT EXISTS classes (
+c_id INTEGER PRIMARY KEY,
+name TEXT NOT NULL,
+description TEXT
+);
+
+CREATE TABLE IF NOT EXISTS times (
+t_id INTEGER PRIMARY KEY,
+start TEXT NOT NULL,
+end TEXT ,
+);
+
+CREATE TABLE IF NOT EXIST dates (
+d_it INTEGER PRIMARY KEY,
+date TEXT NOT NULL,
+isholiday Text
+);
