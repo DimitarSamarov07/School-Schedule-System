@@ -49,13 +49,17 @@ class SqliteMaster {
 
     static getAllSchedulesForDateTime(dateAsEpoch: string): Schedule[] {
         // TODO: Implement
+        let receivedArr = [];
         this.db.serialize(() => {
             this.db.each(Sqlite_consts.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
                 if (err) return;
-                let variable = row;
-                console.log(variable)
+
+                receivedArr.push(row);
+                console.log(row);
+
             });
         });
+
 
         return this.mockScheduleArr;
     }
