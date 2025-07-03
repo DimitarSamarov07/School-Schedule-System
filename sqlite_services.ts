@@ -6,6 +6,7 @@ import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
 import sqlite3 from "sqlite3";
 import type {Database} from "sqlite3"
+import Sqlite_consts from "./sqlite_consts.js";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -43,8 +44,15 @@ class SqliteMaster {
         return this.mockScheduleArr[0];
     }
 
-    static getAllSchedulesForDateTime(date: DateModel): Schedule[] {
+    static getAllSchedulesForDateTime(dateAsEpoch: string): Schedule[] {
         // TODO: Implement
+        this.db.serialize(() => {
+            this.db.each(Sqlite_consts.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
+                if (err) return;
+                let variable = row;
+                console.log(variable)
+            });
+        });
 
         return this.mockScheduleArr;
     }

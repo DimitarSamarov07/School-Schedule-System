@@ -11,3 +11,5 @@ class Sqlite_consts {
                                                  WHERE d.Date = unixepoch(?);`;
 
 }
+
+export default Sqlite_consts;
