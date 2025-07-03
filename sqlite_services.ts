@@ -4,14 +4,17 @@ import Course from "./data_models/Course.js";
 import Teacher from "./data_models/Teacher.js";
 import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
-import sqlite3 from "sqlite3";
 import type {Database} from "sqlite3"
 import Sqlite_consts from "./sqlite_consts.js";
+import sqlite3 from "sqlite3";
+import  Bell from "./data_models/Bell.js";
+import bell from "./data_models/Bell.js";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
     static readonly DATABASE_PATH: string = "./dev.db";
     static db: Database;
+    static delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 
     constructor() {
         // Initialize mock data
@@ -55,6 +58,21 @@ class SqliteMaster {
         });
 
         return this.mockScheduleArr;
+    }
+
+    static async getBellPathByName(bellName: string): Promise<Bell> {
+        let bellToReturn: Bell = null;
+        this.db.serialize(() => {
+            this.db.each(Sqlite_consts.SELECT_BELL_BY_NAME, bellName, (err, row: Bell) => {
+                if (err) throw err;
+                bellToReturn = new Bell(row.Id, row.Name, row.SoundPath);
+            })
+        })
+
+        while (bellToReturn == null){
+            await this.delay(5)
+        }
+        return bellToReturn;
     }
 
 }
