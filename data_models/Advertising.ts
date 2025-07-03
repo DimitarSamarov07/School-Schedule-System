@@ -1,12 +1,12 @@
 ﻿class Advertising {
-    id: number;
-    content: string;
-    imagePath: string;
+    Id: number;
+    Content: string;
+    ImagePath: string;
 
     constructor(id: number, content: string, imagePath: string) {
-        this.id = id;
-        this.content = content;
-        this.imagePath = imagePath;
+        this.Id = id;
+        this.Content = content;
+        this.ImagePath = imagePath;
     }
 }
 

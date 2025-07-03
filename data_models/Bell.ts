@@ -1,12 +1,12 @@
 class Bell {
-    id: number;
-    name: string;
-    soundPath: string;
+    Id: number;
+    Name: string;
+    SoundPath: string;
 
     constructor(id: number, name: string, soundPath: string) {
-        this.id = id;
-        this.name = name;
-        this.soundPath = soundPath;
+        this.Id = id;
+        this.Name = name;
+        this.SoundPath = soundPath;
     }
 }
 

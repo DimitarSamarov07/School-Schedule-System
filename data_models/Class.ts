@@ -1,12 +1,12 @@
 class Class {
-    id: number;
-    name: string;
-    description: string;
+    Id: number;
+    Name: string;
+    Description: string;
 
     constructor(id: number, name: string, description: string) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
+        this.Id = id;
+        this.Name = name;
+        this.Description = description;
     }
 }
 

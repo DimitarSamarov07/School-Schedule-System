@@ -1,12 +1,12 @@
 class DateModel {
-    id: number;
-    date: Date;
-    isHoliday: boolean;
+    Id: number;
+    Date: Date;
+    IsHoliday: boolean;
 
     constructor(id: number, date: Date, isHoliday: boolean) {
-        this.id = id;
-        this.date = date;
-        this.isHoliday = isHoliday;
+        this.Id = id;
+        this.Date = date;
+        this.IsHoliday = isHoliday;
     }
 }
 
