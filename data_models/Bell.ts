@@ -3,10 +3,10 @@ class Bell {
     name: string;
     soundPath: string;
 
-    constructor(id: number, name: string, sound: string) {
+    constructor(id: number, name: string, soundPath: string) {
         this.id = id;
         this.name = name;
-        this.soundPath = sound;
+        this.soundPath = soundPath;
     }
 }
 
