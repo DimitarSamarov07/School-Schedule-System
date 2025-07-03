@@ -4,11 +4,10 @@ import Course from "./data_models/Course.js";
 import Teacher from "./data_models/Teacher.js";
 import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
-import type {Database} from "sqlite3"
-import Sqlite_consts from "./sqlite_consts.js";
+import type {Database} from "sqlite3";
 import sqlite3 from "sqlite3";
-import  Bell from "./data_models/Bell.js";
-import bell from "./data_models/Bell.js";
+import SqliteConstants from "./sqlite_constants.js";
+import Bell from "./data_models/Bell.js";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -47,27 +46,85 @@ class SqliteMaster {
         return this.mockScheduleArr[0];
     }
 
+    //TODO: Finish the logic behind the schedule
     static getAllSchedulesForDateTime(dateAsEpoch: string): Schedule[] {
-        // TODO: Implement
+        const now = new Date();
+        const currentTime = now.toTimeString().slice(0, 5);
         let receivedArr = [];
         this.db.serialize(() => {
-            this.db.each(Sqlite_consts.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
-                if (err) return;
 
+            this.db.all('SELECT Start, End FROM Times', [], (err, rows) => {
+                if (err) {
+                    console.error(err);
+                    return;
+                }
+                for (const row of rows) {
+
+                    // @ts-ignore
+                    if (this.isTimeBetween(currentTime, row.Start, row.End)) {
+                        // TODO: display the schedule for that time
+                        // @ts-ignore
+                        console.log(`Current time ${currentTime} is within ${row.Start} - ${row.End}`);
+
+                        break;
+                    } else {
+
+                        break;
+                    }
+                }
+            });
+            //The .each method runs the given query for EACH row
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
+                if (err) console.log(err);
                 receivedArr.push(row);
                 console.log(row);
 
             });
         });
+        // TODO: display ads
+
+        if (!this.isTimeBetween(this.getCurrentTime(), "07:00", "15:00")) {
+            console.log("")
+        }
 
 
         return this.mockScheduleArr;
     }
 
+    static checkIsTimeBetweenDB() {
+
+    }
+
+    static isTimeBetween(x: string, startTime: string, endTime: string) {
+        const toMinutes = (t: string) => {
+            const [h, m] = t.split(':').map(Number);
+            return h * 60 + m;
+        };
+
+        const xMin = toMinutes(x);
+        const startMin = toMinutes(startTime);
+        const endMin = toMinutes(endTime);
+
+        // Handles intervals that don’t cross midnight
+        if (startMin <= endMin) {
+            return xMin >= startMin && xMin <= endMin;
+        }
+        // Handles intervals that cross midnight (e.g. 23:00 to 01:00)
+        return xMin >= startMin || xMin <= endMin;
+    }
+
+    static getCurrentTime(): string {
+        const now = new Date();
+
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        return `${hours}:${minutes.toString().padStart(2, '0')}`;
+    }
+
     static async getBellPathByName(bellName: string): Promise<Bell> {
         let bellToReturn: Bell = null;
         this.db.serialize(() => {
-            this.db.each(Sqlite_consts.SELECT_BELL_BY_NAME, bellName, (err, row: Bell) => {
+            this.db.each(SqliteConstants.SELECT_BELL_BY_NAME, bellName, (err, row: Bell) => {
                 if (err) throw err;
                 bellToReturn = new Bell(row.Id, row.Name, row.SoundPath);
             })
