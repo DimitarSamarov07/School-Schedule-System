@@ -91,3 +91,15 @@ INSERT INTO Dates (Date, IsHoliday) VALUES
 INSERT INTO Rooms (Name, Floor) VALUES
     ('21', 2),
     ('10', 1);
+
+/*
+SELECT * FROM Teachers;
+SELECT * FROM Courses;
+SELECT * FROM Rooms;
+SELECT * FROM Times;
+SELECT * FROM Schedule;
+SELECT * FROM Dates;
+SELECT * FROM Classes;
+SELECT * FROM Advertising;
+SELECT * FROM Bells;
+*/
