@@ -1,40 +1,40 @@
 PRAGMA foreign_keys = ON;
 
 CREATE TABLE IF NOT EXISTS Teachers (
-    T_ID INTEGER PRIMARY KEY,
-    FName VARCHAR(25),
-    LName VARCHAR(25)
+    id INTEGER PRIMARY KEY,
+    FirstName VARCHAR(25),
+    LastName VARCHAR(25)
 );
 
 CREATE TABLE IF NOT EXISTS Rooms (
-    R_ID INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     Name VARCHAR(50),
     Floor INTEGER NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Courses (
-    C_ID INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     Name VARCHAR(50) NOT NULL,
     Teacher INTEGER,
     Room INTEGER,
-    FOREIGN KEY (Teacher) REFERENCES Teachers(T_ID),
-    FOREIGN KEY (Room) REFERENCES Rooms(R_ID)
+    FOREIGN KEY (Teacher) REFERENCES Teachers(id),
+    FOREIGN KEY (Room) REFERENCES Rooms(id)
 );
 
 CREATE TABLE IF NOT EXISTS Classes (
-	C_ID INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY,
 	Name VARCHAR(50) NOT NULL,
 	Description VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS Times (
-	T_ID INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY,
 	Start TIME NOT NULL,
 	End TIME
 );
 
 CREATE TABLE IF NOT EXISTS Dates (
-	D_ID INTEGER PRIMARY KEY,
+	id INTEGER PRIMARY KEY,
 	Date TEXT NOT NULL,
 	IsHoliday BOOLEAN
 );
@@ -42,28 +42,28 @@ CREATE TABLE IF NOT EXISTS Dates (
 CREATE TABLE IF NOT EXISTS Schedule (
     Course INTEGER,
     Class INTEGER,
-    T_ID INTEGER,
-    D_ID INTEGER,
-    FOREIGN KEY (Course) REFERENCES Courses(C_ID),
-    FOREIGN KEY (Class) REFERENCES Classes(C_ID),
-    FOREIGN KEY (T_ID) REFERENCES Times(T_ID),
-    FOREIGN KEY (D_ID) REFERENCES Dates(D_ID),
-    PRIMARY KEY (Course, Class, T_ID)
+    T_id INTEGER,
+    D_id INTEGER,
+    FOREIGN KEY (Course) REFERENCES Courses(id),
+    FOREIGN KEY (Class) REFERENCES Classes(id),
+    FOREIGN KEY (T_id) REFERENCES Times(id) ,
+    FOREIGN KEY (D_id) REFERENCES Dates(id),
+    PRIMARY KEY (Course, Class, T_id)
 );
 
 CREATE TABLE IF NOT EXISTS Advertising (
-    A_ID INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     Content TEXT,
     ImagePath TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Bells (
-    B_ID INTEGER PRIMARY KEY,
+    id INTEGER PRIMARY KEY,
     Name VARCHAR(20),
     SoundPath TEXT
 );
 
-INSERT INTO Teachers (FName, LName) VALUES
+INSERT INTO Teachers (FirstName, LastName) VALUES
     ('Иван','Добрев'),
     ('Христо','Георгиев');
 
@@ -93,6 +93,16 @@ INSERT INTO Rooms (Name, Floor) VALUES
     ('21', 2),
     ('10', 1);
 
+INSERT INTO Schedule(Course, Class, T_id, D_ID) VALUES
+    (1, 1, 1, 1),
+    (2, 2, 1, 1);
+
+INSERT INTO Advertising(Content, ImagePath) VALUES
+    ('Текст на реклама', './add_banner.png');
+
+INSERT INTO Bells(Name, SoundPath) VALUES
+    ('Звънец', './bell.mp3');
+
 /*
 SELECT * FROM Teachers;
 SELECT * FROM Courses;
@@ -101,6 +111,6 @@ SELECT * FROM Times;
 SELECT * FROM Schedule;
 SELECT * FROM Dates;
 SELECT * FROM Classes;
-SELECT * FROM Advertising;
-SELECT * FROM Bells;
+*SELECT * FROM Advertising;
+*SELECT * FROM Bells;
 */
