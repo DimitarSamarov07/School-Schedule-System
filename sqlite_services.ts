@@ -4,13 +4,17 @@ import Course from "./data_models/Course.js";
 import Teacher from "./data_models/Teacher.js";
 import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
+import sqlite3 from "sqlite3";
+import type {Database} from "sqlite3"
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
+    static readonly DATABASE_PATH: string = "./dev.db";
+    static db: Database;
 
     constructor() {
         // Initialize mock data
-        let testRoom =  new Room(1, "test", 1)
+        let testRoom = new Room(1, "test", 1)
         let testClass = new Class(1, "test", "test")
         let testTeacher = new Teacher(1, "test", "test")
         let testCourse = new Course(1, "test", testTeacher, testRoom)
@@ -19,11 +23,12 @@ class SqliteMaster {
     }
 
     static initializeConnection(): void {
-        // TODO: Implement
+        const sqlite = sqlite3.verbose();
+        this.db = new sqlite.Database(this.DATABASE_PATH);
     }
 
     static disconnectFromDB(): void {
-        // TODO: Implement
+        this.db.close()
     }
 
     static getSchedulesByDate(): Schedule[] {
