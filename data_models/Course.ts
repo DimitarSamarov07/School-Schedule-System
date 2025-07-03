@@ -2,16 +2,16 @@ import Teacher from "./Teacher.ts";
 import Room from "./Room.ts";
 
 class Course {
-    public id: number;
-    public name: string;
-    teacher: Teacher;
-    room: Room;
+    public Id: number;
+    public Name: string;
+    Teacher: Teacher;
+    Room: Room;
 
     constructor(id: number, name: string, teacher: Teacher, room: Room) {
-        this.id = id;
-        this.name = name;
-        this.teacher = teacher;
-        this.room = room;
+        this.Id = id;
+        this.Name = name;
+        this.Teacher = teacher;
+        this.Room = room;
     }
 }
 
