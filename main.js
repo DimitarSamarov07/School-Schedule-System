@@ -19,5 +19,5 @@ app.get("/random", (req, res) => {
 );
 
 manager.initializeConnection();
-manager.getAllSchedulesForDateTime('2025-04-01')
+//manager.getAllSchedulesForDateTime('2025-01-01 15:30')
 app.listen(port, ()=> console.log(`App Listening on port ${port}`));
