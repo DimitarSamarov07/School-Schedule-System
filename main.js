@@ -7,6 +7,11 @@ let port = 6969;
 app.get("schedule", (req, res) => {
     let {classId, date} = req.query;
     res.send(manager.getScheduleByClassIdForDate(classId, date));
+});
+
+app.get("/currentHour", async (req, res) => {
+    let result = await manager.getCurrentHour();
+    res.status(200).send({currentHour: result});
 })
 
 app.get("/test-page", (req, res) => {
@@ -19,5 +24,6 @@ app.get("/random", (req, res) => {
 );
 
 manager.initializeConnection();
+console.log(await manager.getCurrentHour());
 //manager.getAllSchedulesForDateTime('2025-01-01 15:30')
 app.listen(port, ()=> console.log(`App Listening on port ${port}`));

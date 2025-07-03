@@ -45,34 +45,68 @@ class SqliteMaster {
 
         return this.mockScheduleArr[0];
     }
+    static async getCurrentHour(): Promise<string> {
+        const now = new Date();
+        const currentTime = now.toTimeString().slice(0, 5);
+
+
+        return new Promise((resolve, reject) => {
+            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows) => {
+                if (err) {
+                    console.error(err);
+                    return reject(err);
+                }
+
+                for (const row of rows) {
+                    if (this.isTimeBetween(currentTime, row.Start, row.End)) {
+
+                        let result = "";
+                        switch (row.id) {
+                            case 1:
+                                result = "1-ви час";
+                                break;
+                            case 2:
+                                result = "2-ри час";
+                                break;
+                            case 3:
+                                result = "3-ти час";
+                                break;
+                            case 4:
+                                result = "4-ти час";
+                                break;
+                            case 5:
+                                result = "5-ти час";
+                                break;
+                            case 6:
+                                result = "6-ти час";
+                                break;
+                            case 7:
+                                result = "7-ми час";
+                                break;
+                            case 8:
+                                result = "8-ми час";
+                                break;
+                            default:
+                                result = "Непознат час";
+                        }
+
+                        return resolve(result);
+                    }
+                }
+
+                resolve("Извън учебно време");
+            });
+        });
+    }
+
 
     //TODO: Finish the logic behind the schedule
     static getAllSchedulesForDateTime(dateAsEpoch: string): Schedule[] {
-        const now = new Date();
-        const currentTime = now.toTimeString().slice(0, 5);
+
         let receivedArr = [];
         this.db.serialize(() => {
 
-            this.db.all('SELECT Start, End FROM Times', [], (err, rows) => {
-                if (err) {
-                    console.error(err);
-                    return;
-                }
-                for (const row of rows) {
 
-                    // @ts-ignore
-                    if (this.isTimeBetween(currentTime, row.Start, row.End)) {
-                        // TODO: display the schedule for that time
-                        // @ts-ignore
-                        console.log(`Current time ${currentTime} is within ${row.Start} - ${row.End}`);
-
-                        break;
-                    } else {
-
-                        break;
-                    }
-                }
-            });
             //The .each method runs the given query for EACH row
             this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
                 if (err) console.log(err);
