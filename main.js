@@ -1,5 +1,5 @@
 import express from "express";
-import {SqliteMaster as manager} from "./sqlite_services.js" ;
+import manager from "./sqlite_services.js" ;
 
 const app = express(); // Initializing Express App
 let port = 6969;
@@ -17,5 +17,7 @@ app.get("/random", (req, res) => {
         res.send(Math.random(0, 100));
     }
 );
+
+manager.initializeConnection();
 
 app.listen(port, () => console.log(`App Listening on port ${port}`));
