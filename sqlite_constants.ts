@@ -1,6 +1,6 @@
 // TODO: SQLite query strings go here
 
-class Sqlite_consts {
+class SqliteConstants {
     static readonly SELECT_SCHEDULES_FOR_DATE = `
         SELECT cl.Name as 'className', c.Name as 'courseName', CONCAT(t.FirstName, ' ', t.LastName) as 'fullTeacherName', r.Name as 'roomNumber', r.Floor as 'floor'
         FROM Schedule
@@ -19,4 +19,4 @@ class Sqlite_consts {
          LIMIT 1;`
 }
 
-export default Sqlite_consts;
+export default SqliteConstants;
