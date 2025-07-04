@@ -86,8 +86,8 @@ INSERT INTO Classes (Name, Description) VALUES
     ('9Б','Графичен дизайн');
 
 INSERT INTO Dates (Date, IsHoliday) VALUES
-    ('11-03-2025', FALSE),
-    ('24-04-2025', TRUE);
+    ('2025-07-03', FALSE),
+    ('2025-07-04', TRUE);
 
 INSERT INTO Rooms (Name, Floor) VALUES
     ('21', 2),
