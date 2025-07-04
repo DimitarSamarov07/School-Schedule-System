@@ -9,7 +9,6 @@ import sqlite3 from "sqlite3";
 import  Bell from "./data_models/Bell.js";
 import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
-;
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
