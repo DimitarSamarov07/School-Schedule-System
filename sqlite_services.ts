@@ -55,7 +55,7 @@ class SqliteMaster {
     }
 
     static async getRunningTime(): Promise<RunningTime> {
-        let isRunningTime;
+        let isInBreak;
         return new Promise((resolve, reject) => {
             this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
                 if (err) {
@@ -71,9 +71,9 @@ class SqliteMaster {
                         return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
                     }
                 }
-                isRunningTime = null;
+                isInBreak = null;
             });
-            if (isRunningTime == null) {
+            if (isInBreak == null) {
                 this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
@@ -85,11 +85,10 @@ class SqliteMaster {
                         const start = moment(parsedRow.Start, 'HH:mm');
                         const end = moment(parsedRow.End, 'HH:mm');
                         if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
-                            console.log(parsedRow.Id, parsedRow.Start, parsedRow.End);
                             return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
                         }
                     }
-                    isRunningTime = true;
+                    isInBreak = true;
 
                 });
             }
@@ -98,12 +97,29 @@ class SqliteMaster {
 
 
     //TODO: Finish the logic behind the schedule
-    static getAllSchedulesForDateTime(date: string): Promise<Schedule[]> {
+    static getAllSchedulesForDate(date: string): Promise<Schedule[]> {
         let receivedArr = [];
 
         return new Promise((resolve, reject) => {
             //The .each method runs the given query for EACH row
             this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, date, (err, row) => {
+                if (err) {
+                    console.error(err);
+                    reject();
+                }
+                let schedule = Schedule.convertFromDBModel(row);
+                receivedArr.push(schedule);
+            }, () => {
+                resolve(receivedArr);
+            });
+        });
+    }
+    static getAllSchedulesForDateTime(date: string, time:string): Promise<Schedule[]> {
+        let receivedArr = [];
+
+        return new Promise((resolve, reject) => {
+            //The .each method runs the given query for EACH row
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_BY_DATE_AND_TIME, [date, time], (err, row) => {
                 if (err) {
                     console.error(err);
                     reject();

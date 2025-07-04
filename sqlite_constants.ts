@@ -29,12 +29,13 @@ class SqliteConstants {
                  JOIN Times ti on ti.id = Schedule.T_id
     `;//YYYY.MM.DD
 
-    static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} WHERE d.Date = (?);`;
+    static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} WHERE d.Date = (?) AND IsHoliday = 0;`;
 
-    static readonly SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID = `${this.BASE_SCHEDULE_QUERY} WHERE d.date = (?) AND cl.id = (?)`
+    static readonly SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID = `${this.BASE_SCHEDULE_QUERY} WHERE d.date = (?) AND cl.id = (?) AND IsHoliday = 0`
 
     static readonly SELECT_BREAKS = `SELECT id, END as 'Start', LEAD(Start) over (ORDER BY id) as 'End'
-                                     from Times`
+                                     from Times `
+    static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME = `${this.BASE_SCHEDULE_QUERY} WHERE d.date = (?) and (?) BETWEEN ti.Start AND ti.End AND IsHoliday = 0`
     static readonly SELECT_BELL_BY_NAME =
         `SELECT Id, Name, SoundPath
          FROM Bells
