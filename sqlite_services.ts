@@ -4,10 +4,12 @@ import Course from "./data_models/Course.js";
 import Teacher from "./data_models/Teacher.js";
 import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
-import type {Database} from "sqlite3";
+import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
-import SqliteConstants from "./sqlite_constants.js";
 import Bell from "./data_models/Bell.js";
+import Time from "./data_models/Time.js";
+import SqliteConstants from "./sqlite_constants.js";
+import RunningTime from "./response_models/RunningTime.js";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -22,7 +24,8 @@ class SqliteMaster {
         let testTeacher = new Teacher(1, "test", "test")
         let testCourse = new Course(1, "test", testTeacher, testRoom)
         let testDate = new DateModel(1, new Date(), false)
-        SqliteMaster.mockScheduleArr = [new Schedule(testCourse, testClass, testTeacher, testDate)]
+        let testTime = new Time(1, '223', '322');
+        SqliteMaster.mockScheduleArr = [new Schedule(testClass, testCourse, testTime, testDate)]
     }
 
     static initializeConnection(): void {
@@ -34,71 +37,50 @@ class SqliteMaster {
         this.db.close()
     }
 
-    static getScheduleByClassIdForDate(classId: number, date: DateModel): Schedule {
+    static getSchedulesByDate(): Schedule[] {
         // TODO: Implement
 
-        return this.mockScheduleArr[0];
+        return this.mockScheduleArr;
     }
-    static async getCurrentHour(): Promise<string> {
-        const now = new Date();
-        const currentTime = now.toTimeString().slice(0, 5);
 
+    static async getSchedulesByClassIdForDate(classId: number, date: DateModel): Promise<Schedule[]> {
+        let schedulesToReturn: Schedule[] = [];
 
         return new Promise((resolve, reject) => {
-            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows: Object[]) => {
+
+            this.db.serialize(() => {
+                this.db.each(SqliteConstants.SELECT_SCHEDULES_BY_CLASS_ID_FOR_DATE, classId, date, (err, row: Schedule) => {
+                    if (err) {
+                        reject(err)
+                        console.error(err);
+                    }
+                    schedulesToReturn.push(new Schedule(row.Class, row.Course, row.Times, row.Date));
+                }, () => {
+                    resolve(schedulesToReturn);
+                })
+            })
+        });
+    }
+
+    static async getRunningTime(): Promise<RunningTime> {
+        return new Promise((resolve, reject) => {
+            this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
                 }
-
                 for (const row of rows) {
                     // @ts-ignore
-                    if (this.isTimeBetween(currentTime, row.Start, row.End)) {
+                    let parsedRow = new Time(row.id, row.Start, row.End);
+                    if (this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End)) {
+                        let rowTimeStart = parsedRow.Start.getHours() + ":" + parsedRow.Start.getMinutes();
+                        let rowTimeEnd = parsedRow.End.getHours() + ":" + parsedRow.End.getMinutes();
 
-                        let result = "";
-                        // @ts-ignore
-                        switch (row.id) {
-                            case 1:
-                                // @ts-ignore
-                                result ="1-ви час " + row.Start + "-"  + row.End;
-                                break;
-                            case 2:
-                                // @ts-ignore
-                                result = "2-ри час" + row.Start + "-"  + row.End;
-                                break;
-                            case 3:
-                                // @ts-ignore
-                                result = "3-ти час" + row.Start + "-"  + row.End;
-                                break;
-                            case 4:
-                                // @ts-ignore
-                                result = "4-ти час" + row.Start + "-"  + row.End;
-                                break;
-                            case 5:
-                                // @ts-ignore
-                                result = "5-ти час" + row.Start + "-"  + row.End;
-                                break;
-                            case 6:
-                                // @ts-ignore
-                                result = "6-ти час" + row.Start + "-"  + row.End;
-                                break;
-                            case 7:
-                                // @ts-ignore
-                                result = "7-ми час" + row.Start + "-"  + row.End;
-                                break;
-                            case 8:
-                                // @ts-ignore
-                                result = "8-ми час" + row.Start + "-"  + row.End;
-                                break;
-                            default:
-                                result = "Непознат час";
-                        }
-
-                        return resolve(result);
+                        return resolve(new RunningTime(parsedRow.Id, rowTimeStart, rowTimeEnd));
                     }
                 }
 
-                resolve("Извън учебно време");
+                resolve(null);
             });
         });
     }
@@ -109,8 +91,6 @@ class SqliteMaster {
 
         let receivedArr = [];
         this.db.serialize(() => {
-
-
             //The .each method runs the given query for EACH row
             this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
                 if (err) console.log(err);
@@ -119,12 +99,6 @@ class SqliteMaster {
 
             });
         });
-        // TODO: display ads
-
-        if (!this.isTimeBetween(this.getCurrentTime(), "07:00", "15:00")) {
-            console.log("")
-        }
-
 
         return this.mockScheduleArr;
     }
@@ -133,22 +107,9 @@ class SqliteMaster {
 
     }
 
-    static isTimeBetween(x: string, startTime: string, endTime: string) {
-        const toMinutes = (t: string) => {
-            const [h, m] = t.split(':').map(Number);
-            return h * 60 + m;
-        };
+    static isTimeBetween(x: Date, startTime: Date, endTime: Date): boolean {
+        return startTime <= x && endTime >= x;
 
-        const xMin = toMinutes(x);
-        const startMin = toMinutes(startTime);
-        const endMin = toMinutes(endTime);
-
-        // Handles intervals that don’t cross midnight
-        if (startMin <= endMin) {
-            return xMin >= startMin && xMin <= endMin;
-        }
-        // Handles intervals that cross midnight (e.g. 23:00 to 01:00)
-        return xMin >= startMin || xMin <= endMin;
     }
 
     static getCurrentTime(): string {
@@ -168,7 +129,7 @@ class SqliteMaster {
             })
         })
 
-        while (bellToReturn == null){
+        while (bellToReturn == null) {
             await this.delay(5)
         }
         return bellToReturn;
