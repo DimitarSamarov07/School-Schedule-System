@@ -1,14 +1,19 @@
 import express from "express";
 import manager from "./sqlite_services.js" ;
-import {getRawAsset} from "node:sea";
 
 const app = express(); // Initializing Express App
 let port = 6969;
 
-app.get("/schedule", (req, res) => {
-    let {classId, date} = req.query;
-    res.send(manager.getScheduleByClassIdForDate(classId, date));
+app.get("/schedulesByDate", async (req, res) => {
+    let {date} = req.query;
+    date = new Date(Date.parse(date))
+    res.send(await manager.getAllSchedulesForDateTime(date));
 });
+
+app.get("/schedulesByClassIdForDate", (req, res) => {
+
+})
+
 
 app.get("/runningTime", async (req, res) => {
     let result = await manager.getRunningTime();
@@ -16,6 +21,7 @@ app.get("/runningTime", async (req, res) => {
 })
 
 app.get("/test-page", (req, res) => {
+
     res.send('Hello WORLD. ');
 });
 
@@ -25,5 +31,4 @@ app.get("/random", (req, res) => {
 );
 
 manager.initializeConnection();
-//manager.getAllSchedulesForDateTime('2025-01-01 15:30')
-app.listen(port, ()=> console.log(`App Listening on port ${port}`));
+app.listen(port, () => console.log(`App Listening on port ${port}`));
