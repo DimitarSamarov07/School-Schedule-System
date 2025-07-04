@@ -9,7 +9,14 @@ app.get("/schedulesByDate", async (req, res) => {
     let {date} = req.query;
     date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
 
-    res.send(await manager.getAllSchedulesForDateTime(date));
+    res.send(await manager.getAllSchedulesForDate(date));
+
+});
+app.get("/schedulesByDateTime", async (req, res) => {
+    let {date, time} = req.query;
+    date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
+
+    res.send(await manager.getAllSchedulesForDateTime(date, time));
 
 });
 
