@@ -26,7 +26,7 @@ class SqliteConstants {
                  JOIN Courses c on c.id = Schedule.Course
                  JOIN Teachers t on t.id = Schedule.T_ID
                  JOIN Rooms r on r.id = c.Room
-        WHERE strftime('%s', d.Date) = strftime('%s', ?) && cl.Class = classID;       
+        WHERE strftime('%s', d.Date) = strftime('%s', ?) AND cl.Class = classID;       
         `;
 }
 
