@@ -1,5 +1,6 @@
 import express from "express";
 import manager from "./sqlite_services.js" ;
+import {getRawAsset} from "node:sea";
 
 const app = express(); // Initializing Express App
 let port = 6969;

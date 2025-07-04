@@ -16,7 +16,7 @@ class Time {
 
         //Split the received string and set it as the end time
         let splitEnd = endTime.split(":")
-        dateEnd.setHours(parseInt(splitEnd[0], parseInt(splitEnd[1])))
+        dateEnd.setHours(parseInt(splitEnd[0]), parseInt(splitEnd[1]))
         this.End = dateEnd;
 
     }

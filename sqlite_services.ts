@@ -9,6 +9,7 @@ import sqlite3 from "sqlite3";
 import Bell from "./data_models/Bell.js";
 import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
+import RunningTime from "./response_models/RunningTime.js";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -57,61 +58,25 @@ class SqliteMaster {
         }
         return scheduleToReturn;
     }
-    static async getCurrentHour(): Promise<string> {
-        const now = new Date();
-        const currentTime = now.toTimeString().slice(0, 5);
-        let timeArr = [];
-
+    static async getRunningTime(): Promise<RunningTime> {
         return new Promise((resolve, reject) => {
-            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows) => {
+            this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
                 }
-
                 for (const row of rows) {
-                    let parsedRow = new Time(row.Id, row.Start, row.End);
-                    timeArr.push(parsedRow)
-                    console.log(this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End))
-                    console.log(new Date())
-                    console.log(parsedRow.Start)
-                    console.log(parsedRow.End)
+                    // @ts-ignore
+                    let parsedRow = new Time(row.id, row.Start, row.End);
                     if (this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End)) {
-                        let result = "";
-                        switch (parsedRow.Id) {
-                            case 1:
-                                result ="1-ви час " + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 2:
-                                result = "2-ри час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 3:
-                                result = "3-ти час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 4:
-                                result = "4-ти час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 5:
-                                result = "5-ти час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 6:
-                                result = "6-ти час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 7:
-                                result = "7-ми час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            case 8:
-                                result = "8-ми час" + parsedRow.Start + "-"  + parsedRow.End;
-                                break;
-                            default:
-                                result = "Непознат час";
-                        }
+                        let rowTimeStart = parsedRow.Start.getHours() + ":" + parsedRow.Start.getMinutes();
+                        let rowTimeEnd = parsedRow.End.getHours() + ":" + parsedRow.End .getMinutes();
 
-                        return resolve(result);
+                        return resolve(new RunningTime(parsedRow.Id, rowTimeStart, rowTimeEnd));
                     }
                 }
 
-                resolve("Извън учебно време");
+                resolve(null);
             });
         });
     }
@@ -132,12 +97,6 @@ class SqliteMaster {
 
             });
         });
-        // TODO: display ads
-
-        if (!this.isTimeBetween(new Date(), "07:00", "15:00")) {
-            console.log("")
-        }
-
 
         return this.mockScheduleArr;
     }
