@@ -10,8 +10,8 @@ app.get("schedule", (req, res) => {
     res.send(manager.getScheduleByClassIdForDate(classId, date));
 });
 
-app.get("/currentHour", async (req, res) => {
-    let result = await manager.getCurrentHour();
+app.get("/runningTime", async (req, res) => {
+    let result = await manager.getRunningTime();
     res.status(200).send({currentHour: result});
 })
 
