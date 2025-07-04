@@ -4,10 +4,12 @@ import Course from "./data_models/Course.js";
 import Teacher from "./data_models/Teacher.js";
 import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
-import type {Database} from "sqlite3";
+import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
+import  Bell from "./data_models/Bell.js";
+import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
-import Bell from "./data_models/Bell.js";
+;
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -22,7 +24,8 @@ class SqliteMaster {
         let testTeacher = new Teacher(1, "test", "test")
         let testCourse = new Course(1, "test", testTeacher, testRoom)
         let testDate = new DateModel(1, new Date(), false)
-        SqliteMaster.mockScheduleArr = [new Schedule(testCourse, testClass, testTeacher, testDate)]
+        let testTime = new Time(1, '223','322') ;
+        SqliteMaster.mockScheduleArr = [new Schedule(testClass, testCourse, testTime, testDate)]
     }
 
     static initializeConnection(): void {
@@ -40,10 +43,20 @@ class SqliteMaster {
         return this.mockScheduleArr;
     }
 
-    static getScheduleByClassIdForDate(classId: number, date: DateModel): Schedule {
-        // TODO: Implement
+    static async getScheduleByClassIdForDate(classId: number, date: DateModel): Promise<Schedule> {
 
-        return this.mockScheduleArr[0];
+        let scheduleToReturn: Schedule = null;
+        this.db.serialize(() => {
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_BY_CLASS_ID_FOR_DATE, classId,date , (err, row: Schedule) => {
+                if (err) throw err;
+                scheduleToReturn = new Schedule(row.Class,row.Course,row.Times,row.Date);
+            })
+        })
+
+        while (scheduleToReturn == null){
+            await this.delay(5)
+        }
+        return scheduleToReturn;
     }
     static async getCurrentHour(): Promise<string> {
         const now = new Date();
