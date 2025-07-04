@@ -6,7 +6,7 @@ import Room from "./data_models/Room.js";
 import Class from "./data_models/Class.js";
 import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
-import  Bell from "./data_models/Bell.js";
+import Bell from "./data_models/Bell.js";
 import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
 
@@ -60,53 +60,48 @@ class SqliteMaster {
     static async getCurrentHour(): Promise<string> {
         const now = new Date();
         const currentTime = now.toTimeString().slice(0, 5);
-
+        let timeArr = [];
 
         return new Promise((resolve, reject) => {
-            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows: Object[]) => {
+            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
                 }
 
                 for (const row of rows) {
-                    // @ts-ignore
-                    if (this.isTimeBetween(currentTime, row.Start, row.End)) {
-
+                    let parsedRow = new Time(row.Id, row.Start, row.End);
+                    timeArr.push(parsedRow)
+                    console.log(this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End))
+                    console.log(new Date())
+                    console.log(parsedRow.Start)
+                    console.log(parsedRow.End)
+                    if (this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End)) {
                         let result = "";
-                        // @ts-ignore
-                        switch (row.id) {
+                        switch (parsedRow.Id) {
                             case 1:
-                                // @ts-ignore
-                                result ="1-ви час " + row.Start + "-"  + row.End;
+                                result ="1-ви час " + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 2:
-                                // @ts-ignore
-                                result = "2-ри час" + row.Start + "-"  + row.End;
+                                result = "2-ри час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 3:
-                                // @ts-ignore
-                                result = "3-ти час" + row.Start + "-"  + row.End;
+                                result = "3-ти час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 4:
-                                // @ts-ignore
-                                result = "4-ти час" + row.Start + "-"  + row.End;
+                                result = "4-ти час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 5:
-                                // @ts-ignore
-                                result = "5-ти час" + row.Start + "-"  + row.End;
+                                result = "5-ти час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 6:
-                                // @ts-ignore
-                                result = "6-ти час" + row.Start + "-"  + row.End;
+                                result = "6-ти час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 7:
-                                // @ts-ignore
-                                result = "7-ми час" + row.Start + "-"  + row.End;
+                                result = "7-ми час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             case 8:
-                                // @ts-ignore
-                                result = "8-ми час" + row.Start + "-"  + row.End;
+                                result = "8-ми час" + parsedRow.Start + "-"  + parsedRow.End;
                                 break;
                             default:
                                 result = "Непознат час";
@@ -139,7 +134,7 @@ class SqliteMaster {
         });
         // TODO: display ads
 
-        if (!this.isTimeBetween(this.getCurrentTime(), "07:00", "15:00")) {
+        if (!this.isTimeBetween(new Date(), "07:00", "15:00")) {
             console.log("")
         }
 
@@ -151,22 +146,9 @@ class SqliteMaster {
 
     }
 
-    static isTimeBetween(x: string, startTime: string, endTime: string) {
-        const toMinutes = (t: string) => {
-            const [h, m] = t.split(':').map(Number);
-            return h * 60 + m;
-        };
+    static isTimeBetween(x: Date, startTime: Date, endTime: Date): boolean {
+        return startTime <= x && endTime >= x;
 
-        const xMin = toMinutes(x);
-        const startMin = toMinutes(startTime);
-        const endMin = toMinutes(endTime);
-
-        // Handles intervals that don’t cross midnight
-        if (startMin <= endMin) {
-            return xMin >= startMin && xMin <= endMin;
-        }
-        // Handles intervals that cross midnight (e.g. 23:00 to 01:00)
-        return xMin >= startMin || xMin <= endMin;
     }
 
     static getCurrentTime(): string {
