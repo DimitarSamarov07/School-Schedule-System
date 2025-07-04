@@ -87,20 +87,42 @@ class SqliteMaster {
 
 
     //TODO: Finish the logic behind the schedule
-    static getAllSchedulesForDateTime(dateAsEpoch: string): Schedule[] {
+    static getAllSchedulesForDateTime(date: Date): Promise<Schedule[]> {
+        let currDay = date.getDate();
+        let currDayStr: string
+
+        let currMonth = date.getMonth() + 1;  // Months are from 0 to 11..APPARENTLY
+        let currMonthStr: string
+
+        if (currDay < 10) {
+            currDayStr = "0" + currDay
+        } else {
+            currDayStr = currDay.toString();
+        }
+        if (currMonth < 10) {
+            currMonthStr = "0" + currMonth;
+        } else {
+            currMonthStr = currMonth.toString();
+        }
+
+        let formattedDate = `${date.getFullYear()}-${currMonthStr}-${currDayStr}`
 
         let receivedArr = [];
-        this.db.serialize(() => {
-            //The .each method runs the given query for EACH row
-            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, dateAsEpoch, (err, row) => {
-                if (err) console.log(err);
-                receivedArr.push(row);
-                console.log(row);
 
+        return new Promise((resolve, reject) => {
+            //The .each method runs the given query for EACH row
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, formattedDate, (err, row) => {
+                if (err) {
+                    console.error(err);
+                    reject();
+                }
+
+                let schedule = Schedule.convertFromDBModel(row);
+                receivedArr.push(schedule);
+            }, () => {
+                resolve(receivedArr);
             });
         });
-
-        return this.mockScheduleArr;
     }
 
     static checkIsTimeBetweenDB() {
