@@ -5,7 +5,7 @@ import {getRawAsset} from "node:sea";
 const app = express(); // Initializing Express App
 let port = 6969;
 
-app.get("schedule", (req, res) => {
+app.get("/schedule", (req, res) => {
     let {classId, date} = req.query;
     res.send(manager.getScheduleByClassIdForDate(classId, date));
 });
