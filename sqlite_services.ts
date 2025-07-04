@@ -55,6 +55,7 @@ class SqliteMaster {
     }
 
     static async getRunningTime(): Promise<RunningTime> {
+        let isRunningTime;
         return new Promise((resolve, reject) => {
             this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
                 if (err) {
@@ -70,9 +71,28 @@ class SqliteMaster {
                         return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
                     }
                 }
-
-                resolve(null);
+                isRunningTime = null;
             });
+            if (isRunningTime == null) {
+                this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        return reject(err);
+                    }
+                    for (const row of rows) {
+                        let parsedRow = new Time(row.id, row.Start, row.End);
+                        const now = moment();
+                        const start = moment(parsedRow.Start, 'HH:mm');
+                        const end = moment(parsedRow.End, 'HH:mm');
+                        if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                            console.log(parsedRow.Id, parsedRow.Start, parsedRow.End);
+                            return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
+                        }
+                    }
+                    isRunningTime = true;
+
+                });
+            }
         });
     }
 

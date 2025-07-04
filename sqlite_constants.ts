@@ -33,6 +33,8 @@ class SqliteConstants {
 
     static readonly SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID = `${this.BASE_SCHEDULE_QUERY} WHERE d.date = (?) AND cl.id = (?)`
 
+    static readonly SELECT_BREAKS = `SELECT id, END as 'Start', LEAD(Start) over (ORDER BY id) as 'End'
+                                     from Times`
     static readonly SELECT_BELL_BY_NAME =
         `SELECT Id, Name, SoundPath
          FROM Bells
