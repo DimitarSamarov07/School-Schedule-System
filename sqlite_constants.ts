@@ -28,6 +28,10 @@ class SqliteConstants {
                  JOIN Rooms r on r.id = c.Room
         WHERE strftime('%s', d.Date) = strftime('%s', ?) AND cl.Class = classID;       
         `;
+
+    static readonly SELECT_ALL_TIMES = `
+    SELECT id, Start, End FROM Times
+    `
 }
 
 export default SqliteConstants;
