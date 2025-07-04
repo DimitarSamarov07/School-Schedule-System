@@ -1,18 +1,21 @@
 import express from "express";
 import manager from "./sqlite_services.js" ;
+import moment from "moment";
 
 const app = express(); // Initializing Express App
 let port = 6969;
 
 app.get("/schedulesByDate", async (req, res) => {
     let {date} = req.query;
-    date = new Date(Date.parse(date))
+    date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
+
     res.send(await manager.getAllSchedulesForDateTime(date));
+
 });
 
 app.get("/schedulesByClassIdForDate", async (req, res) => {
     let {classId, date} = req.query;
-    date = new Date(Date.parse(date))
+    date = moment(date).format("YYYY-MM-DD");
     res.send(await manager.getSchedulesByClassIdForDate(parseInt(classId), date));
 })
 
