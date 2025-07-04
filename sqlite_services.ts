@@ -37,40 +37,31 @@ class SqliteMaster {
         this.db.close()
     }
 
-    static getSchedulesByDate(): Schedule[] {
-        // TODO: Implement
 
-        return this.mockScheduleArr;
-    }
-
-    static async getSchedulesByClassIdForDate(classId: number, date: DateModel): Promise<Schedule[]> {
+    static async getSchedulesByClassIdForDate(classId: number, date: Date): Promise<Schedule[]> {
         let schedulesToReturn: Schedule[] = [];
-
+        let formattedDate = this.formatDateForDb(date);
         return new Promise((resolve, reject) => {
-
-            this.db.serialize(() => {
-                this.db.each(SqliteConstants.SELECT_SCHEDULES_BY_CLASS_ID_FOR_DATE, classId, date, (err, row: Schedule) => {
-                    if (err) {
-                        reject(err)
-                        console.error(err);
-                    }
-                    schedulesToReturn.push(new Schedule(row.Class, row.Course, row.Times, row.Date));
-                }, () => {
-                    resolve(schedulesToReturn);
-                })
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID, [formattedDate, classId], (err, row: any) => {
+                if (err) {
+                    reject(err)
+                    console.error(err);
+                }
+                schedulesToReturn.push(Schedule.convertFromDBModel(row));
+            }, () => {
+                resolve(schedulesToReturn);
             })
         });
     }
 
     static async getRunningTime(): Promise<RunningTime> {
         return new Promise((resolve, reject) => {
-            this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows) => {
+            this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
                 }
                 for (const row of rows) {
-                    // @ts-ignore
                     let parsedRow = new Time(row.id, row.Start, row.End);
                     if (this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End)) {
                         let rowTimeStart = parsedRow.Start.getHours() + ":" + parsedRow.Start.getMinutes();
@@ -88,25 +79,7 @@ class SqliteMaster {
 
     //TODO: Finish the logic behind the schedule
     static getAllSchedulesForDateTime(date: Date): Promise<Schedule[]> {
-        let currDay = date.getDate();
-        let currDayStr: string
-
-        let currMonth = date.getMonth() + 1;  // Months are from 0 to 11..APPARENTLY
-        let currMonthStr: string
-
-        if (currDay < 10) {
-            currDayStr = "0" + currDay
-        } else {
-            currDayStr = currDay.toString();
-        }
-        if (currMonth < 10) {
-            currMonthStr = "0" + currMonth;
-        } else {
-            currMonthStr = currMonth.toString();
-        }
-
-        let formattedDate = `${date.getFullYear()}-${currMonthStr}-${currDayStr}`
-
+        let formattedDate = this.formatDateForDb(date);
         let receivedArr = [];
 
         return new Promise((resolve, reject) => {
@@ -157,6 +130,26 @@ class SqliteMaster {
         return bellToReturn;
     }
 
+    private static formatDateForDb(date: Date): string {
+        let currDay = date.getDate();
+        let currDayStr: string
+
+        let currMonth = date.getMonth() + 1;  // Months are from 0 to 11..APPARENTLY
+        let currMonthStr: string
+
+        if (currDay < 10) {
+            currDayStr = "0" + currDay
+        } else {
+            currDayStr = currDay.toString();
+        }
+        if (currMonth < 10) {
+            currMonthStr = "0" + currMonth;
+        } else {
+            currMonthStr = currMonth.toString();
+        }
+
+        return `${date.getFullYear()}-${currMonthStr}-${currDayStr}`;
+    }
 }
 
 export default SqliteMaster;

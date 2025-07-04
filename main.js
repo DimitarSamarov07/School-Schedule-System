@@ -10,8 +10,10 @@ app.get("/schedulesByDate", async (req, res) => {
     res.send(await manager.getAllSchedulesForDateTime(date));
 });
 
-app.get("/schedulesByClassIdForDate", (req, res) => {
-
+app.get("/schedulesByClassIdForDate", async (req, res) => {
+    let {classId, date} = req.query;
+    date = new Date(Date.parse(date))
+    res.send(await manager.getSchedulesByClassIdForDate(parseInt(classId), date));
 })
 
 
