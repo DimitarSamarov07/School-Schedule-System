@@ -7,6 +7,7 @@ class SqliteConstants {
                t.id           as 'teacherId',
                t.FirstName    as 'firstName',
                t.LastName     as 'lastName',
+               cl.id          as 'classId',
                cl.Name        as 'className',
                cl.Description as 'classDesc',
                d.id           as 'dateId',
@@ -26,7 +27,7 @@ class SqliteConstants {
                  JOIN Teachers t on t.id = Schedule.T_id
                  JOIN Rooms r on r.id = c.Room
                  JOIN Times ti on ti.id = Schedule.T_id
-        WHERE strftime('%s', d.Date) = strftime('%s', (?));
+        WHERE d.Date = (?);
         `;
     //YYYY.MM.DD
 
