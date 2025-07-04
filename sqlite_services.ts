@@ -51,40 +51,50 @@ class SqliteMaster {
 
 
         return new Promise((resolve, reject) => {
-            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows) => {
+            this.db.all('SELECT id, Start, End FROM Times', [], (err, rows: Object[]) => {
                 if (err) {
                     console.error(err);
                     return reject(err);
                 }
 
                 for (const row of rows) {
+                    // @ts-ignore
                     if (this.isTimeBetween(currentTime, row.Start, row.End)) {
 
                         let result = "";
+                        // @ts-ignore
                         switch (row.id) {
                             case 1:
-                                result = "1-ви час";
+                                // @ts-ignore
+                                result ="1-ви час " + row.Start + "-"  + row.End;
                                 break;
                             case 2:
-                                result = "2-ри час";
+                                // @ts-ignore
+                                result = "2-ри час" + row.Start + "-"  + row.End;
                                 break;
                             case 3:
-                                result = "3-ти час";
+                                // @ts-ignore
+                                result = "3-ти час" + row.Start + "-"  + row.End;
                                 break;
                             case 4:
-                                result = "4-ти час";
+                                // @ts-ignore
+                                result = "4-ти час" + row.Start + "-"  + row.End;
                                 break;
                             case 5:
-                                result = "5-ти час";
+                                // @ts-ignore
+                                result = "5-ти час" + row.Start + "-"  + row.End;
                                 break;
                             case 6:
-                                result = "6-ти час";
+                                // @ts-ignore
+                                result = "6-ти час" + row.Start + "-"  + row.End;
                                 break;
                             case 7:
-                                result = "7-ми час";
+                                // @ts-ignore
+                                result = "7-ми час" + row.Start + "-"  + row.End;
                                 break;
                             case 8:
-                                result = "8-ми час";
+                                // @ts-ignore
+                                result = "8-ми час" + row.Start + "-"  + row.End;
                                 break;
                             default:
                                 result = "Непознат час";
