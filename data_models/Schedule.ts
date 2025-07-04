@@ -1,18 +1,18 @@
 import Course from "./Course.ts";
 import Class from "./Class.ts";
-import Teacher from "./Teacher.ts";
 import DateModel from "./DateModel.ts";
+import type Time from "./Time.js";
 
 class Schedule {
-    Course: Course;
     Class: Class;
-    Teacher: Teacher;
+    Course: Course;
+    Times: Time;
     Date: DateModel;
 
-    constructor(course: Course, scheduleClass: Class, teacher: Teacher , date: DateModel) {
-        this.Course = course;
+    constructor(scheduleClass: Class, course: Course, times: Time, date: DateModel) {
         this.Class = scheduleClass;
-        this.Teacher = teacher ;
+        this.Course = course;
+        this.Times = times;
         this.Date = date;
     }
 }
