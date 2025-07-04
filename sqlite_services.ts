@@ -86,7 +86,7 @@ class SqliteMaster {
                         const end = moment(parsedRow.End, 'HH:mm');
                         if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
                             console.log(parsedRow.Id, parsedRow.Start, parsedRow.End);
-                            return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
+                            return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
                         }
                     }
                     isRunningTime = true;
