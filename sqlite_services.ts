@@ -10,6 +10,7 @@ import Bell from "./data_models/Bell.js";
 import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
 import RunningTime from "./response_models/RunningTime.js";
+import moment from "moment";
 
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
@@ -38,11 +39,10 @@ class SqliteMaster {
     }
 
 
-    static async getSchedulesByClassIdForDate(classId: number, date: Date): Promise<Schedule[]> {
+    static async getSchedulesByClassIdForDate(classId: number, date: string): Promise<Schedule[]> {
         let schedulesToReturn: Schedule[] = [];
-        let formattedDate = this.formatDateForDb(date);
         return new Promise((resolve, reject) => {
-            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID, [formattedDate, classId], (err, row: any) => {
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID, [date, classId], (err, row: any) => {
                 if (err) {
                     reject(err)
                     console.error(err);
@@ -63,11 +63,11 @@ class SqliteMaster {
                 }
                 for (const row of rows) {
                     let parsedRow = new Time(row.id, row.Start, row.End);
-                    if (this.isTimeBetween(new Date(), parsedRow.Start, parsedRow.End)) {
-                        let rowTimeStart = parsedRow.Start.getHours() + ":" + parsedRow.Start.getMinutes();
-                        let rowTimeEnd = parsedRow.End.getHours() + ":" + parsedRow.End.getMinutes();
-
-                        return resolve(new RunningTime(parsedRow.Id, rowTimeStart, rowTimeEnd));
+                    const now = moment();
+                    const start = moment(parsedRow.Start, 'HH:mm');
+                    const end = moment(parsedRow.End, 'HH:mm');
+                    if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                        return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
                     }
                 }
 
@@ -78,18 +78,16 @@ class SqliteMaster {
 
 
     //TODO: Finish the logic behind the schedule
-    static getAllSchedulesForDateTime(date: Date): Promise<Schedule[]> {
-        let formattedDate = this.formatDateForDb(date);
+    static getAllSchedulesForDateTime(date: string): Promise<Schedule[]> {
         let receivedArr = [];
 
         return new Promise((resolve, reject) => {
             //The .each method runs the given query for EACH row
-            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, formattedDate, (err, row) => {
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, date, (err, row) => {
                 if (err) {
                     console.error(err);
                     reject();
                 }
-
                 let schedule = Schedule.convertFromDBModel(row);
                 receivedArr.push(schedule);
             }, () => {
@@ -98,22 +96,6 @@ class SqliteMaster {
         });
     }
 
-    static checkIsTimeBetweenDB() {
-
-    }
-
-    static isTimeBetween(x: Date, startTime: Date, endTime: Date): boolean {
-        return startTime <= x && endTime >= x;
-
-    }
-
-    static getCurrentTime(): string {
-        const now = new Date();
-
-        const hours = now.getHours();
-        const minutes = now.getMinutes();
-        return `${hours}:${minutes.toString().padStart(2, '0')}`;
-    }
 
     static async getBellPathByName(bellName: string): Promise<Bell> {
         let bellToReturn: Bell = null;
@@ -130,26 +112,5 @@ class SqliteMaster {
         return bellToReturn;
     }
 
-    private static formatDateForDb(date: Date): string {
-        let currDay = date.getDate();
-        let currDayStr: string
-
-        let currMonth = date.getMonth() + 1;  // Months are from 0 to 11..APPARENTLY
-        let currMonthStr: string
-
-        if (currDay < 10) {
-            currDayStr = "0" + currDay
-        } else {
-            currDayStr = currDay.toString();
-        }
-        if (currMonth < 10) {
-            currMonthStr = "0" + currMonth;
-        } else {
-            currMonthStr = currMonth.toString();
-        }
-
-        return `${date.getFullYear()}-${currMonthStr}-${currDayStr}`;
-    }
 }
-
 export default SqliteMaster;
