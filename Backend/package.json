@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "@types/node": "^24.0.10",
+    "express": "^5.1.0",
+    "moment": "^2.30.1",
+    "sqlite3": "^5.1.7",
+    "tsx": "^4.20.3"
+  },
+  "type": "module",
+  "scripts": {
+    "start": "node --import=tsx main.js"
+  }
+}
