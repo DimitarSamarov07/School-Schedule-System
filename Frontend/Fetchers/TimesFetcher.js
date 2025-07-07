@@ -1,22 +1,18 @@
-﻿const fetchTime = () => {
-    fetch('http://localhost:6969/runningTime?Time', {
-        headers: {
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => {
+﻿async function fetchTime() {
+    const url = 'http://localhost:6969/runningTime?Time';
+    try {
+        const response = await fetch(url);
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`Response status: ${response.status}`);
         }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Start Time:', data.currentHour.startTime);
-        console.log('Number in Schedule:', data.currentHour.numberInSchedule);
-    })
-    .catch(error => {
-        console.error('Error:', error.message);
-    });
-};
 
-fetchTime();
+        const json = await response.json();
+        console.log(json);
+
+        return response.json();
+    } catch (error) {
+        console.error(error.message);
+    }
+}
+
+export default fetchTime()
