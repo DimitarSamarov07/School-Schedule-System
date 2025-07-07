@@ -6,6 +6,16 @@ import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
 import RunningTime from "./response_models/RunningTime.js";
 import moment from "moment";
+import ReturningId from "./response_models/ReturningId.js";
+import CourseResponse from "./response_models/CourseResponse.js";
+import TeacherResponse from "./response_models/TeacherResponse.js";
+import ClassResponse from "./response_models/ClassResponse.js";
+import RoomResponse from "./response_models/RoomResponse.js";
+import TimeResponse from "./response_models/TimeResponse.js";
+import DateModelResponse from "./response_models/DateModelResponse.js";
+import ScheduleResponse from "./response_models/ScheduleResponse.js";
+import BellResponse from "./response_models/BellResponse.js";
+import AdvertisingResponse from "./response_models/AdvertisingResponse.js";
 
 /**
  * Represents a manager for handling SQLite-related operations.
@@ -204,16 +214,104 @@ class SqliteMaster {
     static async getBellPathByName(bellName: string): Promise<Bell> {
         let bellToReturn: Bell = null;
         return new Promise((resolve, reject) => {
-            this.db.each(SqliteConstants.SELECT_BELL_BY_NAME, bellName, (err, row: Bell) => {
+            this.db.each(SqliteConstants.SELECT_BELL_BY_NAME, bellName, (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
                     return;
                 }
-                bellToReturn = new Bell(row.Id, row.Name, row.SoundPath);
+                bellToReturn = new Bell(row.id, row.Name, row.SoundPath);
                 resolve(bellToReturn);
             })
         });
+    }
+
+    static async createTeacher(firstName: string, lastName: string): Promise<TeacherResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_TEACHERS, [firstName, lastName])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new TeacherResponse(id, firstName, lastName);
+    }
+
+    static async createClass(name: string, description: string): Promise<ClassResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_CLASSES, [name, description])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new ClassResponse(id, name, description);
+    }
+
+    static async createRoom(name: string, floor: number): Promise<RoomResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_ROOMS, [name, floor])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new RoomResponse(id, name, floor);
+    }
+
+    static async createTime(start: string, end: string): Promise<TimeResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_TIMES, [start, end])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new TimeResponse(id, start, end);
+    }
+
+    static async createDate(date: string, isHoliday: boolean): Promise<DateModelResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_DATES, [date, isHoliday])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new DateModelResponse(id, date, isHoliday)
+    }
+
+    static async createCourse(name: string, teacherId: number, roomId: number): Promise<CourseResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_COURSES, [name, teacherId, roomId])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new CourseResponse(id, name, teacherId, roomId)
+    }
+
+    static async createSchedule(courseId: number, classId: number, teacherId: number, dateId: number): Promise<ScheduleResponse> {
+        await this.createBase(SqliteConstants.INSERT_INTO_SCHEDULE, [courseId, classId, teacherId, dateId])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new ScheduleResponse(classId, courseId, teacherId, dateId)
+    }
+
+    static async createBell(name: string, soundPath: string): Promise<BellResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_BELLS, [name, soundPath])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+
+        return new BellResponse(id, name, soundPath);
+    }
+
+    static async createAdvertising(content: string, imagePath: string): Promise<AdvertisingResponse> {
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_ADVERTISING, [content, imagePath])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+
+        return new AdvertisingResponse(id, content, imagePath);
+    }
+
+    private static createBase(query: string, params: any[]): Promise<ReturningId> {
+        return new Promise((resolve, reject): void => {
+            this.db.each(query, params, (err, row: any) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                let returningId = new ReturningId(row?.id);
+                resolve(returningId)
+            })
+        })
     }
 
 }

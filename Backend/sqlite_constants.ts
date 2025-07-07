@@ -73,6 +73,14 @@ class SqliteConstants {
                                          VALUES ((?), (?))
                                          RETURNING id;`
 
+    static readonly INSERT_INTO_BELLS = `INSERT INTO Bells(Name, SoundPath)
+                                         VALUES ((?), (?))
+                                         RETURNING id;`
+
+    static readonly INSERT_INTO_ADVERTISING = `INSERT INTO Advertising(Content, ImagePath)
+                                         VALUES ((?), (?))
+                                         RETURNING id;`
+
     //DELETE queries
 
     static readonly DELETE_FROM_CLASSES = `DELETE
