@@ -99,9 +99,9 @@ INSERT INTO Rooms (Name, Floor) VALUES
     ('21', 2),
     ('10', 1);
 
-INSERT INTO Schedule(Course, Class, T_id, D_ID) VALUES
+INSERT OR REPLACE INTO Schedule(Course, Class, T_id, D_ID) VALUES
     (1, 1, 1, 1),
-    (2, 2, 1, 1);
+    (2, 2, 2, 2);
 
 INSERT INTO Advertising(Content, ImagePath) VALUES
     ('Текст на реклама', './add_banner.png');
