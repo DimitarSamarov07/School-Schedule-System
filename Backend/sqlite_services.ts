@@ -1,9 +1,4 @@
-import DateModel from "./data_models/DateModel.js";
 import Schedule from "./data_models/Schedule.js";
-import Course from "./data_models/Course.js";
-import Teacher from "./data_models/Teacher.js";
-import Room from "./data_models/Room.js";
-import Class from "./data_models/Class.js";
 import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
 import Bell from "./data_models/Bell.js";
@@ -18,7 +13,6 @@ import moment from "moment";
  * manage connections, and handle various entity data.
  */
 class SqliteMaster {
-    static mockScheduleArr: Schedule[];
     /**
      * The relative file path to the database file.
      * This variable specifies the location of the database file
@@ -33,24 +27,6 @@ class SqliteMaster {
      * queries, manipulate data, and manage database transactions.
      */
     static db: Database;
-
-    /**
-     * Constructor for initializing mock data.
-     * This sets up initial mock objects including Room, Class, Teacher, Course, DateModel, and Time,
-     * and populates a mock schedule array in SqliteMaster.
-     *
-     * @return {void} This constructor does not return a value.
-     */
-    constructor() {
-        // Initialize mock data
-        let testRoom = new Room(1, "test", 1)
-        let testClass = new Class(1, "test", "test")
-        let testTeacher = new Teacher(1, "test", "test")
-        let testCourse = new Course(1, "test", testTeacher, testRoom)
-        let testDate = new DateModel(1, new Date(), false)
-        let testTime = new Time(1, '223', '322');
-        SqliteMaster.mockScheduleArr = [new Schedule(testClass, testCourse, testTime, testDate)]
-    }
 
     /**
      * Initializes the database connection using SQLite and sets up the database instance.
