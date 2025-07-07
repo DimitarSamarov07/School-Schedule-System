@@ -1,6 +1,9 @@
 ﻿const fetchTime = async () => {
     try {
         const response = await fetch('http://localhost:6969/runningTime?Time', {
+            headers: {
+                'Accept': 'application/json'
+            }
         });
 
         if (!response.ok) {
@@ -8,15 +11,14 @@
         }
         
         const data = await response.json();
-        console.log('Full response:', data); // See the complete response
         
         if (!data) {
             throw new Error('No data received from the server');
         }
+
+        // Log the complete data structure
+        console.log(JSON.stringify(data, null, 2));
         
-        console.log(`Start: ${data.start}`);
-        console.log(`End: ${data.end}`);
-        console.log(`Period: ${data.schedule}`);
     } catch (error) {
         console.error('Error:', error.message);
     }
