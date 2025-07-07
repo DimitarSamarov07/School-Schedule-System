@@ -67,7 +67,7 @@ class SqliteMaster {
                 this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
-                        reject(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
                         return;
                     }
                     try {
@@ -108,7 +108,7 @@ class SqliteMaster {
                             isInBreak = true;
                         } catch (e) {
                             console.error(err);
-                            reject(err);
+                            reject("A malformed database entry ?");
                             return;
                         }
 
