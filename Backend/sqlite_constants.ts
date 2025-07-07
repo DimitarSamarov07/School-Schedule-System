@@ -43,6 +43,32 @@ class SqliteConstants {
     static readonly SELECT_ALL_TIMES = `
     SELECT id, Start, End FROM Times
     `
+    static readonly INSERT_INTO_TEACHERS = `INSERT INTO Teachers(FirstName, LastName)
+                                            VALUES ((?), (?))
+                                            RETURNING id;`
+
+    static readonly INSERT_INTO_CLASSES = `INSERT INTO Classes(Name, Description)
+                                           VALUES ((?), (?))
+                                           RETURNING id;`
+
+    static readonly INSERT_INTO_TIMES = `INSERT INTO Times(Start, End)
+                                         VALUES ((?), (?))
+                                         RETURNING id;`
+
+    static readonly INSERT_INTO_COURSES = `INSERT INTO Courses(Name, Teacher, Room)
+                                           VALUES ((?), (?), (?))
+                                           RETURNING id;`
+
+    static readonly INSERT_INTO_DATES = `INSERT INTO Dates(Date, IsHoliday)
+                                         VALUES ((?), (?))
+                                         RETURNING id;`
+
+    static readonly INSERT_INTO_SCHEDULE = `INSERT INTO Schedule(Course, Class, T_id, D_id)
+                                            VALUES ((?), (?), (?), (?));`
+
+    static readonly INSERT_INTO_ROOMS = `INSERT INTO Rooms(Name, Floor)
+                                         VALUES ((?), (?))
+                                         RETURNING id;`
 }
 
 export default SqliteConstants;
