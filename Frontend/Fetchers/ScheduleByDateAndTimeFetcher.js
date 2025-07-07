@@ -1,9 +1,8 @@
 import fetchTime from './TimesFetcher.js';
-import timesFetcher from "./TimesFetcher.js";
 
 async function fetchScheduleByDateAndTime () {
     try {
-        const time = (await fetchTime).data.currentTime.startTime;
+        const time = (await fetchTime()).data.currentTime.startTime;
         const date = "2025-03-07";
         
         const params = new URLSearchParams();
@@ -21,4 +20,4 @@ async function fetchScheduleByDateAndTime () {
 
 fetchScheduleByDateAndTime()
 
-export default fetchScheduleByDateAndTime()
+export default fetchScheduleByDateAndTime;

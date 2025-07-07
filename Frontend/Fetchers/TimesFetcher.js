@@ -9,10 +9,9 @@
         const json = await response.json();
         console.log(json);
 
-        return response.json();
     } catch (error) {
         console.error(error.message);
     }
 }
 
-export default fetchTime()
+export default fetchTime;
