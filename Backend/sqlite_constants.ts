@@ -1,5 +1,3 @@
-// TODO: SQLite query strings go here
-
 class SqliteConstants {
     static readonly BASE_SCHEDULE_QUERY = `
         SELECT c.id           as 'courseId',
