@@ -43,6 +43,9 @@ class SqliteConstants {
     static readonly SELECT_ALL_TIMES = `
     SELECT id, Start, End FROM Times
     `
+
+    //INSERT queries
+
     static readonly INSERT_INTO_TEACHERS = `INSERT INTO Teachers(FirstName, LastName)
                                             VALUES ((?), (?))
                                             RETURNING id;`
@@ -69,6 +72,44 @@ class SqliteConstants {
     static readonly INSERT_INTO_ROOMS = `INSERT INTO Rooms(Name, Floor)
                                          VALUES ((?), (?))
                                          RETURNING id;`
+
+    //DELETE queries
+
+    static readonly DELETE_FROM_CLASSES = `DELETE
+                                           FROM Classes
+                                           WHERE id = (?);`
+
+    static readonly DELETE_FROM_DATES = `DELETE
+                                         FROM Dates
+                                         WHERE id = (?);`
+
+    static readonly DELETE_FROM_TEACHERS = `DELETE
+                                            FROM Teachers
+                                            WHERE id = (?);`
+
+    static readonly DELETE_FROM_COURSES = `DELETE
+                                           FROM Courses
+                                           WHERE id = (?);`
+
+    static readonly DELETE_FROM_ROOMS = `DELETE
+                                         FROM Rooms
+                                         WHERE id = (?);`
+
+    static readonly DELETE_FROM_ADVERTISING = `DELETE
+                                               FROM Advertising
+                                               WHERE id = (?);`
+
+    static readonly DELETE_FROM_BELLS = `DELETE
+                                         FROM Bells
+                                         WHERE id = (?);`
+
+    static readonly DELETE_FROM_SCHEDULE = `DELETE
+                                            FROM Schedule
+                                            WHERE (Course, Class, T_id) = ((?), (?), (?));`
+
+    static readonly DELETE_FROM_TIMES = `DELETE
+                                         FROM Times
+                                         WHERE id = (?);`
 }
 
 export default SqliteConstants;
