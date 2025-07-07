@@ -1,16 +1,24 @@
 ﻿const fetchTime = async () => {
     try {
-        const response = await fetch('http://localhost:6969/runningTime?Time');
+        const response = await fetch('http://localhost:6969/runningTime?Time', {
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const data = await response.json();
+        console.log('Full response:', data); // See the complete response
         
-        // This will show us what properties we actually have
-        console.log('Available properties:', Object.keys(data));
+        if (!data) {
+            throw new Error('No data received from the server');
+        }
         
-        // This will show the full data object
-        console.log('Data:', data);
-        
+        console.log(`Start: ${data.start}`);
+        console.log(`End: ${data.end}`);
+        console.log(`Period: ${data.schedule}`);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error:', error.message);
     }
 };
 
