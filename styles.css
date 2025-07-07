@@ -1,0 +1,227 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f4f7f6;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    color: #222;
+}
+header {
+    background-color: #7FC4B7;
+    color: white;
+    padding: 25px 10px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+#clock {
+    font-size: 4em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+#break-time {
+    font-size: 3em;
+    font-weight: 700;
+}
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+}
+ 
+ 
+.login-container {
+    background-color: #ffffff;
+    padding: 40px 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+}
+ 
+.login-container h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+ 
+.input-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+ 
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+    font-size: 1.1em;
+}
+ 
+.input-group input[type="text"],
+.input-group input[type="password"] {
+    width: calc(100% - 20px);
+    padding: 12px 10px;
+    border: 1px solid #cbbbbb;
+    border-radius: 5px;
+    font-size: 1.1em;
+    box-sizing: border-box;
+}
+ 
+.input-group input[type="text"]:focus,
+.input-group input[type="password"]:focus {
+    border-color: #7FC4B7;
+    outline: none;
+    box-shadow: 0 0 5px rgba(127, 196, 183, 0.5);
+}
+ 
+button[type="submit"] {
+    background-color: #7FC4B7;
+    color: white;
+    padding: 15px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.3em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    margin-top: 20px;
+}
+ 
+button[type="submit"]:hover {
+    background-color: #69b0a1;
+    transform: translateY(-2px);
+}
+ 
+.error-message {
+    color: #e74c3c;
+    margin-top: 20px;
+    font-weight: bold;
+    display: none;
+}
+ 
+footer {
+    background-color: #7FC4B7;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    font-weight: bold;
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
+}
+footer a {
+    font-size: 20px;
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+}
+footer a:hover {
+    text-decoration: underline;
+}
+ 
+  .grid-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      overflow-x: auto;
+    }
+ 
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 300px;
+      width: 300px;
+    }
+ 
+    .card h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+ 
+    .card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 200px;
+      border: 1px solid #ddd;
+      padding: 10px;
+      border-radius: 5px;
+    }
+ 
+    .card ul li {
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+ 
+    .card ul li:last-child {
+      border-bottom: none;
+    }
+ 
+    .card ul[contenteditable="true"] {
+      cursor: text;
+    }
+ 
+    .card button {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+ 
+    .card button:hover {
+      background-color: #0056b3;
+    }
+
+   #drop-zone {
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 20px;
+  text-align: center;
+  cursor: pointer;
+  background-color: #ccc;
+  transition: 0.3s;
+}
+
+  
+ #calendar {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 5px;
+  user-select: none;
+}
+ 
+.day {
+  padding: 10px;
+  background-color: #eee;
+  text-align: center;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+ 
+.day:hover {
+  background-color: #ccc;
+}
+ 
+.day.marked {
+  background-color: #ff5555;
+  color: white;
+  font-weight: bold;
+}
+ 
+
+ 
+
