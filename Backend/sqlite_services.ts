@@ -12,6 +12,11 @@ import SqliteConstants from "./sqlite_constants.js";
 import RunningTime from "./response_models/RunningTime.js";
 import moment from "moment";
 
+/**
+ * Represents a manager for handling SQLite-related operations.
+ * Provides methods to interact with the database, retrieve schedules,
+ * manage connections, and handle various entity data.
+ */
 class SqliteMaster {
     static mockScheduleArr: Schedule[];
     static readonly DATABASE_PATH: string = "./dev.db";
@@ -44,8 +49,9 @@ class SqliteMaster {
         return new Promise((resolve, reject) => {
             this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID, [date, classId], (err, row: any) => {
                 if (err) {
-                    reject(err)
                     console.error(err);
+                    reject(err)
+                    return;
                 }
                 schedulesToReturn.push(Schedule.convertFromDBModel(row));
             }, () => {
@@ -55,48 +61,63 @@ class SqliteMaster {
     }
 
     static async getRunningTime(): Promise<RunningTime> {
-        let isInBreak;
+        let isInBreak: boolean;
         return new Promise((resolve, reject) => {
-            this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
-                if (err) {
-                    console.error(err);
-                    return reject(err);
-                }
-                for (const row of rows) {
-                    let parsedRow = new Time(row.id, row.Start, row.End);
-                    const now = moment();
-                    const start = moment(parsedRow.Start, 'HH:mm');
-                    const end = moment(parsedRow.End, 'HH:mm');
-                    if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
-                        return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
-                    }
-                }
-                isInBreak = null;
-            });
-            if (isInBreak == null) {
-                this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
-                        return reject(err);
+                        reject(err);
+                        return;
                     }
-                    for (const row of rows) {
-                        let parsedRow = new Time(row.id, row.Start, row.End);
-                        const now = moment();
-                        const start = moment(parsedRow.Start, 'HH:mm');
-                        const end = moment(parsedRow.End, 'HH:mm');
-                        if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
-                            return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
+                    try {
+                        for (const row of rows) {
+                            let parsedRow = new Time(row.id, row.Start, row.End);
+                            const now = moment();
+                            const start = moment(parsedRow.Start, 'HH:mm');
+                            const end = moment(parsedRow.End, 'HH:mm');
+                            if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                                return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
+                            }
                         }
+                        isInBreak = null;
+                    } catch (e) {
+                        console.error(e);
+                        reject("Something went wrong when parsing the dates. Database error?")
+                        return;
                     }
-                    isInBreak = true;
 
                 });
-            }
+                if (isInBreak == null) {
+                    this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
+                        if (err) {
+                            console.error(err);
+                            reject(err);
+                            return;
+                        }
+                        try {
+                            for (const row of rows) {
+                                let parsedRow = new Time(row.id, row.Start, row.End);
+                                const now = moment();
+                                const start = moment(parsedRow.Start, 'HH:mm');
+                                const end = moment(parsedRow.End, 'HH:mm');
+                                if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                                    return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
+                                }
+                            }
+                            isInBreak = true;
+                        } catch (e) {
+                            console.error(err);
+                            reject(err);
+                            return;
+                        }
+
+                    });
+                }
+            })
         });
     }
 
-
-    //TODO: Finish the logic behind the schedule
     static getAllSchedulesForDate(date: string): Promise<Schedule[]> {
         let receivedArr = [];
 
@@ -105,16 +126,24 @@ class SqliteMaster {
             this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE, date, (err, row) => {
                 if (err) {
                     console.error(err);
-                    reject();
+                    reject("Database error");
+                    return;
                 }
-                let schedule = Schedule.convertFromDBModel(row);
-                receivedArr.push(schedule);
+                try {
+                    let schedule = Schedule.convertFromDBModel(row);
+                    receivedArr.push(schedule);
+                } catch (e) {
+                    console.error(e);
+                    reject("Something went wrong when parsing the data models. A DB inconsistency ?")
+                    return;
+                }
             }, () => {
                 resolve(receivedArr);
             });
         });
     }
-    static getAllSchedulesForDateTime(date: string, time:string): Promise<Schedule[]> {
+
+    static getAllSchedulesForDateTime(date: string, time: string): Promise<Schedule[]> {
         let receivedArr = [];
 
         return new Promise((resolve, reject) => {
@@ -122,7 +151,8 @@ class SqliteMaster {
             this.db.each(SqliteConstants.SELECT_SCHEDULES_BY_DATE_AND_TIME, [date, time], (err, row) => {
                 if (err) {
                     console.error(err);
-                    reject();
+                    reject("Database error");
+                    return;
                 }
                 let schedule = Schedule.convertFromDBModel(row);
                 receivedArr.push(schedule);
@@ -135,18 +165,19 @@ class SqliteMaster {
 
     static async getBellPathByName(bellName: string): Promise<Bell> {
         let bellToReturn: Bell = null;
-        this.db.serialize(() => {
+        return new Promise((resolve, reject) => {
             this.db.each(SqliteConstants.SELECT_BELL_BY_NAME, bellName, (err, row: Bell) => {
-                if (err) throw err;
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
                 bellToReturn = new Bell(row.Id, row.Name, row.SoundPath);
+                resolve(bellToReturn);
             })
-        })
-
-        while (bellToReturn == null) {
-            await this.delay(5)
-        }
-        return bellToReturn;
+        });
     }
 
 }
+
 export default SqliteMaster;
