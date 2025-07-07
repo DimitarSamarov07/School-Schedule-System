@@ -63,6 +63,12 @@ CREATE TABLE IF NOT EXISTS Bells (
     SoundPath TEXT
 );
 
+CREATE TABLE IF NOT EXISTS Admins (
+	id INTEGER,
+	User VARCHAR(20),
+	Pass VARCHAR(20)
+);
+
 INSERT INTO Teachers (FirstName, LastName) VALUES
     ('Иван','Добрев'),
     ('Христо','Георгиев');
@@ -102,6 +108,9 @@ INSERT INTO Advertising(Content, ImagePath) VALUES
 
 INSERT INTO Bells(Name, SoundPath) VALUES
     ('Звънец', './bell.mp3');
+
+INSERT INTO Admins(User,Pass) VALUES
+('admin@gmail.com','admin1')
 
 /*
 SELECT * FROM Teachers;
