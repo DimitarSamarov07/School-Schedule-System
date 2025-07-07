@@ -2,7 +2,12 @@ import express from "express";
 import manager from "./sqlite_services.js" ;
 import moment from "moment";
 
-const app = express(); // Initializing Express App
+ // Initializing Express App
+import helmet from "helmet";
+
+const app = express();
+app.use(helmet()) // Enhances security
+
 let port = 6969;
 
 app.get("/schedulesByDate", async (req, res) => {
