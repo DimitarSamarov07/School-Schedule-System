@@ -16,7 +16,7 @@ app.get("/schedulesByDate", async (req, res) => {
         res.status(406).send("Malformed parameter");
     }
     try {
-        date = moment(date, 'YYYY-MM-DD');
+        date = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
     } catch (e) {
         res.status(406).send("Malformed date. The correct format is YYYY-MM-DD");
     }
