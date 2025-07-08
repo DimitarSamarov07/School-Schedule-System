@@ -215,7 +215,7 @@ class SqliteMaster {
     static getDateFromDBByDate(date: string): Promise<DateModel> {
         return new Promise((resolve, reject) => {
             this.db.all(SqliteConstants.SELECT_DATE_BY_DATE, date, (err, rows: any) => {
-                if (err){
+                if (err) {
                     console.error(err);
                     reject("Database error");
                     return;
@@ -328,6 +328,86 @@ class SqliteMaster {
         return new AdvertisingResponse(id, content, imagePath);
     }
 
+
+    static async updateAdvertising(id: number, content: string | null, imagePath: string | null) {
+        let advertisement = new AdvertisingResponse(id, content, imagePath);
+        let response = await this.updateBase(SqliteConstants.UPDATE_ADVERTISING, [content, imagePath, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        Object.assign(advertisement, response);
+        return advertisement;
+    }
+
+    static async updateBell(id: number, name: string | null, soundPath: string | null) {
+        let bell = new BellResponse(id, name, soundPath);
+        let response = await this.updateBase(SqliteConstants.UPDATE_BELL, [name, soundPath, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        Object.assign(bell, response);
+        return bell;
+    }
+
+    static async updateClass(id: number, name: string | null, description: string | null): Promise<ClassResponse> {
+        let classObj = new ClassResponse(id, name, description);
+        let response = await this.updateBase(SqliteConstants.UPDATE_CLASS, [name, description, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        Object.assign(classObj, response);
+        return classObj;
+    }
+
+    static async updateCourse(id: number, name: string | null, teacherId: number | null, roomId: number | null): Promise<CourseResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_COURSE, [name, teacherId, roomId, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new CourseResponse(response.id, response.Name, response.Teacher, response.Room);
+    }
+
+    static async updateRoom(id: number, name: string | null, floor: number | null): Promise<RoomResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_ROOM, [name, floor, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new RoomResponse(response.id, response.Name, response.Floor);
+    }
+
+    static async updateDate(id: number, date: string | null, isHoliday: boolean | null): Promise<DateModelResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_DATE, [date, isHoliday, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new DateModelResponse(response.id, response.Date, response.IsHoliday);
+    }
+
+    static async updateSchedule(classId: number | null, courseId: number | null, timeId: number | null, dateId: number | null): Promise<ScheduleResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_SCHEDULE, [courseId, classId, timeId, dateId])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new ScheduleResponse(response.Class, response.Course, response.T_id, response.D_id);
+    }
+
+    static async updateTime(id: number, start: string | null, end: string | null): Promise<TimeResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_TIME, [start, end, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new TimeResponse(response.id, response.Start, response.End);
+    }
+
+    static async updateTeacher(id: number, firstName: string | null, lastName: string | null): Promise<TeacherResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_TEACHER, [firstName, lastName, id])
+            .catch(err => {
+                return Promise.reject(err);
+            })
+        return new TeacherResponse(response.id, response.FirstName, response.LastName);
+    }
+
+
     private static createBase(query: string, params: any[]): Promise<ReturningId> {
         return new Promise((resolve, reject): void => {
             this.db.each(query, params, (err, row: any) => {
@@ -338,6 +418,19 @@ class SqliteMaster {
                 }
                 let returningId = new ReturningId(row?.id);
                 resolve(returningId)
+            })
+        })
+    }
+
+    private static updateBase(query: string, params: any[]): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            this.db.all(query, params, (err, rows: any) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                resolve(rows[0]);
             })
         })
     }
