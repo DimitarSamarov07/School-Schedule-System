@@ -1,26 +1,31 @@
-﻿async function fetchTime() {
-    const url = 'http://localhost:6969/runningTime?Time';
+﻿async function fetchRunningTime() {
+    const url = 'http://localhost:6969/runningTime';
+    const runningTime = document.getElementById("runningTime");
+
     try {
         const response = await fetch(url);
+
         if (!response.ok) {
             throw new Error(`Response status: ${response.status}`);
         }
 
         const json = await response.json();
-        console.log(json);
-        document.getElementById('class-time2').textContent = `${json.startTime} - ${json.endTime}`;
-        return json;
-
+        const {numberInSchedule,startTime, endTime } = json.currentHour;
+        if (numberInSchedule === -1) {
+            runningTime.innerHTML =
+                `Междучасие от ${startTime} до ${endTime}`;
+        }
+        else{
+            runningTime.innerHTML = numberInSchedule + `  час - ${startTime} до ${endTime}`;
+        }
 
     } catch (error) {
-        console.error(error.message);
+        console.error("Fetch error:", error.message);
+        document.getElementById("runningTime").innerHTML = "Failed to load time.";
     }
 }
-fetchTime();
-setInterval(fetchTime, 1000);
-// async function fetchTimeToBrowser(){
-//     let fetcher =fetchTime();
-//     document.getElementById('class-time').textContent = `${fetcher.startTime} - ${fetcher.endTime}`;
-// }
 
-// export default fetchTime;
+document.addEventListener("DOMContentLoaded", async () => {
+    await fetchRunningTime();
+    setInterval(fetchRunningTime, 10000);
+});
