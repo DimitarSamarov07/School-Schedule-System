@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="bg">
+<script defer src="../Fetchers/TimesFetcher.js"></script>
+<link href="school_hours.css" rel="stylesheet">
+<head>
+    <meta charset="UTF-8"/>
+    <title>Час</title>
+
+</head>
+<body>
+
+<header>
+    <div id="clock">00:00</div>
+    <div id="class-time">
+        <p id="runningTime">Loading...</p>
+    </div>
+
+</header>
+<main>
+
+    <div class="grid">
+        <div class="cell">11А</div>
+        <div class="cell">Бази данни</div>
+        <div class="cell">Г. Густинов</div>
+        <div class="cell">21 зала</div>
+
+        <div class="cell">10А</div>
+        <div class="cell">Математика</div>
+        <div class="cell">Д. Стоилова</div>
+        <div class="cell">23 зала</div>
+
+        <div class="cell">8А</div>
+        <div class="cell">Английски</div>
+        <div class="cell">К. Иванова</div>
+        <div class="cell">24 зала</div>
+    </div>
+
+</main>
+
+<footer>
+    <a href="https://gikn.eu/" target="_blank">
+        ЧПГИКН „Академик Благовест Сендов”
+    </a>
+</footer>
+<script async src="TimeFetcher.js"></script>
+<script>
+    function updateClock() {
+        const now = new Date();
+        let h = now.getHours();
+        let m = now.getMinutes();
+        if (h < 10) h = '0' + h;
+        if (m < 10) m = '0' + m;
+        document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+
+    updateClock();
+    setInterval(updateClock, 1000);
+
+</script>
+
+</body>
+</html>

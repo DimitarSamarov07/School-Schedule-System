@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8" />
+    <title>Гимназия по Информатика</title>
+    <link rel="stylesheet" href="holiday.css">
+</head>
+<body>
+<header>
+    <div id="clock">00:00</div>
+    <div id="break-time">Неучебно време</div>
+</header>
+ 
+<main>
+    <img src="https://i.ibb.co/bMK9Ln67/2.png" alt="Гимназия по информатика - Записваме" class="centered-image" align="left">
+    <img src="Summer-IT-School-4-540x300-1-500x300.jpg" alt="гимназия по информатика" class="centered-image"  align="right">
+</main>
+ 
+<footer>
+    <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+        Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+    </a>
+</footer>
+ 
+<script>
+ 
+    function updateClock() {
+        const now = new Date();
+        let h = now.getHours();
+        let m = now.getMinutes();
+ 
+        if (h < 10) h = '0' + h;
+        if (m < 10) m = '0' + m;
+ 
+        document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+ 
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
+

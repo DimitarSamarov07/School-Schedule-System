@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Час</title>
+    <link rel="stylesheet" href="break.css">
+</head>
+<body>
+ 
+  <header>
+    <div id="clock">00:00</div>
+    <div id="class-time">Голямо междучасие 10:35-10:55</div>
+  </header>
+ 
+  <main>
+     <div class="next-hour">Следващ 4-ти час</div>
+  <div class="grid">
+      <div class="cell">11А</div>
+      <div class="cell">ООП</div>
+      <div class="cell">Г. Густинов</div>
+      <div class="cell">24 зала</div>
+ 
+      <div class="cell">8А</div>
+      <div class="cell">Математика</div>
+      <div class="cell">Д. Стоилова</div>
+      <div class="cell">21 зала</div>
+ 
+      <div class="cell">9А</div>
+      <div class="cell">Английски</div>
+      <div class="cell">К. Иванова</div>
+      <div class="cell">23 зала</div>
+    </div>
+   
+  </main>
+ 
+  <footer>
+    <a href="https://gikn.eu/" target="_blank">
+      ЧПГИКН „Академик Благовест Сендов”
+    </a>
+  </footer>
+ 
+  <script>
+    function updateClock() {
+      const now = new Date();
+      let h = now.getHours();
+      let m = now.getMinutes();
+      if (h < 10) h = '0' + h;
+      if (m < 10) m = '0' + m;
+      document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+ 
+    updateClock();
+    setInterval(updateClock, 1000);
+  </script>
+ 
+</body>
+</html>
