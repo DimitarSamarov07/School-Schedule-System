@@ -12,7 +12,7 @@ let port = 6969;
 
 app.get("/schedulesByDate", async (req, res) => {
     let {date} = req.query;
-    if (date == null) {
+    if (!date) {
         res.status(406).send("Malformed parameter");
     }
     try {
@@ -28,7 +28,12 @@ app.get("/schedulesByDate", async (req, res) => {
 });
 app.get("/schedulesByDateTime", async (req, res) => {
     let {date, time} = req.query;
+    if (!date || !time) {
+        res.status(406).send("Malformed parameter");
+    }
+
     date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
+
     let result = await manager.getAllSchedulesForDateTime(date, time).catch(err => {
         res.status(500).send(err);
     })
@@ -37,7 +42,7 @@ app.get("/schedulesByDateTime", async (req, res) => {
 
 app.get("/schedulesByClassIdForDate", async (req, res) => {
     let {classId, date} = req.query;
-    if (date == null || classId == null) {
+    if (!date || !classId) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -69,7 +74,7 @@ app.get("/runningTime", async (req, res) => {
 
 app.get("/date", async (req, res) => {
     let {date} = req.query;
-    if (date == null) {
+    if (!date) {
         res.status(406);
         res.send("Malformed parameter");
     }
@@ -89,7 +94,7 @@ app.get("/date", async (req, res) => {
 
 app.post("/teacher", async (req, res) => {
     let {firstName, lastName} = req.body;
-    if (firstName == null || lastName == null) {
+    if (!firstName || !lastName) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -101,7 +106,7 @@ app.post("/teacher", async (req, res) => {
 
 app.post("/class", async (req, res) => {
     let {name, description} = req.body;
-    if (name == null || description == null) {
+    if (!name || !description) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -109,12 +114,12 @@ app.post("/class", async (req, res) => {
         res.status(500).send(err);
     })
 
-    res.status(200)
+    res.send(result);
 })
 
 app.post("/room", async (req, res) => {
     let {name, floor} = req.body;
-    if (name == null || floor == null) {
+    if (!name || !floor) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -127,7 +132,7 @@ app.post("/room", async (req, res) => {
 
 app.post("/time", async (req, res) => {
     let {start, end} = req.body;
-    if (start == null || end == null) {
+    if (!start || !end) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -140,7 +145,7 @@ app.post("/time", async (req, res) => {
 
 app.post("/advertising", async (req, res) => {
     let {text, imagePath} = req.body;
-    if (text == null || link == null) {
+    if (!text || !imagePath) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -153,7 +158,7 @@ app.post("/advertising", async (req, res) => {
 
 app.post("/bell", async (req, res) => {
     let {name, soundPath} = req.body;
-    if (name == null || soundPath == null) {
+    if (!name || !soundPath) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -166,7 +171,7 @@ app.post("/bell", async (req, res) => {
 
 app.post("/schedule", async (req, res) => {
     let {courseId, classId, timeId, dateId} = req.body;
-    if (courseId == null || classId == null || timeId == null || dateId == null) {
+    if (!courseId || !classId || !timeId || !dateId) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -179,7 +184,7 @@ app.post("/schedule", async (req, res) => {
 
 app.post("/course", async (req, res) => {
     let {name, teacherId, roomId} = req.body;
-    if (name == null || teacherId == null || roomId == null) {
+    if (!name || !teacherId || !roomId) {
         res.status(406);
         res.send("Malformed parameters");
     }
@@ -193,7 +198,7 @@ app.post("/course", async (req, res) => {
 app.post("/date", async (req, res) => {
     let {date, isHoliday} = req.body;
 
-    if (date == null || isHoliday == null || typeof isHoliday !== "boolean" || moment(date, 'YYYY-MM-DD').isValid() === false) {
+    if (!date || !isHoliday  || typeof isHoliday !== "boolean" || moment(date, 'YYYY-MM-DD').isValid() === false) {
         res.status(406);
         res.send("Malformed parameters");
     }
