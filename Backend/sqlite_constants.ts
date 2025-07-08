@@ -129,41 +129,41 @@ class SqliteConstants {
     static readonly UPDATE_DATE = `UPDATE Dates
         SET Date = COALESCE((?), Date),
             IsHoliday = COALESCE((?), IsHoliday)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
 
     static readonly UPDATE_TEACHER = `UPDATE Teachers
         SET FirstName = COALESCE((?), FirstName),
             LastName = COALESCE((?), LastName)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
     static readonly UPDATE_TIME = `UPDATE Times
         SET Start = COALESCE((?), Start),
             End = COALESCE((?), END)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
     static readonly UPDATE_ROOM = `UPDATE Rooms
         SET Name = COALESCE((?), Name),
             Floor = COALESCE((?),Floor)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
 
    static readonly UPDATE_ADVERTISING = `UPDATE Advertising
         SET Content = COALESCE((?), Content),
             ImagePath = COALESCE((?), ImagePath)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
 
     static readonly UPDATE_BELL = `UPDATE Bells
         SET Name = COALESCE((?), Name),
             SoundPath = COALESCE((?), SoundPath)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
 
     static readonly UPDATE_CLASS = `UPDATE Classes
         SET Name = COALESCE((?), Name),
             Description = COALESCE((?), Description)
-        WHERE id = (?);`
+        WHERE id = (?) RETURNING *;`
     static readonly UPDATE_SCHEDULE = `UPDATE Schedule
         SET Course = COALESCE((?), Course),
             Class = COALESCE((?), Class),
             T_id = COALESCE((?), T_id),
             D_id = COALESCE((?), D_id)
-        WHERE (Course, Class, T_id) = ((?), (?), (?));`
+        WHERE (Course, Class, T_id) = ((?), (?), (?)) RETURNING *;`
 
 }
 
