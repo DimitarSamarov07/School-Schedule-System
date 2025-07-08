@@ -90,7 +90,6 @@ class SqliteMaster {
      * data parsing.
      */
     static async getRunningTime(): Promise<RunningTime> {
-        let isInBreak: boolean;
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
                 this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
@@ -99,53 +98,54 @@ class SqliteMaster {
                         reject("Something went wrong with the database request. Contact the administrator.");
                         return;
                     }
+
                     try {
+                        const now = moment();
                         for (const row of rows) {
-                            let parsedRow = new Time(row.id, row.Start, row.End);
-                            const now = moment();
+                            const parsedRow = new Time(row.id, row.Start, row.End);
                             const start = moment(parsedRow.Start, 'HH:mm');
                             const end = moment(parsedRow.End, 'HH:mm');
+
                             if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
                                 return resolve(new RunningTime(parsedRow.Id, parsedRow.Start, parsedRow.End));
                             }
                         }
-                        isInBreak = null;
+
+
+                        this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
+                            if (err) {
+                                console.error(err);
+                                reject("Something went wrong checking breaks.");
+                                return;
+                            }
+
+                            try {
+                                for (const row of rows) {
+                                    const parsedRow = new Time(row.id, row.Start, row.End);
+                                    const start = moment(parsedRow.Start, 'HH:mm');
+                                    const end = moment(parsedRow.End, 'HH:mm');
+
+                                    if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                                        return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
+                                    }
+                                }
+                                return resolve(new RunningTime(0, null, null));
+
+                            } catch (e) {
+                                console.error(e);
+                                reject("Error parsing break entries.");
+                            }
+                        });
+
                     } catch (e) {
                         console.error(e);
-                        reject("Something went wrong when parsing the dates. Database error?")
-                        return;
+                        reject("Error parsing time entries.");
                     }
-
                 });
-                if (isInBreak == null) {
-                    this.db.all(SqliteConstants.SELECT_BREAKS, [], (err, rows: any) => {
-                        if (err) {
-                            console.error(err);
-                            reject(err);
-                            return;
-                        }
-                        try {
-                            for (const row of rows) {
-                                let parsedRow = new Time(row.id, row.Start, row.End);
-                                const now = moment();
-                                const start = moment(parsedRow.Start, 'HH:mm');
-                                const end = moment(parsedRow.End, 'HH:mm');
-                                if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
-                                    return resolve(new RunningTime(-1, parsedRow.Start, parsedRow.End));
-                                }
-                            }
-                            isInBreak = true;
-                        } catch (e) {
-                            console.error(err);
-                            reject("A malformed database entry ?");
-                            return;
-                        }
-
-                    });
-                }
-            })
+            });
         });
     }
+
 
     /**
      * Retrieves all schedules for a specified date.
