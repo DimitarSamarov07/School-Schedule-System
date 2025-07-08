@@ -130,6 +130,11 @@ class SqliteConstants {
         SET Date = COALESCE((?), Date),
             IsHoliday = COALESCE((?), IsHoliday)
         WHERE id = (?) RETURNING *;`
+    static readonly UPDATE_COURSE = `UPDATE Courses
+        SET Name = COALESCE((?), Name),
+            Teacher = COALESCE((?), Teacher),
+            Room = COALESCE((?), Room)
+        WHERE id = (?) RETURNING *;`
 
     static readonly UPDATE_TEACHER = `UPDATE Teachers
         SET FirstName = COALESCE((?), FirstName),
