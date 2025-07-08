@@ -44,6 +44,12 @@ class SqliteConstants {
     SELECT id, Start, End FROM Times
     `
 
+    static readonly SELECT_DATE_BY_DATE = `
+    SELECT id, Date, IsHoliday FROM Dates
+    WHERE Date = (?)
+    LIMIT 1;
+    `
+
     //INSERT queries
 
     static readonly INSERT_INTO_TEACHERS = `INSERT INTO Teachers(FirstName, LastName)
