@@ -14,9 +14,12 @@
         if (numberInSchedule === -1) {
             runningTime.innerHTML =
                 `Междучасие от ${startTime} до ${endTime}`;
+        } else if (numberInSchedule == 0 && startTime == null, endTime == null) {
+            runningTime.innerHTML =
+                `Неучебно време`;
         }
         else{
-            runningTime.innerHTML = numberInSchedule + `  час - ${startTime} до ${endTime}`;
+            runningTime.innerHTML = ` ${numberInSchedule} час - ${startTime} до ${endTime}`;
         }
 
     } catch (error) {
@@ -27,5 +30,5 @@
 
 document.addEventListener("DOMContentLoaded", async () => {
     await fetchRunningTime();
-    setInterval(fetchRunningTime, 10000);
+    setInterval(fetchRunningTime, 5000);
 });
