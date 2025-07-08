@@ -119,70 +119,44 @@ class SqliteConstants {
                                          FROM Times
                                          WHERE id = (?);`
 
-    static readonly UPDATE_DATE_FROM_ID = ` UPDATE Dates
-                                            SET Date = (?)
-                                            WHERE id = (?);`
-    static readonly UPDATE_ISHOLIDAY_FROM_ID = `UPDATE Dates
-                                                SET IsHoliday = (?)
-                                                WHERE id = (?);`
+    static readonly UPDATE_DATE = `UPDATE Dates
+        SET Date = COALESCE((?), Date),
+            IsHoliday = COALESCE((?), IsHoliday)
+        WHERE id = (?);`
 
-    static readonly UPDATE_TEACHER_FIRST_NAME = `UPDATE Teachers
-                                                 SET FirstName = (?)
-                                                 WHERE id = (?);`
-    static readonly UPDATE_TEACHER_LAST_NAME = `UPDATE Teachers
-                                                SET LastName = (?)
-                                                WHERE id = (?);
-    `
-    static readonly UPDATE_TIME_START = `UPDATE Times
-                                         SET Start = (?)
-                                         WHERE id = (?);`
+    static readonly UPDATE_TEACHER = `UPDATE Teachers
+        SET FirstName = COALESCE((?), FirstName),
+            LastName = COALESCE((?), LastName)
+        WHERE id = (?);`
+    static readonly UPDATE_TIME = `UPDATE Times
+        SET Start = COALESCE((?), Start),
+            End = COALESCE((?), END)
+        WHERE id = (?);`
+    static readonly UPDATE_ROOM = `UPDATE Rooms
+        SET Name = COALESCE((?), Name),
+            Floor = COALESCE((?),Floor)
+        WHERE id = (?);`
 
-    static readonly UPDATE_TIME_END = `UPDATE
-                                           Times
-                                       SET End = (?)
-                                       WHERE id = (?);`
-    static readonly UPDATE_ROOM_NAME = `UPDATE Rooms
-                                        SET Name = (?)
-                                        WHERE id = (?);`
+   static readonly UPDATE_ADVERTISING = `UPDATE Advertising
+        SET Content = COALESCE((?), Content),
+            ImagePath = COALESCE((?), ImagePath)
+        WHERE id = (?);`
 
-    static readonly UPDATE_ROOM_FLOOR = `UPDATE Rooms
-                                         SET Floor = (?)
-                                         WHERE id = (?);`
+    static readonly UPDATE_BELL = `UPDATE Bells
+        SET Name = COALESCE((?), Name),
+            SoundPath = COALESCE((?), SoundPath)
+        WHERE id = (?);`
 
-    static readonly UPDATE_ADVERTISING_CONTENT = `UPDATE Advertising
-                                                  SET Content = (?)
-                                                  WHERE id = (?);`
-    static readonly UPDATE_ADVERTISING_IMAGE_PATH = `    UPDATE Advertising
-                                                         SET ImagePath = (?)
-                                                         WHERE id = (?);`
-
-    static readonly UPDATE_BELL_NAME = `UPDATE Bells
-                                        SET Name = (?)
-                                        WHERE id = (?);`
-    static readonly UPDATE_BELL_SOUND_PATH = `UPDATE Bells
-                                              SET SoundPath = (?)
-                                              WHERE id = (?);`
-
-    static readonly UPDATE_CLASS_NAME = `UPDATE Classes
-                                         SET Name = (?)
-                                         WHERE id = (?);`
-    static readonly UPDATE_CLASS_DESCRIPTION = `UPDATE Classes
-                                                SET Description = (?)
-                                                WHERE id = (?);`
-    static readonly UPDATE_SCHEDULE_COURSE = `UPDATE Schedule
-                                              SET Course = (?)
-                                              WHERE (Course, Class, T_id) = ((?), (?), (?));`
-    static readonly UPDATE_SCHEDULE_CLASS = `UPDATE Schedule
-                                             SET Class = (?)
-                                             WHERE (Course, Class, T_id) = ((?), (?), (?));`
-    static readonly UPDATE_SCHEDULE_TIME_ID = `UPDATE Schedule
-                                               SET T_id = (?)
-                                               WHERE (Course, Class, T_id) = ((?), (?), (?));`
-
-    static readonly UPDATE_SCHEDULE_DATE_ID = `UPDATE Schedule
-                                               SET D_id = (?)
-                                               WHERE (Course, Class, T_id) = ((?), (?), (?));
-    `
+    static readonly UPDATE_CLASS = `UPDATE Classes
+        SET Name = COALESCE((?), Name),
+            Description = COALESCE((?), Description)
+        WHERE id = (?);`
+    static readonly UPDATE_SCHEDULE = `UPDATE Schedule
+        SET Course = COALESCE((?), Course),
+            Class = COALESCE((?), Class),
+            T_id = COALESCE((?), T_id),
+            D_id = COALESCE((?), D_id)
+        WHERE (Course, Class, T_id) = ((?), (?), (?));`
 
 }
 
