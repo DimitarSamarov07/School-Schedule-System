@@ -102,25 +102,83 @@
   </header>
  
   <main>
-     
-  <div class="grid">
+  <div class="grid" id="grid">
+    <div class="row">
       <div class="cell">11А</div>
       <div class="cell">Бази данни</div>
       <div class="cell">Г. Густинов</div>
       <div class="cell">21 зала</div>
- 
+    </div>
+    <div class="row">
       <div class="cell">10А</div>
       <div class="cell">Математика</div>
       <div class="cell">Д. Стоилова</div>
       <div class="cell">23 зала</div>
- 
+    </div>
+    <div class="row">
       <div class="cell">8А</div>
       <div class="cell">Английски</div>
       <div class="cell">К. Иванова</div>
       <div class="cell">24 зала</div>
     </div>
-   
-  </main>
+ 
+    
+    <div class="row">
+      <div class="cell">12А</div>
+      <div class="cell">История</div>
+      <div class="cell">М. Петров</div>
+      <div class="cell">25 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">9Б</div>
+      <div class="cell">География</div>
+      <div class="cell">С. Георгиева</div>
+      <div class="cell">15 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">11А</div>
+      <div class="cell">Химия</div>
+      <div class="cell">И. Стоянова</div>
+      <div class="cell">11 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">8Б</div>
+      <div class="cell">Физика</div>
+      <div class="cell">Р. Радев</div>
+      <div class="cell">18 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">9А</div>
+      <div class="cell">Биология</div>
+      <div class="cell">Т. Илиева</div>
+      <div class="cell">19 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">9В</div>
+      <div class="cell">ИТ</div>
+      <div class="cell">Н. Николов</div>
+      <div class="cell">20 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">8А</div>
+      <div class="cell">Английски</div>
+      <div class="cell">Е. Емилов</div>
+      <div class="cell">5 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">9Б</div>
+      <div class="cell">Математика</div>
+      <div class="cell">Д. Стоилова</div>
+      <div class="cell">7 зала</div>
+    </div>
+    <div class="row">
+      <div class="cell">10А</div>
+      <div class="cell">Руски</div>
+      <div class="cell">М. Георгиева</div>
+      <div class="cell">22 зала</div>
+    </div>
+  </div>
+</main>
  
   <footer>
      <a href="https://gikn.eu/" target="_blank">
@@ -129,18 +187,37 @@
   </footer>
  
   <script>
-    function updateClock() {
-      const now = new Date();
-      let h = now.getHours();
-      let m = now.getMinutes();
-      if (h < 10) h = '0' + h;
-      if (m < 10) m = '0' + m;
-      document.getElementById('clock').textContent = `${h}:${m}`;
-    }
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+    if (h < 10) h = '0' + h;
+    if (m < 10) m = '0' + m;
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
  
-    updateClock();
-    setInterval(updateClock, 1000);
-  </script>
+  updateClock();
+  setInterval(updateClock, 1000);
+ 
+ 
+  const rows = document.querySelectorAll('.grid .row');
+  let currentGroup = 0;
+  const groupSize = 4;
+ 
+  function showGroup(index) {
+    rows.forEach((row, i) => {
+      row.style.display = (i >= index && i < index + groupSize) ? 'contents' : 'none';
+    });
+  }
+ 
+  showGroup(currentGroup);
+ 
+  setInterval(() => {
+    currentGroup += groupSize;
+    if (currentGroup >= rows.length) currentGroup = 0;
+    showGroup(currentGroup);
+  }, 8000); 
+</script>
  
 </body>
 </html>
