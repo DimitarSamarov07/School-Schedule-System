@@ -10,6 +10,16 @@ app.use(helmet()) // Enhances security
 
 let port = 6969;
 
+/*
+ * GET /schedulesByDate
+ * Retrieves all schedules for a given date
+ * Query params:
+ *   - date: string (YYYY-MM-DD format)
+ * Returns:
+ *   - 200: Array of Schedule objects
+ *   - 406: "Malformed parameter" if the date is missing or invalid
+ *   - 500: Database error message
+ */
 app.get("/schedulesByDate", async (req, res) => {
     let {date} = req.query;
     if (!date) {
@@ -26,6 +36,18 @@ app.get("/schedulesByDate", async (req, res) => {
     res.send(result);
 
 });
+
+/*
+ * GET /schedulesByDateTime
+ * Retrieves all schedules for a given date and time
+ * Query params:
+ *   - date: string (YYYY-MM-DD format) 
+ *   - time: string (HH:MM format)
+ * Returns:
+ *   - 200: Array of Schedule objects
+ *   - 406: "Malformed parameter" if date or time missing
+ *   - 500: Database error message
+ */
 app.get("/schedulesByDateTime", async (req, res) => {
     let {date, time} = req.query;
     if (!date || !time) {
@@ -40,6 +62,17 @@ app.get("/schedulesByDateTime", async (req, res) => {
     res.send(result);
 });
 
+/*
+ * GET /schedulesByClassIdForDate 
+ * Retrieves schedules for a specific class on a given date
+ * Query params:
+ *   - classId: number
+ *   - date: string (YYYY-MM-DD format)
+ * Returns:
+ *   - 200: Array of Schedule objects
+ *   - 406: "Malformed parameters" if classId/date missing or invalid
+ *   - 500: Database error message
+ */
 app.get("/schedulesByClassIdForDate", async (req, res) => {
     let {classId, date} = req.query;
     if (!date || !classId) {
@@ -64,7 +97,13 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
     res.send(result);
 })
 
-
+/*
+ * GET /runningTime
+ * Gets the current running time from the database
+ * Returns:
+ *   - 200: {currentHour: string} Current hour value
+ *   - 500: Database error message
+ */
 app.get("/runningTime", async (req, res) => {
     let result = await manager.getRunningTime().catch(err => {
         res.status(500).send(err);
@@ -72,6 +111,17 @@ app.get("/runningTime", async (req, res) => {
     res.status(200).send({currentHour: result});
 })
 
+/*
+ * GET /date
+ * Retrieves date info from the database
+ * Query params:
+ *   - date: string (YYYY-MM-DD format)
+ * Returns:
+ *   - 200: Date object
+ *   - 404: "No date found"
+ *   - 406: "Malformed parameter" if date missing
+ *   - 500: Database error message
+ */
 app.get("/date", async (req, res) => {
     let {date} = req.query;
     if (!date) {
@@ -90,8 +140,19 @@ app.get("/date", async (req, res) => {
 })
 
 
-// Create
+// Create endpoints
 
+/*
+ * POST /teacher
+ * Creates a new teacher record
+ * Body params:
+ *   - firstName: string
+ *   - lastName: string
+ * Returns:
+ *   - 200: Created the teacher object with ID
+ *   - 406: "Malformed parameters" if firstName/lastName missing
+ *   - 500: Database error message
+ */
 app.post("/teacher", async (req, res) => {
     let {firstName, lastName} = req.body;
     if (!firstName || !lastName) {
@@ -104,6 +165,17 @@ app.post("/teacher", async (req, res) => {
     res.send(result);
 });
 
+/*
+ * POST /class
+ * Creates a new class record
+ * Body params:
+ *   - name: string
+ *   - description: string
+ * Returns:
+ *   - 200: Created the Class object with ID
+ *   - 406: "Malformed parameters" if name/description missing
+ *   - 500: Database error message
+ */
 app.post("/class", async (req, res) => {
     let {name, description} = req.body;
     if (!name || !description) {
@@ -117,6 +189,17 @@ app.post("/class", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /room
+ * Creates a new room record
+ * Body params:
+ *   - name: string
+ *   - floor: number
+ * Returns:
+ *   - 200: Created the Room object with ID
+ *   - 406: "Malformed parameters" if name/floor missing
+ *   - 500: Database error message
+ */
 app.post("/room", async (req, res) => {
     let {name, floor} = req.body;
     if (!name || !floor) {
@@ -130,6 +213,17 @@ app.post("/room", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /time
+ * Creates a new time record
+ * Body params:
+ *   - start: string (HH:MM format)
+ *   - end: string (HH:MM format)
+ * Returns:
+ *   - 200: Created the Time object with ID
+ *   - 406: "Malformed parameters" if start/end missing
+ *   - 500: Database error message
+ */
 app.post("/time", async (req, res) => {
     let {start, end} = req.body;
     if (!start || !end) {
@@ -143,6 +237,17 @@ app.post("/time", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /advertising
+ * Creates a new advertising record
+ * Body params:
+ *   - text: string 
+ *   - imagePath: string
+ * Returns:
+ *   - 200: Created the Advertising object with ID
+ *   - 406: "Malformed parameters" if text/imagePath missing
+ *   - 500: Database error message
+ */
 app.post("/advertising", async (req, res) => {
     let {text, imagePath} = req.body;
     if (!text || !imagePath) {
@@ -156,6 +261,17 @@ app.post("/advertising", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /bell
+ * Creates a new bell record
+ * Body params:
+ *   - name: string
+ *   - soundPath: string
+ * Returns:
+ *   - 200: Created the Bell object with ID
+ *   - 406: "Malformed parameters" if name/soundPath missing
+ *   - 500: Database error message
+ */
 app.post("/bell", async (req, res) => {
     let {name, soundPath} = req.body;
     if (!name || !soundPath) {
@@ -169,6 +285,19 @@ app.post("/bell", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /schedule
+ * Creates a new schedule record
+ * Body params:
+ *   - courseId: number
+ *   - classId: number
+ *   - timeId: number 
+ *   - dateId: number
+ * Returns:
+ *   - 200: Created the Schedule object
+ *   - 406: "Malformed parameters" if any ID missing
+ *   - 500: Database error message
+ */
 app.post("/schedule", async (req, res) => {
     let {courseId, classId, timeId, dateId} = req.body;
     if (!courseId || !classId || !timeId || !dateId) {
@@ -182,6 +311,18 @@ app.post("/schedule", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /course
+ * Creates a new course record
+ * Body params:
+ *   - name: string
+ *   - teacherId: number
+ *   - roomId: number
+ * Returns:
+ *   - 200: Created the Course object with ID
+ *   - 406: "Malformed parameters" if name/teacherId/roomId missing
+ *   - 500: Database error message
+ */
 app.post("/course", async (req, res) => {
     let {name, teacherId, roomId} = req.body;
     if (!name || !teacherId || !roomId) {
@@ -195,10 +336,21 @@ app.post("/course", async (req, res) => {
     res.send(result);
 })
 
+/*
+ * POST /date
+ * Creates a new date record
+ * Body params:
+ *   - date: string (YYYY-MM-DD format)
+ *   - isHoliday: boolean
+ * Returns:
+ *   - 200: Created the Date object with ID
+ *   - 406: "Malformed parameters" if date invalid/missing or isHoliday not boolean
+ *   - 500: Database error message
+ */
 app.post("/date", async (req, res) => {
     let {date, isHoliday} = req.body;
 
-    if (!date || !isHoliday  || typeof isHoliday !== "boolean" || moment(date, 'YYYY-MM-DD').isValid() === false) {
+    if (!date || !isHoliday || typeof isHoliday !== "boolean" || moment(date, 'YYYY-MM-DD').isValid() === false) {
         res.status(406);
         res.send("Malformed parameters");
     }
