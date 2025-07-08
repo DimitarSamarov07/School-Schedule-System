@@ -67,5 +67,29 @@ app.get("/runningTime", async (req, res) => {
     res.status(200).send({currentHour: result});
 })
 
+app.get("/date", async (req, res) => {
+    let {date} = req.query;
+    if (date == null) {
+        res.status(406);
+        res.send("Malformed parameter");
+    }
+
+    let result = await manager.getDateFromDBByDate(req.query.date).catch(err => {
+        if (err === "No date found") {
+            res.status(404).send(err);
+        }
+        res.status(500).send(err);
+    })
+
+    res.send(result);
+})
+
+// Teachers
+
+// Create
+app.post("/teacher", async (req, res) => {
+
+})
+
 manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));

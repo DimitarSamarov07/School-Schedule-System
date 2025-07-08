@@ -16,6 +16,7 @@ import DateModelResponse from "./response_models/DateModelResponse.js";
 import ScheduleResponse from "./response_models/ScheduleResponse.js";
 import BellResponse from "./response_models/BellResponse.js";
 import AdvertisingResponse from "./response_models/AdvertisingResponse.js";
+import DateModel from "./data_models/DateModel.js";
 
 /**
  * Represents a manager for handling SQLite-related operations.
@@ -202,6 +203,33 @@ class SqliteMaster {
                 resolve(receivedArr);
             });
         });
+    }
+
+    /**
+     * Retrieves a date object from the database based on the provided date string.
+     *
+     * @param {string} date - The date string in 'YYYY-MM-DD' format used to query the database.
+     * @return {Promise<DateModel>} A promise that resolves to a DateModel instance containing the date information,
+     *                              or rejects with an error message if no data is found or a database error occurs.
+     */
+    static getDateFromDBByDate(date: string): Promise<DateModel> {
+        return new Promise((resolve, reject) => {
+            this.db.all(SqliteConstants.SELECT_DATE_BY_DATE, date, (err, rows: any) => {
+                if (err){
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                if (rows.length == 0) {
+                    reject("No date found");
+                    return;
+                }
+                let row = rows[0];
+                let dateMoment = moment(row.Date, 'YYYY-MM-DD').toDate();
+                let dateModel = new DateModel(row.id, dateMoment, rows[0].IsHoliday);
+                return resolve(dateModel);
+            })
+        })
     }
 
 
