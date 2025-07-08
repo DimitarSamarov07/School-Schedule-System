@@ -98,9 +98,11 @@
  
   <header>
     <div id="clock">00:00</div>
-    <div id="class-time">3-ти час 9:50-10:35</div>
+    <div id="class-time">
+        <p id="class-time2">Loading...</p>
+    </div>
+      <script  type="module" src="../Fetchers/TimesFetcher.js"></script>
   </header>
- 
   <main>
      
   <div class="grid">
@@ -127,7 +129,7 @@
       ЧПГИКН „Академик Благовест Сендов”
     </a>
   </footer>
- 
+  <script src="TimeFetcher.js" async></script>
   <script>
     function updateClock() {
       const now = new Date();
@@ -140,6 +142,7 @@
  
     updateClock();
     setInterval(updateClock, 1000);
+
   </script>
  
 </body>
