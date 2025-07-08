@@ -1,7 +1,8 @@
 async function fetchDataStatus() {
     try {
-        const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
-        //const date = "2025-07-07";
+        const fullDate = new Date();
+        //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
+        const date = "2025-07-07";
 
         const params = new URLSearchParams();
         params.append("date", date);
@@ -19,5 +20,6 @@ async function fetchDataStatus() {
         console.error(error.message);
     }
 }
+fetchDataStatus();
 
 export default fetchDataStatus;
