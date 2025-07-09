@@ -407,6 +407,60 @@ class SqliteMaster {
         return new TeacherResponse(response.id, response.FirstName, response.LastName);
     }
 
+    static async deleteTeacher(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_TEACHERS, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteAdvertising(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_ADVERTISING, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteBell(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_BELLS, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteClass(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_CLASSES, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteCourse(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_COURSES, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteDate(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_DATES, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteRoom(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_ROOMS, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteTime(id: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_TIMES, [id]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
+    static async deleteSchedule(courseId: number, classId: number, timeId: number): Promise<boolean> {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_SCHEDULE, [courseId, classId, timeId]).catch(err => {
+            return Promise.reject(err);
+        })
+    }
+
 
     private static createBase(query: string, params: any[]): Promise<ReturningId> {
         return new Promise((resolve, reject): void => {
@@ -424,13 +478,31 @@ class SqliteMaster {
 
     private static updateBase(query: string, params: any[]): Promise<any> {
         return new Promise((resolve, reject): void => {
-            this.db.all(query, params, (err, rows: any) => {
+            this.db.all(query, params, (err, rows: any[]) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
                     return;
                 }
                 resolve(rows[0]);
+            })
+        })
+    }
+
+    private static deleteBase(query: string, params: any[]): Promise<any> {
+        return new Promise((resolve, reject): void => {
+            this.db.all(query, params, (err, rows: any[]) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                if (rows.length == 0) {
+                    resolve(false);
+                } else {
+                    resolve(true);
+                }
+
             })
         })
     }
