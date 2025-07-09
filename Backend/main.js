@@ -59,7 +59,7 @@ app.get("/schedulesByDateTime", async (req, res) => {
     date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
 
     let result = await manager.getAllSchedulesForDateTime(date, time).catch(err => {
-       return res.status(500).send(err);
+        return res.status(500).send(err);
     })
     return res.send(result);
 });
@@ -157,7 +157,7 @@ app.post("/teacher", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
     let result = await manager.createTeacher(firstName, lastName).catch(err => {
-       return  res.status(500).send(err);
+        return res.status(500).send(err);
     })
     return res.send(result);
 });
@@ -182,7 +182,7 @@ app.post("/class", async (req, res) => {
         return res.status(500).send(err);
     })
 
-   return res.send(result);
+    return res.send(result);
 })
 
 /*
@@ -344,11 +344,127 @@ app.post("/date", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
     let result = await manager.createDate(date, isHoliday).catch(err => {
-       return res.status(500).send(err);
+        return res.status(500).send(err);
     })
 
     return res.send(result);
 })
+
+app.delete("/class", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteClass(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+
+})
+
+app.delete("/course", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteCourse(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+})
+
+app.delete("/date", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteDate(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+})
+
+app.delete("/time", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteClass(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+
+})
+
+app.delete("/bell", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteBell(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+})
+
+app.delete("/teacher", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteTeacher(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+})
+
+app.delete("/room", async (req, res) => {
+    let {id} = req.query;
+
+    let result = await manager.deleteRoom(id).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+})
+
+app.delete("/schedule", async (req, res) => {
+    let {courseId, classId, timeId} = req.query;
+
+    let result = await manager.deleteSchedule(courseId, classId, timeId).catch(err => {
+        return res.status(500).send(err);
+    })
+
+    if (result) {
+        return res.send(result);
+    } else {
+        return res.status(422).send(false);
+    }
+
+})
+
 
 manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
