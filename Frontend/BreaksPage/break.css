@@ -38,12 +38,26 @@ main {
     padding: 30px 20px;
 }
 
+/*Everything about the grid*/
 .grid {
     display: grid;
-    grid-template-columns: 2fr 3fr 3fr 2fr;
-    gap: 12px;
+    grid-template-columns: repeat(4, 1fr);
+    padding: 10px;
+    gap: 10px;
+    grid-auto-rows: minmax(100px, auto);
     max-width: 800px;
     width: 100%;
+}
+.grid > * {
+    background-color: #7FC4B7;
+    padding: 15px;
+    border-radius: 5px;
+}
+.grid > *:empty {/* Remove styles for empty cells */
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    border-radius: 0;
 }
 
 
