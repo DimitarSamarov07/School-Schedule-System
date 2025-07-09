@@ -380,6 +380,11 @@ class SqliteMaster {
             .catch(err => {
                 return Promise.reject(err);
             })
+
+        if (!response) {
+            return null;
+        }
+
         return new DateModelResponse(response.id, response.Date, response.IsHoliday);
     }
 
@@ -388,6 +393,15 @@ class SqliteMaster {
             .catch(err => {
                 return Promise.reject(err);
             })
+
+        if (!response) {
+            return null;
+        }
+
+        if (!response) {
+            return null;
+        }
+
         return new ScheduleResponse(response.Class, response.Course, response.T_id, response.D_id);
     }
 
@@ -396,6 +410,11 @@ class SqliteMaster {
             .catch(err => {
                 return Promise.reject(err);
             })
+
+        if (!response) {
+            return null;
+        }
+
         return new TimeResponse(response.id, response.Start, response.End);
     }
 
@@ -404,6 +423,11 @@ class SqliteMaster {
             .catch(err => {
                 return Promise.reject(err);
             })
+
+        if (!response) {
+            return null;
+        }
+
         return new TeacherResponse(response.id, response.FirstName, response.LastName);
     }
 
@@ -483,6 +507,9 @@ class SqliteMaster {
                     console.error(err);
                     reject("Database error");
                     return;
+                }
+                if (rows.length == 0) {
+                    return resolve(false);
                 }
                 resolve(rows[0]);
             })
