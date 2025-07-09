@@ -90,39 +90,39 @@ class SqliteConstants {
 
     static readonly DELETE_FROM_CLASSES = `DELETE
                                            FROM Classes
-                                           WHERE id = (?);`
+                                           WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_DATES = `DELETE
                                          FROM Dates
-                                         WHERE id = (?);`
+                                         WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_TEACHERS = `DELETE
                                             FROM Teachers
-                                            WHERE id = (?);`
+                                            WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_COURSES = `DELETE
                                            FROM Courses
-                                           WHERE id = (?);`
+                                           WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_ROOMS = `DELETE
                                          FROM Rooms
-                                         WHERE id = (?);`
+                                         WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_ADVERTISING = `DELETE
                                                FROM Advertising
-                                               WHERE id = (?);`
+                                               WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_BELLS = `DELETE
                                          FROM Bells
-                                         WHERE id = (?);`
+                                         WHERE id = (?)  RETURNING id;`
 
     static readonly DELETE_FROM_SCHEDULE = `DELETE
                                             FROM Schedule
-                                            WHERE (Course, Class, T_id) = ((?), (?), (?));`
+                                            WHERE (Course, Class, T_id) = ((?), (?), (?))  RETURNING Class ;`
 
     static readonly DELETE_FROM_TIMES = `DELETE
                                          FROM Times
-                                         WHERE id = (?);`
+                                         WHERE id = (?) RETURNING id;`
 
     //UPDATE queries
 
