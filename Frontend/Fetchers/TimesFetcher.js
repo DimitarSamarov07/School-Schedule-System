@@ -1,24 +1,23 @@
 ﻿async function fetchRunningTime() {
-    const url = 'http://localhost:6969/runningTime';
+    const url = 'http://192.168.88.10:6969/runningTime';
     const runningTime = document.getElementById("runningTime");
 
     try {
         const response = await fetch(url);
 
         if (!response.ok) {
-            throw new Error(`Response status: ${response.status}`);
+             console.error(new Error(`Response status: ${response.status}`));
         }
 
         const json = await response.json();
-        const {numberInSchedule,startTime, endTime } = json.currentHour;
+        const {numberInSchedule, startTime, endTime} = json.currentHour;
         if (numberInSchedule === -1) {
             runningTime.innerHTML =
                 `Междучасие от ${startTime} до ${endTime}`;
-        } else if (numberInSchedule == 0 && startTime == null, endTime == null) {
+        } else if (numberInSchedule === 0 && startTime == null && endTime == null) {
             runningTime.innerHTML =
                 `Неучебно време`;
-        }
-        else{
+        } else {
             runningTime.innerHTML = ` ${numberInSchedule} час - ${startTime} до ${endTime}`;
         }
 
@@ -28,7 +27,5 @@
     }
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await fetchRunningTime();
-    setInterval(fetchRunningTime, 5000);
-});
+fetchRunningTime();
+setInterval(fetchRunningTime, 5000);
