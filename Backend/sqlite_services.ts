@@ -254,6 +254,13 @@ class SqliteMaster {
         });
     }
 
+    /**
+     * Creates a new teacher entry in the database and returns a response object with the teacher details.
+     *
+     * @param {string} firstName - The first name of the teacher.
+     * @param {string} lastName - The last name of the teacher.
+     * @return {Promise<TeacherResponse>} A promise that resolves to a TeacherResponse object containing the teacher's details.
+     */
     static async createTeacher(firstName: string, lastName: string): Promise<TeacherResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_TEACHERS, [firstName, lastName])
             .catch(err => {
@@ -262,6 +269,13 @@ class SqliteMaster {
         return new TeacherResponse(id, firstName, lastName);
     }
 
+    /**
+     * Creates a new class entry in the database with the specified name and description.
+     *
+     * @param {string} name - The name of the class to create.
+     * @param {string} description - The description of the class.
+     * @return {Promise<ClassResponse>} A promise that resolves with a ClassResponse object containing the details of the created class.
+     */
     static async createClass(name: string, description: string): Promise<ClassResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_CLASSES, [name, description])
             .catch(err => {
@@ -270,6 +284,13 @@ class SqliteMaster {
         return new ClassResponse(id, name, description);
     }
 
+    /**
+     * Creates a new room with the given name and floor number in the database.
+     *
+     * @param {string} name - The name of the room to be created.
+     * @param {number} floor - The floor number where the room is located.
+     * @return {Promise<RoomResponse>} A promise that resolves to an instance of RoomResponse containing details of the created room.
+     */
     static async createRoom(name: string, floor: number): Promise<RoomResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_ROOMS, [name, floor])
             .catch(err => {
@@ -278,6 +299,13 @@ class SqliteMaster {
         return new RoomResponse(id, name, floor);
     }
 
+    /**
+     * Creates a new time entry in the database between the given start and end times.
+     *
+     * @param {string} start - The starting time for the time entry.
+     * @param {string} end - The ending time for the time entry.
+     * @return {Promise<TimeResponse>} A promise that resolves to a TimeResponse object containing the created time details.
+     */
     static async createTime(start: string, end: string): Promise<TimeResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_TIMES, [start, end])
             .catch(err => {
@@ -286,6 +314,13 @@ class SqliteMaster {
         return new TimeResponse(id, start, end);
     }
 
+    /**
+     * Creates a new date entry in the database and returns a response object.
+     *
+     * @param {string} date - The date to be recorded, formatted as a string.
+     * @param {boolean} isHoliday - Indicates whether the date is a holiday.
+     * @return {Promise<DateModelResponse>} A promise that resolves to a DateModelResponse object containing the created date information.
+     */
     static async createDate(date: string, isHoliday: boolean): Promise<DateModelResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_DATES, [date, isHoliday])
             .catch(err => {
@@ -294,6 +329,14 @@ class SqliteMaster {
         return new DateModelResponse(id, date, isHoliday)
     }
 
+    /**
+     * Creates a new course with the specified name, teacher, and room details.
+     *
+     * @param {string} name - The name of the course to be created.
+     * @param {number} teacherId - The ID of the teacher assigned to the course.
+     * @param {number} roomId - The ID of the room where the course will take place.
+     * @return {Promise<CourseResponse>} A promise that resolves with the created course's details encapsulated in a `CourseResponse` object.
+     */
     static async createCourse(name: string, teacherId: number, roomId: number): Promise<CourseResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_COURSES, [name, teacherId, roomId])
             .catch(err => {
@@ -302,6 +345,15 @@ class SqliteMaster {
         return new CourseResponse(id, name, teacherId, roomId)
     }
 
+    /**
+     * Creates a new schedule entry with the provided course, class, teacher, and date information.
+     *
+     * @param {number} courseId - The ID of the course associated with the schedule.
+     * @param {number} classId - The ID of the class associated with the schedule.
+     * @param {number} teacherId - The ID of the teacher associated with the schedule.
+     * @param {number} dateId - The ID of the date associated with the schedule.
+     * @return {Promise<ScheduleResponse>} A promise that resolves to a ScheduleResponse object containing the schedule details.
+     */
     static async createSchedule(courseId: number, classId: number, teacherId: number, dateId: number): Promise<ScheduleResponse> {
         await this.createBase(SqliteConstants.INSERT_INTO_SCHEDULE, [courseId, classId, teacherId, dateId])
             .catch(err => {
@@ -310,6 +362,13 @@ class SqliteMaster {
         return new ScheduleResponse(classId, courseId, teacherId, dateId)
     }
 
+    /**
+     * Creates a new bell using the given name and sound path, storing the information in the database.
+     *
+     * @param {string} name - The name of the bell to be created.
+     * @param {string} soundPath - The path to the sound file associated with the bell.
+     * @return {Promise<BellResponse>} A Promise that resolves to an instance of BellResponse containing the details of the created bell.
+     */
     static async createBell(name: string, soundPath: string): Promise<BellResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_BELLS, [name, soundPath])
             .catch(err => {
@@ -319,6 +378,13 @@ class SqliteMaster {
         return new BellResponse(id, name, soundPath);
     }
 
+    /**
+     * Creates a new advertising entry in the database and returns a response object with the details of the created entry.
+     *
+     * @param {string} content The content of the advertising.
+     * @param {string} imagePath The file path to the image associated with the advertising.
+     * @return {Promise<AdvertisingResponse>} A promise that resolves with an AdvertisingResponse object containing the ID, content, and image path of the created advertising entry.
+     */
     static async createAdvertising(content: string, imagePath: string): Promise<AdvertisingResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_ADVERTISING, [content, imagePath])
             .catch(err => {
@@ -329,6 +395,14 @@ class SqliteMaster {
     }
 
 
+    /**
+     * Updates an existing advertisement in the database with new content and/or imagePath values.
+     *
+     * @param {number} id - The unique identifier of the advertisement to be updated.
+     * @param {string|null} content - The new content for the advertisement. Can be null to clear the content field.
+     * @param {string|null} imagePath - The new image path for the advertisement. Can be null to clear the imagePath field.
+     * @return {Promise<AdvertisingResponse>} A promise that resolves to an updated AdvertisingResponse object.
+     */
     static async updateAdvertising(id: number, content: string | null, imagePath: string | null) {
         let advertisement = new AdvertisingResponse(id, content, imagePath);
         let response = await this.updateBase(SqliteConstants.UPDATE_ADVERTISING, [content, imagePath, id])
@@ -339,6 +413,14 @@ class SqliteMaster {
         return advertisement;
     }
 
+    /**
+     * Updates an existing bell in the database with the provided details.
+     *
+     * @param {number} id - The unique identifier of the bell to update.
+     * @param {string | null} name - The new name for the bell. Can be null to retain the current name.
+     * @param {string | null} soundPath - The new sound path for the bell. Can be null to retain the current sound path.
+     * @return {Promise<BellResponse>} Returns a Promise resolving to an updated BellResponse object reflecting the updated properties of the bell.
+     */
     static async updateBell(id: number, name: string | null, soundPath: string | null) {
         let bell = new BellResponse(id, name, soundPath);
         let response = await this.updateBase(SqliteConstants.UPDATE_BELL, [name, soundPath, id])
@@ -349,6 +431,14 @@ class SqliteMaster {
         return bell;
     }
 
+    /**
+     * Updates a class in the database with the given id, name, and description.
+     *
+     * @param {number} id - The unique identifier of the class to be updated.
+     * @param {string | null} name - The new name of the class, or null if not being updated.
+     * @param {string | null} description - The new description of the class, or null if not being updated.
+     * @return {Promise<ClassResponse>} A promise that resolves to the updated class object.
+     */
     static async updateClass(id: number, name: string | null, description: string | null): Promise<ClassResponse> {
         let classObj = new ClassResponse(id, name, description);
         let response = await this.updateBase(SqliteConstants.UPDATE_CLASS, [name, description, id])
@@ -359,6 +449,15 @@ class SqliteMaster {
         return classObj;
     }
 
+    /**
+     * Updates an existing course with the provided information.
+     *
+     * @param {number} id - The unique identifier of the course to be updated.
+     * @param {string | null} name - The new name of the course, or null to leave it unchanged.
+     * @param {number | null} teacherId - The ID of the teacher associated with the course, or null to leave it unchanged.
+     * @param {number | null} roomId - The ID of the room assigned to the course, or null to leave it unchanged.
+     * @return {Promise<CourseResponse>} A promise that resolves to a CourseResponse object containing the updated course details.
+     */
     static async updateCourse(id: number, name: string | null, teacherId: number | null, roomId: number | null): Promise<CourseResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_COURSE, [name, teacherId, roomId, id])
             .catch(err => {
@@ -367,6 +466,14 @@ class SqliteMaster {
         return new CourseResponse(response.id, response.Name, response.Teacher, response.Room);
     }
 
+    /**
+     * Updates the information of a room in the database based on the provided parameters.
+     *
+     * @param {number} id - The unique identifier of the room to update.
+     * @param {string|null} name - The new name of the room, or null to leave it unchanged.
+     * @param {number|null} floor - The new floor of the room, or null to leave it unchanged.
+     * @return {Promise<RoomResponse>} A promise that resolves to a RoomResponse object containing the updated room details.
+     */
     static async updateRoom(id: number, name: string | null, floor: number | null): Promise<RoomResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_ROOM, [name, floor, id])
             .catch(err => {
@@ -375,6 +482,14 @@ class SqliteMaster {
         return new RoomResponse(response.id, response.Name, response.Floor);
     }
 
+    /**
+     * Updates the date information in the database based on the provided parameters.
+     *
+     * @param {number} id - The unique identifier of the record to be updated.
+     * @param {string|null} date - The new date value to be updated, or null if no change.
+     * @param {boolean|null} isHoliday - Indicates whether the date is a holiday (true or false) or null if no change.
+     * @return {Promise<DateModelResponse>} Returns a promise that resolves to a DateModelResponse object containing updated record details, or null if the update fails.
+     */
     static async updateDate(id: number, date: string | null, isHoliday: boolean | null): Promise<DateModelResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_DATE, [date, isHoliday, id])
             .catch(err => {
@@ -388,6 +503,18 @@ class SqliteMaster {
         return new DateModelResponse(response.id, response.Date, response.IsHoliday);
     }
 
+    /**
+     * Updates the schedule with new class, course, time, and date information while removing the old schedule details.
+     *
+     * @param {number} oldClassId - The ID of the old class to be updated.
+     * @param {number} oldCourseId - The ID of the old course to be updated.
+     * @param {number} oldDateId - The ID of the old date to be updated.
+     * @param {number | null} classId - The new class ID to update to, or null if not changing.
+     * @param {number | null} courseId - The new course ID to update to, or null if not changing.
+     * @param {number | null} timeId - The new time ID to update to, or null if not changing.
+     * @param {number | null} dateId - The new date ID to update to, or null if not changing.
+     * @return {Promise<ScheduleResponse>} A promise resolving to a `ScheduleResponse` object containing the updated schedule information.
+     */
     static async updateSchedule(oldClassId: number, oldCourseId: number, oldDateId: number, classId: number | null, courseId: number | null, timeId: number | null, dateId: number | null): Promise<ScheduleResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_SCHEDULE, [courseId, classId, timeId, dateId, oldClassId, oldCourseId, oldDateId])
             .catch(err => {
@@ -405,6 +532,14 @@ class SqliteMaster {
         return new ScheduleResponse(response.Class, response.Course, response.T_id, response.D_id);
     }
 
+    /**
+     * Updates the time details for a specific record.
+     *
+     * @param {number} id - The unique identifier of the record to update.
+     * @param {string | null} start - The starting time to be set, or null to unset it.
+     * @param {string | null} end - The ending time to be set, or null to unset it.
+     * @return {Promise<TimeResponse>} A promise that resolves to a TimeResponse object containing updated details, or null if the update failed.
+     */
     static async updateTime(id: number, start: string | null, end: string | null): Promise<TimeResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_TIME, [start, end, id])
             .catch(err => {
@@ -418,6 +553,14 @@ class SqliteMaster {
         return new TimeResponse(response.id, response.Start, response.End);
     }
 
+    /**
+     * Updates the details of a teacher in the database.
+     *
+     * @param {number} id - The unique identifier of the teacher to be updated.
+     * @param {string | null} firstName - The updated first name of the teacher, or null if it is not being updated.
+     * @param {string | null} lastName - The updated last name of the teacher, or null if it is not being updated.
+     * @return {Promise<TeacherResponse>} A promise that resolves to a TeacherResponse object containing the updated information of the teacher, or null if the update fails.
+     */
     static async updateTeacher(id: number, firstName: string | null, lastName: string | null): Promise<TeacherResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_TEACHER, [firstName, lastName, id])
             .catch(err => {
@@ -431,54 +574,111 @@ class SqliteMaster {
         return new TeacherResponse(response.id, response.FirstName, response.LastName);
     }
 
+    /**
+     * Deletes a teacher from the database using the given teacher ID.
+     *
+     * @param {number} id - The unique identifier of the teacher to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the teacher is successfully deleted, or rejects with an error if the operation fails.
+     */
     static async deleteTeacher(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_TEACHERS, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a specific advertising entry from the database based on the provided ID.
+     *
+     * @param {number} id - The ID of the advertising entry to be deleted.
+     * @return {Promise<boolean>} Returns a promise that resolves to true if the deletion was successful, or rejects with an error if it fails.
+     */
     static async deleteAdvertising(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_ADVERTISING, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a bell record from the database specified by the given ID.
+     *
+     * @param {number} id - The ID of the bell record to delete.
+     * @return {Promise<boolean>} A promise that resolves to true if the deletion was successful, or rejects with an error if the deletion fails.
+     */
     static async deleteBell(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_BELLS, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a class from the database based on the given ID.
+     *
+     * @param {number} id - The unique identifier of the class to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the class was successfully deleted, or rejects with an error otherwise.
+     */
     static async deleteClass(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_CLASSES, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a course from the database using the provided course ID.
+     *
+     * @param {number} id - The unique identifier of the course to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the course is successfully deleted, or rejects with an error if the operation fails.
+     */
     static async deleteCourse(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_COURSES, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a date record from the database based on the provided identifier.
+     *
+     * @param {number} id - The identifier of the date record to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the operation succeeds or rejects with an error if it fails.
+     */
     static async deleteDate(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_DATES, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a room from the database using the specified room ID.
+     *
+     * @param {number} id - The unique identifier of the room to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the room is successfully deleted,
+     * or rejects with an error if the operation fails.
+     */
     static async deleteRoom(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_ROOMS, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a time entry from the database based on the provided ID.
+     *
+     * @param {number} id - The ID of the time entry to be deleted.
+     * @return {Promise<boolean>} A promise that resolves to true if the deletion was successful, or rejects with an error.
+     */
     static async deleteTime(id: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_TIMES, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
+    /**
+     * Deletes a schedule from the database based on the provided course ID, class ID, and time ID.
+     *
+     * @param {number} courseId - The unique identifier of the course.
+     * @param {number} classId - The unique identifier of the class.
+     * @param {number} timeId - The unique identifier of the time slot.
+     * @return {Promise<boolean>} A promise that resolves to true if the schedule was successfully deleted, otherwise rejects with an error.
+     */
     static async deleteSchedule(courseId: number, classId: number, timeId: number): Promise<boolean> {
         return await this.deleteBase(SqliteConstants.DELETE_FROM_SCHEDULE, [courseId, classId, timeId]).catch(err => {
             return Promise.reject(err);
@@ -486,6 +686,13 @@ class SqliteMaster {
     }
 
 
+    /**
+     * Executes a database query to fetch a single row and wraps the result in a ReturningId object.
+     *
+     * @param {string} query - The SQL query to be executed.
+     * @param {any[]} params - An array of parameters for the SQL query.
+     * @return {Promise<ReturningId>} A promise that resolves to a ReturningId object containing the fetched row's id.
+     */
     private static createBase(query: string, params: any[]): Promise<ReturningId> {
         return new Promise((resolve, reject): void => {
             this.db.get(query, params, (err, row: any) => {
@@ -500,6 +707,15 @@ class SqliteMaster {
         })
     }
 
+    /**
+     * Executes a database query with the provided parameters and handles the result.
+     *
+     * @param {string} query The SQL query to be executed.
+     * @param {any[]} params The parameters to be used in the SQL query.
+     * @return {Promise<any>} A promise that resolves with the first row of the result set if successful,
+     *                        resolves with `false` if no rows are returned, or rejects with an error message
+     *                        in case of a database error.
+     */
     private static updateBase(query: string, params: any[]): Promise<any> {
         return new Promise((resolve, reject): void => {
             this.db.all(query, params, (err, rows: any[]) => {
@@ -516,6 +732,13 @@ class SqliteMaster {
         })
     }
 
+    /**
+     * Executes a database query for deletion and resolves with the operation status.
+     *
+     * @param {string} query - The SQL query string to be executed.
+     * @param {any[]} params - An array of parameters to bind to the query placeholders.
+     * @return {Promise<any>} A promise that resolves to `true` if the operation is successful and rows are affected, `false` if no rows are affected, or rejects with an error message in case of a database error.
+     */
     private static deleteBase(query: string, params: any[]): Promise<any> {
         return new Promise((resolve, reject): void => {
             this.db.all(query, params, (err, rows: any[]) => {
