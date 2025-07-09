@@ -1,7 +1,8 @@
 ﻿async function fetchScheduleByClassIdForDate () {
+    const url = 'http://192.168.88.10:6969/schedulesByClassIdForDate';
     try {
         const classId = 1;
-        const fullDate = new Date();
+        //const fullDate = new Date();
         //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
         const date = "2025-07-07";
 
@@ -10,7 +11,7 @@
         params.append("date", date);
 
 
-        const response = await fetch(`http://localhost:6969/schedulesByClassIdForDate?${params}`);
+        const response = await fetch(`${url}?${params}`);
         const data = await response.json();
         console.log('Data:', data);
         console.log('classId');
