@@ -33,10 +33,13 @@ app.get("/schedulesByDate", async (req, res) => {
     } catch (e) {
         return res.status(406).send("Malformed date. The correct format is YYYY-MM-DD");
     }
-    let result = await manager.getAllSchedulesForDate(date).catch(err => {
-        return res.status(500).send(err);
-    })
-    return res.send(result);
+    return await manager.getAllSchedulesForDate(date)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 
 });
 
@@ -59,10 +62,13 @@ app.get("/schedulesByDateTime", async (req, res) => {
 
     date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
 
-    let result = await manager.getAllSchedulesForDateTime(date, time).catch(err => {
-        return res.status(500).send(err);
-    })
-    return res.send(result);
+    return await manager.getAllSchedulesForDateTime(date, time)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 });
 
 /*
@@ -91,10 +97,13 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
     if (isNaN(classIdParsed)) {
         return res.status(406).send("Malformed classId");
     }
-    let result = await manager.getSchedulesByClassIdForDate(classIdParsed, date).catch(err => {
-        return res.status(500).send(err);
-    });
-    return res.send(result);
+    return await manager.getSchedulesByClassIdForDate(classId, date)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -128,14 +137,17 @@ app.get("/date", async (req, res) => {
         return res.status(406).send("Malformed parameter");
     }
 
-    let result = await manager.getDateFromDBByDate(req.query.date).catch(err => {
-        if (err === "No date found") {
-            return res.status(404).send(err);
-        }
-        return res.status(500).send(err);
-    })
+    return await manager.getDateFromDBByDate(req.query.date)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No date found") {
+                return res.status(404).send(err);
+            }
+            return res.status(500).send(err);
+        })
 
-    return res.send(result);
 })
 
 
@@ -157,10 +169,14 @@ app.post("/teacher", async (req, res) => {
     if (!firstName || !lastName) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createTeacher(firstName, lastName).catch(err => {
-        return res.status(500).send(err);
-    })
-    return res.send(result);
+
+    return await manager.createTeacher(firstName, lastName)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 });
 
 /*
@@ -179,11 +195,14 @@ app.post("/class", async (req, res) => {
     if (!name || !description) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createClass(name, description).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createClass(name, description)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -202,11 +221,15 @@ app.post("/room", async (req, res) => {
     if (!name || !floor) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createRoom(name, floor).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createRoom(name, floor)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
+
 })
 
 /*
@@ -225,11 +248,14 @@ app.post("/time", async (req, res) => {
     if (!start || !end) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createTime(start, end).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createTime(start, end)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -248,11 +274,14 @@ app.post("/advertising", async (req, res) => {
     if (!text || !imagePath) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createAdvertising(text, imagePath).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createAdvertising(text, imagePath)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -271,11 +300,14 @@ app.post("/bell", async (req, res) => {
     if (!name || !soundPath) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createBell(name, soundPath).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createBell(name, soundPath)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -296,11 +328,14 @@ app.post("/schedule", async (req, res) => {
     if (!courseId || !classId || !timeId || !dateId) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createSchedule(courseId, classId, timeId, dateId).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createSchedule(courseId, classId, timeId, dateId)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -320,11 +355,15 @@ app.post("/course", async (req, res) => {
     if (!name || !teacherId || !roomId) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.createCourse(name, teacherId, roomId).catch(err => {
-        return res.status(500).send(err);
-    })
 
-    return res.send(result);
+    return await manager.createCourse(name, teacherId, roomId)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
+
 })
 
 // HTTP PUT
@@ -334,13 +373,18 @@ app.put("/teacher", async (req, res) => {
     if ((!firstName && !lastName) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateTeacher(firstName, lastName, id).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateTeacher(firstName, lastName, id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/class", async (req, res) => {
@@ -348,13 +392,18 @@ app.put("/class", async (req, res) => {
     if ((!name && !description) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateClass(id, name, description).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateClass(id, name, description)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/course", async (req, res) => {
@@ -362,13 +411,18 @@ app.put("/course", async (req, res) => {
     if ((!name && !teacherId && !roomId) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateCourse(id, name, teacherId, roomId).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateCourse(id, name, teacherId, roomId)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/time", async (req, res) => {
@@ -376,13 +430,18 @@ app.put("/time", async (req, res) => {
     if ((!start && !end) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateTime(id, start, end).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateTime(id, start, end)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/room", async (req, res) => {
@@ -390,13 +449,18 @@ app.put("/room", async (req, res) => {
     if ((!name && !floor) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateRoom(id, name, floor).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateRoom(id, name, floor)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/advertising", async (req, res) => {
@@ -404,13 +468,18 @@ app.put("/advertising", async (req, res) => {
     if ((!content && !imagePath) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateAdvertising(id, content, imagePath).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateAdvertising(id, content, imagePath)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 app.put("/bell", async (req, res) => {
@@ -418,13 +487,19 @@ app.put("/bell", async (req, res) => {
     if ((!name && !soundPath) || !id) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateBell(id, name, soundPath).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager.updateBell(id, name, soundPath)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
+
 })
 
 app.put("/schedule", async (req, res) => {
@@ -432,13 +507,19 @@ app.put("/schedule", async (req, res) => {
     if ((!newCourseId && !newClassId && !newTimeId && !newDateId) || !oldCourseId || !oldClassId || !oldDateId) {
         return res.status(406).send("Malformed parameters");
     }
-    let result = await manager.updateCourse(id, name, teacherId, roomId).catch(err => {
-        return res.status(500).send(err);
-    })
-    if (!result) {
-        return res.status(422).send(false);
-    }
-    return res.send(result);
+
+    return await manager
+        .updateSchedule(oldClassId, oldCourseId, oldDateId, newClassId, newCourseId, newTimeId, newDateId)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -454,16 +535,17 @@ app.put("/schedule", async (req, res) => {
 app.delete("/class", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteClass(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
-
+    return await manager.deleteClass(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -479,15 +561,17 @@ app.delete("/class", async (req, res) => {
 app.delete("/course", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteCourse(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteCourse(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -503,15 +587,17 @@ app.delete("/course", async (req, res) => {
 app.delete("/date", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteDate(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteDate(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -527,15 +613,17 @@ app.delete("/date", async (req, res) => {
 app.delete("/time", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteClass(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteClass(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 
 })
 
@@ -552,15 +640,17 @@ app.delete("/time", async (req, res) => {
 app.delete("/bell", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteBell(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteBell(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -576,15 +666,17 @@ app.delete("/bell", async (req, res) => {
 app.delete("/teacher", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteTeacher(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteTeacher(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -600,15 +692,17 @@ app.delete("/teacher", async (req, res) => {
 app.delete("/room", async (req, res) => {
     let {id} = req.query;
 
-    let result = await manager.deleteRoom(id).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
+    return await manager.deleteRoom(id)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 /*
@@ -626,16 +720,17 @@ app.delete("/room", async (req, res) => {
 app.delete("/schedule", async (req, res) => {
     let {courseId, classId, timeId} = req.query;
 
-    let result = await manager.deleteSchedule(courseId, classId, timeId).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    if (result) {
-        return res.send(result);
-    } else {
-        return res.status(422).send(false);
-    }
-
+    return await manager.deleteSchedule(courseId, classId, timeId)
+        .then(result => {
+            if (result) {
+                return res.send(result);
+            } else {
+                return res.status(422).send(false);
+            }
+        })
+        .catch(err => {
+            return res.status(500).send(err);
+        })
 })
 
 manager.initializeConnection();
