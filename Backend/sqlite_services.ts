@@ -388,8 +388,8 @@ class SqliteMaster {
         return new DateModelResponse(response.id, response.Date, response.IsHoliday);
     }
 
-    static async updateSchedule(classId: number | null, courseId: number | null, timeId: number | null, dateId: number | null): Promise<ScheduleResponse> {
-        let response = await this.updateBase(SqliteConstants.UPDATE_SCHEDULE, [courseId, classId, timeId, dateId])
+    static async updateSchedule(oldClassId: number, oldCourseId: number, oldDateId: number, classId: number | null, courseId: number | null, timeId: number | null, dateId: number | null): Promise<ScheduleResponse> {
+        let response = await this.updateBase(SqliteConstants.UPDATE_SCHEDULE, [courseId, classId, timeId, dateId, oldClassId, oldCourseId, oldDateId])
             .catch(err => {
                 return Promise.reject(err);
             })
@@ -488,14 +488,14 @@ class SqliteMaster {
 
     private static createBase(query: string, params: any[]): Promise<ReturningId> {
         return new Promise((resolve, reject): void => {
-            this.db.each(query, params, (err, row: any) => {
+            this.db.get(query, params, (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
                     return;
                 }
                 let returningId = new ReturningId(row?.id);
-                resolve(returningId)
+                return resolve(returningId)
             })
         })
     }
