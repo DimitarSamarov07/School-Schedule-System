@@ -384,7 +384,7 @@ app.post("/course", async (req, res) => {
 
 app.post("/date", async (req, res) => {
     let {date, isHoliday} = req.body;
-    if (!name || !teacherId || !roomId) {
+    if (!date || !isHoliday ) {
         return res.status(406).send("Malformed parameters");
     }
 
