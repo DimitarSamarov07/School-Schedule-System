@@ -328,29 +328,15 @@ app.post("/course", async (req, res) => {
 })
 
 /*
- * POST /date
- * Creates a new date record
- * Body params:
- *   - date: string (YYYY-MM-DD format)
- *   - isHoliday: boolean
+ * DELETE /class
+ * Deletes a class record by ID
+ * Query params:
+ *   - id: number
  * Returns:
  *   - 200: Created the Date object with ID
  *   - 406: "Malformed parameters" if date invalid/missing or isHoliday not boolean
  *   - 500: Database error message
  */
-app.post("/date", async (req, res) => {
-    let {date, isHoliday} = req.body;
-
-    if (!date || !isHoliday || typeof isHoliday !== "boolean" || moment(date, 'YYYY-MM-DD').isValid() === false) {
-        return res.status(406).send("Malformed parameters");
-    }
-    let result = await manager.createDate(date, isHoliday).catch(err => {
-        return res.status(500).send(err);
-    })
-
-    return res.send(result);
-})
-
 app.delete("/class", async (req, res) => {
     let {id} = req.query;
 
@@ -366,6 +352,16 @@ app.delete("/class", async (req, res) => {
 
 })
 
+/*
+ * DELETE /course 
+ * Deletes a course record by ID
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/course", async (req, res) => {
     let {id} = req.query;
 
@@ -380,6 +376,16 @@ app.delete("/course", async (req, res) => {
     }
 })
 
+/*
+ * DELETE /date
+ * Deletes a date record by ID 
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/date", async (req, res) => {
     let {id} = req.query;
 
@@ -394,6 +400,16 @@ app.delete("/date", async (req, res) => {
     }
 })
 
+/*
+ * DELETE /time
+ * Deletes a time record by ID
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/time", async (req, res) => {
     let {id} = req.query;
 
@@ -409,6 +425,16 @@ app.delete("/time", async (req, res) => {
 
 })
 
+/*
+ * DELETE /bell
+ * Deletes a bell record by ID
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/bell", async (req, res) => {
     let {id} = req.query;
 
@@ -423,6 +449,16 @@ app.delete("/bell", async (req, res) => {
     }
 })
 
+/*
+ * DELETE /teacher
+ * Deletes a teacher record by ID
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/teacher", async (req, res) => {
     let {id} = req.query;
 
@@ -437,6 +473,16 @@ app.delete("/teacher", async (req, res) => {
     }
 })
 
+/*
+ * DELETE /room
+ * Deletes a room record by ID
+ * Query params:
+ *   - id: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/room", async (req, res) => {
     let {id} = req.query;
 
@@ -451,6 +497,18 @@ app.delete("/room", async (req, res) => {
     }
 })
 
+/*
+ * DELETE /schedule
+ * Deletes a schedule record by courseId, classId and timeId
+ * Query params:
+ *   - courseId: number
+ *   - classId: number 
+ *   - timeId: number
+ * Returns:
+ *   - 200: true if deleted successfully
+ *   - 422: false if deletion failed
+ *   - 500: Database error message
+ */
 app.delete("/schedule", async (req, res) => {
     let {courseId, classId, timeId} = req.query;
 
@@ -465,7 +523,6 @@ app.delete("/schedule", async (req, res) => {
     }
 
 })
-
 
 manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
