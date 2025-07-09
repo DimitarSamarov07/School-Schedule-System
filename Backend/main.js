@@ -8,6 +8,7 @@ import cors from "cors";
 
 const app = express();
 app.use(helmet()) // Enhances security
+app.use(express.json())
 app.use(cors())
 
 let port = 6969;
