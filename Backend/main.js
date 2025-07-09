@@ -3,14 +3,33 @@ import manager from "./sqlite_services.js";
 import moment from "moment";
 import helmet from "helmet";
 import cors from "cors";
+import rateLimit from 'express-rate-limit';
 
 // Initializing Express App
 
 const app = express();
-app.use(express.json())
+const limiter = rateLimit({
+    windowMs: 15 * 1000,
+    max: 20,
+    message: "Too many requests from this IP, please try again after 15 minutes",
+    standardHeaders: true,
+    legacyHeaders: false,
+    skipFailedRequests: false,
+    skipSuccessfulRequests: false,
+});
+app.use(limiter)
+app.use(express.json({limit: '10kb'}));
 app.use(helmet()) // Enhances security
 
-app.use(cors())
+
+app.use(cors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"]
+}))
+
+//
+app.set('trust proxy', 1);
 
 
 let port = 6969;
@@ -164,7 +183,7 @@ app.get("/date", async (req, res) => {
  * Returns:
  *   - 200: Created the teacher object with ID
  *   - 406: "Malformed parameters" if firstName/lastName missing
- *   - 500: Database error message
+ *   - 500: A database error message
  */
 
 app.post("/teacher", async (req, res) => {
