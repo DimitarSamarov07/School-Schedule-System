@@ -31,7 +31,6 @@ app.use(cors({
 //
 app.set('trust proxy', 1);
 
-
 let port = 6969;
 
 /*
@@ -59,7 +58,7 @@ app.get("/schedulesByDate", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 });
@@ -88,7 +87,7 @@ app.get("/schedulesByDateTime", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 });
 
@@ -123,7 +122,7 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -136,7 +135,7 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
  */
 app.get("/runningTime", async (req, res) => {
     let result = await manager.getRunningTime().catch(err => {
-        return res.status(500).send(err);
+        return res.status(500).send({"error": err});
     });
     return res.status(200).send({currentHour: result});
 })
@@ -164,9 +163,9 @@ app.get("/date", async (req, res) => {
         })
         .catch(err => {
             if (err === "No date found") {
-                return res.status(404).send(err);
+                return res.status(404).send({"error": err});
             }
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 })
@@ -198,7 +197,7 @@ app.post("/teacher", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 });
 
@@ -224,7 +223,7 @@ app.post("/class", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -250,7 +249,7 @@ app.post("/room", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 })
@@ -277,7 +276,7 @@ app.post("/time", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -303,7 +302,7 @@ app.post("/advertising", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -329,7 +328,7 @@ app.post("/bell", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -357,7 +356,7 @@ app.post("/schedule", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -384,7 +383,7 @@ app.post("/course", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 })
@@ -412,7 +411,7 @@ app.post("/date", async (req, res) => {
             return res.send(result);
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 })
@@ -447,7 +446,7 @@ app.put("/teacher", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -479,7 +478,7 @@ app.put("/class", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -512,7 +511,7 @@ app.put("/course", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -544,7 +543,7 @@ app.put("/time", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -576,7 +575,7 @@ app.put("/room", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -608,7 +607,7 @@ app.put("/advertising", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -640,7 +639,7 @@ app.put("/bell", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 /*
@@ -672,7 +671,7 @@ app.put("/date", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -709,7 +708,7 @@ app.put("/schedule", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -737,7 +736,7 @@ app.delete("/class", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -763,7 +762,7 @@ app.delete("/course", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -789,7 +788,7 @@ app.delete("/date", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -815,7 +814,7 @@ app.delete("/time", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 
 })
@@ -842,7 +841,7 @@ app.delete("/bell", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -868,7 +867,7 @@ app.delete("/teacher", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -894,7 +893,7 @@ app.delete("/room", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
@@ -922,7 +921,7 @@ app.delete("/schedule", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 /*
@@ -947,7 +946,7 @@ app.delete("/advertising", async (req, res) => {
             }
         })
         .catch(err => {
-            return res.status(500).send(err);
+            return res.status(500).send({"error": err});
         })
 })
 
