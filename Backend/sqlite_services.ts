@@ -18,6 +18,8 @@ import BellResponse from "./response_models/BellResponse.js";
 import AdvertisingResponse from "./response_models/AdvertisingResponse.js";
 import DateModel from "./data_models/DateModel.js";
 
+import bcrypt from "bcrypt";
+
 /**
  * Represents a manager for handling SQLite-related operations.
  * Provides methods to interact with the database, retrieve schedules,
@@ -38,6 +40,11 @@ class SqliteMaster {
      * queries, manipulate data, and manage database transactions.
      */
     static db: Database;
+
+    /**
+     * The salt rounds for the bcrypt hash function
+     */
+    static saltRounds = 10;
 
     /**
      * Initializes the database connection using SQLite and sets up the database instance.
@@ -685,6 +692,74 @@ class SqliteMaster {
         })
     }
 
+    static async registerNewAdmin(username: string, email: string, password: string) {
+        let hashedPassword = await this.hashPassword(password);
+
+        return new Promise((resolve, reject) => {
+            this.db.get(SqliteConstants.CREATE_ADMIN, [username, email, hashedPassword], (err, row: any) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                resolve(row);
+            })
+        })
+    }
+
+    static async updateAdminEmail(username: string, newEmail: string, currentPassword: string) {
+        return new Promise(async (resolve, reject) => {
+            let isThisTheCurrentUser = await this.checkAdminCredentials(username, currentPassword);
+            if(!isThisTheCurrentUser){
+                return resolve(false);
+            }
+
+            this.db.get(SqliteConstants.UPDATE_ADMIN_EMAIL, [newEmail, username, currentPassword], (err, row: any) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                resolve(row);
+            })
+        })
+    }
+
+    static async updateAdminPassword(username: string, newPass: string, currentPassword: string) {
+        return new Promise(async (resolve, reject) => {
+            let isThisTheCurrentUser = await this.checkAdminCredentials(username, currentPassword);
+            if(!isThisTheCurrentUser){
+                return resolve(false);
+            }
+
+            this.db.get(SqliteConstants.UPDATE_ADMIN_PASS, [newPass, username, currentPassword], (err, row: any) => {
+                if (err) {
+                    console.error(err);
+                    reject("Database error");
+                    return;
+                }
+                resolve(row);
+            })
+        })
+    }
+
+    static async checkAdminCredentials(username: string, password: string) {
+        let hashedPassword = await this.hashPassword(password);
+
+        return new Promise((resolve, reject) => {
+            this.db.get(SqliteConstants.CHECK_ADMIN_CREDENTIALS, [username, hashedPassword], (err, row: any) => {
+                if (err) {
+                    console.error(err);
+                    resolve(false);
+                    return;
+                }
+                if (row) {
+                    return resolve(true);
+                }
+                return resolve(false);
+            })
+        })
+    }
 
     /**
      * Executes a database query to fetch a single row and wraps the result in a ReturningId object.
@@ -755,6 +830,10 @@ class SqliteMaster {
 
             })
         })
+    }
+
+    private static async hashPassword(password: string): Promise<string> {
+        return await bcrypt.hash(password, this.saltRounds);
     }
 
 }
