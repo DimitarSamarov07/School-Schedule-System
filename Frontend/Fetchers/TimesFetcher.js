@@ -20,6 +20,7 @@
         } else {
             runningTime.innerHTML = ` ${numberInSchedule} час - ${startTime} до ${endTime}`;
         }
+        return json;
 
     } catch (error) {
         console.error("Fetch error:", error.message);
@@ -29,3 +30,5 @@
 
 fetchRunningTime();
 setInterval(fetchRunningTime, 5000);
+
+export default fetchRunningTime;
