@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Вход в Система</title>
+  <link rel="stylesheet" href="styles.css"> </head>
+<body>
+<header>
+  <div id="clock">00:00</div>
+  <div id="break-time">Вход в Система</div>
+</header>
+ 
+<main>
+  <div class="login-container">
+    <h2>Моля, влезте</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Потребителско име:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Парола:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Продължи</button>
+      <p id="errorMessage" class="error-message"></p>
+    </form>
+  </div>
+</main>
+ 
+<footer>
+  <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+    Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+  </a>
+</footer>
+ 
+<script>
+ 
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+ 
+    if (h < 10) h = '0' + h;
+    if (m < 10) m = '0' + m;
+ 
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
+ 
+  updateClock();
+  setInterval(updateClock, 1000);
+ 
+ 
+  document.getElementById('loginForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+ 
+    const usernameInput = document.getElementById('username').value;
+    const passwordInput = document.getElementById('password').value;
+    const errorMessage = document.getElementById('errorMessage');
+ 
+    const correctUsername = 'user';
+    const correctPassword = 'admin123';
+ 
+    if (usernameInput === correctUsername && passwordInput === correctPassword) {
+      window.location.href = 'success.html';
+    } else {
+      errorMessage.textContent = 'Грешно потребителско име или парола.';
+      errorMessage.style.display = 'block';
+    }
+  });
+</script>
+</body>
+</html>
+
+
