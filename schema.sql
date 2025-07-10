@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS Courses (
 CREATE TABLE IF NOT EXISTS Classes (
 	id INTEGER PRIMARY KEY,
 	Name VARCHAR(50) NOT NULL,
-	Description VARCHAR(100)
+	Description VARCHAR(200)
 );
 
 CREATE TABLE IF NOT EXISTS Times (
@@ -76,8 +76,8 @@ CREATE TABLE IF NOT EXISTS Bells (
 
 CREATE TABLE IF NOT EXISTS Admins (
 	id INTEGER PRIMARY KEY,
-	User VARCHAR(20) NOT NULL,
-	Pass VARCHAR(20) NOT NULL
+	User VARCHAR(50) NOT NULL,
+	Pass VARCHAR(100) NOT NULL
 );
 
 INSERT INTO Teachers (FirstName, LastName) VALUES
@@ -100,7 +100,7 @@ INSERT INTO Rooms (Name, Floor) VALUES
 INSERT INTO Courses(Name, Teacher, Room) VALUES
     (
         'Български език и литература',
-        0,
+        1,
         5
     ),
     (
@@ -120,7 +120,7 @@ INSERT INTO Courses(Name, Teacher, Room) VALUES
     ),
     (
         'Физическо възпитане и спорт',
-        0,
+        1,
         2
     ),
     (
