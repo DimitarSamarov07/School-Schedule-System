@@ -70,13 +70,14 @@ CREATE TABLE IF NOT EXISTS Advertising (
 
 CREATE TABLE IF NOT EXISTS Bells (
     id INTEGER PRIMARY KEY,
-    Name VARCHAR(20),
+    Name VARCHAR(20) UNIQUE,
     SoundPath TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Admins (
 	id INTEGER PRIMARY KEY,
-	User VARCHAR(50) NOT NULL,
+	User VARCHAR(50) NOT NULL UNIQUE,
+    Email VARCHAR(50) NOT NULL UNIQUE,
 	Pass VARCHAR(100) NOT NULL
 );
 
@@ -167,8 +168,8 @@ INSERT INTO Advertising (Content, ImagePath) VALUES
 INSERT INTO Bells (Name, SoundPath) VALUES
     ('Звънец', './bell.mp3');
 
-INSERT INTO Admins (User , Pass) VALUES
-    ('admin@gmail.com', 'admin1');
+INSERT INTO Admins (User, Email, Pass) VALUES
+    ('admin', 'admin@example.com', 'admin1');
 
 SELECT * FROM Teachers;
 SELECT * FROM Courses;
