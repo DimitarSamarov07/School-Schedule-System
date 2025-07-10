@@ -40,13 +40,15 @@ class SqliteConstants {
          LIMIT 1;`
 
     static readonly SELECT_ALL_TIMES = `
-    SELECT id, Start, End FROM Times
+        SELECT id, Start, End
+        FROM Times
     `
 
     static readonly SELECT_DATE_BY_DATE = `
-    SELECT id, Date, IsHoliday FROM Dates
-    WHERE Date = (?)
-    LIMIT 1;
+        SELECT id, Date, IsHoliday
+        FROM Dates
+        WHERE Date = (?)
+        LIMIT 1;
     `
 
     //INSERT queries
@@ -83,92 +85,132 @@ class SqliteConstants {
                                          RETURNING id;`
 
     static readonly INSERT_INTO_ADVERTISING = `INSERT INTO Advertising(Content, ImagePath)
-                                         VALUES ((?), (?))
-                                         RETURNING id;`
+                                               VALUES ((?), (?))
+                                               RETURNING id;`
 
     //DELETE queries
 
     static readonly DELETE_FROM_CLASSES = `DELETE
                                            FROM Classes
-                                           WHERE id = (?)  RETURNING id;`
+                                           WHERE id = (?)
+                                           RETURNING id;`
 
     static readonly DELETE_FROM_DATES = `DELETE
                                          FROM Dates
-                                         WHERE id = (?)  RETURNING id;`
+                                         WHERE id = (?)
+                                         RETURNING id;`
 
     static readonly DELETE_FROM_TEACHERS = `DELETE
                                             FROM Teachers
-                                            WHERE id = (?)  RETURNING id;`
+                                            WHERE id = (?)
+                                            RETURNING id;`
 
     static readonly DELETE_FROM_COURSES = `DELETE
                                            FROM Courses
-                                           WHERE id = (?)  RETURNING id;`
+                                           WHERE id = (?)
+                                           RETURNING id;`
 
     static readonly DELETE_FROM_ROOMS = `DELETE
                                          FROM Rooms
-                                         WHERE id = (?)  RETURNING id;`
+                                         WHERE id = (?)
+                                         RETURNING id;`
 
     static readonly DELETE_FROM_ADVERTISING = `DELETE
                                                FROM Advertising
-                                               WHERE id = (?)  RETURNING id;`
+                                               WHERE id = (?)
+                                               RETURNING id;`
 
     static readonly DELETE_FROM_BELLS = `DELETE
                                          FROM Bells
-                                         WHERE id = (?)  RETURNING id;`
+                                         WHERE id = (?)
+                                         RETURNING id;`
 
     static readonly DELETE_FROM_SCHEDULE = `DELETE
                                             FROM Schedule
-                                            WHERE (Course, Class, T_id) = ((?), (?), (?))  RETURNING Class ;`
+                                            WHERE (Course, Class, T_id) = ((?), (?), (?))
+                                            RETURNING Class;`
 
     static readonly DELETE_FROM_TIMES = `DELETE
                                          FROM Times
-                                         WHERE id = (?) RETURNING id;`
+                                         WHERE id = (?)
+                                         RETURNING id;`
 
     //UPDATE queries
 
     static readonly UPDATE_DATE = `UPDATE Dates
-        SET Date = COALESCE((?), Date),
-            IsHoliday = COALESCE((?), IsHoliday)
-        WHERE id = (?) RETURNING *;`
+                                   SET Date      = COALESCE((?), Date),
+                                       IsHoliday = COALESCE((?), IsHoliday)
+                                   WHERE id = (?)
+                                   RETURNING *;`
     static readonly UPDATE_COURSE = `UPDATE Courses
-        SET Name = COALESCE((?), Name),
-            Teacher = COALESCE((?), Teacher),
-            Room = COALESCE((?), Room)
-        WHERE id = (?) RETURNING *;`
+                                     SET Name    = COALESCE((?), Name),
+                                         Teacher = COALESCE((?), Teacher),
+                                         Room    = COALESCE((?), Room)
+                                     WHERE id = (?)
+                                     RETURNING *;`
 
     static readonly UPDATE_TEACHER = `UPDATE Teachers
-        SET FirstName = COALESCE((?), FirstName),
-            LastName = COALESCE((?), LastName)
-        WHERE id = (?) RETURNING *;`
+                                      SET FirstName = COALESCE((?), FirstName),
+                                          LastName  = COALESCE((?), LastName)
+                                      WHERE id = (?)
+                                      RETURNING *;`
     static readonly UPDATE_TIME = `UPDATE Times
-        SET Start = COALESCE((?), Start),
-            End = COALESCE((?), END)
-        WHERE id = (?) RETURNING *;`
+                                   SET Start = COALESCE((?), Start),
+                                       End   = COALESCE((?), END)
+                                   WHERE id = (?)
+                                   RETURNING *;`
     static readonly UPDATE_ROOM = `UPDATE Rooms
-        SET Name = COALESCE((?), Name),
-            Floor = COALESCE((?),Floor)
-        WHERE id = (?) RETURNING *;`
+                                   SET Name  = COALESCE((?), Name),
+                                       Floor = COALESCE((?), Floor)
+                                   WHERE id = (?)
+                                   RETURNING *;`
 
-   static readonly UPDATE_ADVERTISING = `UPDATE Advertising
-        SET Content = COALESCE((?), Content),
-            ImagePath = COALESCE((?), ImagePath)
-        WHERE id = (?) RETURNING *;`
+    static readonly UPDATE_ADVERTISING = `UPDATE Advertising
+                                          SET Content   = COALESCE((?), Content),
+                                              ImagePath = COALESCE((?), ImagePath)
+                                          WHERE id = (?)
+                                          RETURNING *;`
 
     static readonly UPDATE_BELL = `UPDATE Bells
-        SET Name = COALESCE((?), Name),
-            SoundPath = COALESCE((?), SoundPath)
-        WHERE id = (?) RETURNING *;`
+                                   SET Name      = COALESCE((?), Name),
+                                       SoundPath = COALESCE((?), SoundPath)
+                                   WHERE id = (?)
+                                   RETURNING *;`
 
     static readonly UPDATE_CLASS = `UPDATE Classes
-        SET Name = COALESCE((?), Name),
-            Description = COALESCE((?), Description)
-        WHERE id = (?) RETURNING *;`
+                                    SET Name        = COALESCE((?), Name),
+                                        Description = COALESCE((?), Description)
+                                    WHERE id = (?)
+                                    RETURNING *;`
     static readonly UPDATE_SCHEDULE = `UPDATE Schedule
-        SET Course = COALESCE((?), Course),
-            Class = COALESCE((?), Class),
-            T_id = COALESCE((?), T_id),
-            D_id = COALESCE((?), D_id)
-        WHERE (Course, Class, T_id) = ((?), (?), (?)) RETURNING *;`
+                                       SET Course = COALESCE((?), Course),
+                                           Class  = COALESCE((?), Class),
+                                           T_id   = COALESCE((?), T_id),
+                                           D_id   = COALESCE((?), D_id)
+                                       WHERE (Course, Class, T_id) = ((?), (?), (?))
+                                       RETURNING *;`
+
+
+    static readonly CREATE_ADMIN =
+        `INSERT INTO Admins(User, Pass)
+         VALUES ((?), (?));`
+
+    static readonly UPDATE_ADMIN_PASS =
+        `UPDATE Admins
+         SET Pass = COALESCE((?), Pass)
+         WHERE User = (?);`
+
+    static readonly DELETE_ADMIN =
+        `DELETE
+         FROM Admins
+         WHERE User = (?);`
+
+    static readonly CHECK_ADMIN_CREDENTIALS =
+        `SELECT *
+         FROM Admins
+         WHERE User = (?)
+           AND Pass = (?)
+         LIMIT 1; `
 
 }
 
