@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^24.0.10",
     "bcrypt": "^6.0.0",
     "cors": "^2.8.5",
