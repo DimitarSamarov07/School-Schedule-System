@@ -192,13 +192,18 @@ class SqliteConstants {
 
 
     static readonly CREATE_ADMIN =
-        `INSERT INTO Admins(User, Pass)
-         VALUES ((?), (?));`
+        `INSERT INTO Admins(User, Email, Pass)
+         VALUES ((?), (?), (?));`
 
     static readonly UPDATE_ADMIN_PASS =
         `UPDATE Admins
          SET Pass = COALESCE((?), Pass)
          WHERE User = (?);`
+
+    static readonly UPDATE_ADMIN_EMAIL =
+        `UPDATE Admins
+         SET Email = COALESCE((?), Email)
+        `;
 
     static readonly DELETE_ADMIN =
         `DELETE
