@@ -198,17 +198,22 @@ class SqliteConstants {
     static readonly UPDATE_ADMIN_PASS =
         `UPDATE Admins
          SET Pass = COALESCE((?), Pass)
-         WHERE User = (?);`
+         WHERE User = (?)
+           AND Pass = (?);`
 
     static readonly UPDATE_ADMIN_EMAIL =
         `UPDATE Admins
          SET Email = COALESCE((?), Email)
-        `;
+         WHERE User = (?)
+           AND Pass = (?);
+        `
 
     static readonly DELETE_ADMIN =
         `DELETE
          FROM Admins
-         WHERE User = (?);`
+         WHERE User = (?)
+           AND Pass = (?)
+;`
 
     static readonly CHECK_ADMIN_CREDENTIALS =
         `SELECT *
