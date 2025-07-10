@@ -1,5 +1,3 @@
-// import fetchRunningTime from "./TimesFetcher";
-
 let currentBatchIndex = 0;
 const batchSize = 4;
 let schedules = [];
@@ -67,7 +65,7 @@ async function fetchAndStartRotatingSchedules() {
         const date = "2025-07-07";
 
         // needs testing
-        // const time = fetchRunningTime().startTime;
+        // const time = fetchRunningTime().endTime;
         //const fullDate = new Date();
         //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
 
@@ -86,5 +84,4 @@ async function fetchAndStartRotatingSchedules() {
         document.getElementById("scheduleContainer").innerHTML = "Failed to load schedules.";
     }
 }
-
 document.addEventListener("DOMContentLoaded", fetchAndStartRotatingSchedules);
