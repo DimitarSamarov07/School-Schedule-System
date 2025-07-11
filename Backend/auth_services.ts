@@ -12,7 +12,7 @@ class Authenticator {
         this.secretKey = await fs.readFile(secretLocation, 'utf-8');
     }
 
-    static createJWT(username: string): void {
+    static createJWT(username: string): string {
         return jwt.sign({username: username}, this.secretKey, {algorithm: 'RS256'});
     }
 
