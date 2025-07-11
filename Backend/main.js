@@ -4,6 +4,7 @@ import moment from "moment";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
+import authenticatorMaster from "./auth_services.ts";
 
 // Initializing Express App
 
@@ -963,5 +964,6 @@ app.delete("/advertising", async (req, res) => {
         })
 })
 
+await authenticatorMaster.initializeAuthenticator();
 manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));

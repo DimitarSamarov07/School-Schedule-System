@@ -7,12 +7,12 @@ class Authenticator {
 
     private static secretKey: string;
 
-    static async initializeAuthenticator() {
+    static async initializeAuthenticator(): Promise<void> {
         let secretLocation = env.JWT_SECRET_PK_LOCATION;
         this.secretKey = await fs.readFile(secretLocation, 'utf-8');
     }
 
-    static initializeJWT(username: string): void {
+    static createJWT(username: string): void {
         return jwt.sign({username: username}, this.secretKey, {algorithm: 'RS256'});
     }
 
