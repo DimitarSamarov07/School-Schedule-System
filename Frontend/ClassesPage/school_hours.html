@@ -50,8 +50,10 @@
     </a>
 </footer>
 <script defer async src="../Fetchers/TimesFetcher.js">
-    if (document.getElementById('runningTime').innerHTML === `Неучебно време`) {
-        window.location.href = '../HolidaysPage/holidays.html';
+    while(true){
+        if (document.getElementById('runningTime').innerHTML === `Неучебно време` && now.getHours() > 7 && document.getElementById("scheduleContainer").innerHTML === "") {
+            window.location.href = '../HolidaysPage/holidays.html';
+        }
     }
 </script>
 <script defer async src="../Fetchers/ScheduleByDateAndTimeFetcher.js"></script>

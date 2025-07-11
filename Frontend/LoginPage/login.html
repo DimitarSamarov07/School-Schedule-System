@@ -33,7 +33,6 @@
     Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
   </a>
 </footer>
- 
 <script>
  
   function updateClock() {
@@ -49,25 +48,42 @@
  
   updateClock();
   setInterval(updateClock, 1000);
- 
- 
-  document.getElementById('loginForm').addEventListener('submit', function(event) {
+
+  // Post the username and password when the 'submit' button is clicked
+  document.getElementById('loginForm').addEventListener('submit', async function (event) {
     event.preventDefault();
- 
+
     const usernameInput = document.getElementById('username').value;
     const passwordInput = document.getElementById('password').value;
     const errorMessage = document.getElementById('errorMessage');
- 
-    const correctUsername = 'user';
-    const correctPassword = 'admin123';
- 
-    if (usernameInput === correctUsername && passwordInput === correctPassword) {
-      window.location.href = 'success.html';
-    } else {
-      errorMessage.textContent = 'Грешно потребителско име или парола.';
+    const url = "waiting for end-point"
+
+    try {
+      const response = await fetch('', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: usernameInput,
+          password: passwordInput,
+        }),
+      });
+
+      // error handling
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          window.location.href = '../AdminPage/admin.html';
+        } else {
+          throw new Error(result.message || 'Неуспешен вход.');
+        }
+      } else {
+        throw new Error('HTTP грешка: ' + response.status);
+      }
+    } catch (error) {
+      errorMessage.textContent = error.message;
       errorMessage.style.display = 'block';
     }
   });
+
 </script>
 </body>
 </html>

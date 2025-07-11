@@ -62,7 +62,7 @@ async function fetchAndStartRotatingSchedules() {
     const url = 'http://192.168.88.10:6969/schedulesByDateTime';
     try {
         const time = "8:01";
-        const date = "2025-07-07";
+        const date = "2025-01-06";
 
         // needs testing
         // const time = fetchRunningTime().endTime;
