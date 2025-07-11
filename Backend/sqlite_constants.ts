@@ -50,6 +50,7 @@ class SqliteConstants {
         WHERE Date = (?)
         LIMIT 1;
     `
+    static readonly SELECT_ALL_ADVERTISEMENTS = `SELECT *FROM Advertising`
 
     //INSERT queries
 
