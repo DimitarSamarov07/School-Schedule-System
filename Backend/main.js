@@ -214,6 +214,35 @@ app.post("/teacher", async (req, res) => {
             return res.status(500).send({"error": err});
         })
 });
+app.post("/register", async (req, res) => {
+
+    let {username, email,password} = req.body;
+    if ((!username || !password) || !email) {
+        return res.status(406).send("Malformed parameters");
+    }
+
+    return await manager.registerNewAdmin(username,email,password)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            return res.status(500).send({"error": err});
+        })
+});
+app.post("/login", async (req, res) => {
+
+    let {username,password} = req.body;
+    if (!username || !password) {
+        return res.status(406).send("Malformed parameters");
+    }
+    let isAdmin = await manager.checkAdminCredentials(username,password);
+    if(!isAdmin){
+        return res.status(403).send({"error": "Invalid credentials."})
+    }
+    let token = authenticatorMaster.createJWT(username);
+    return res.cookie("AUTH_TOKEN",token).status(201).send();
+});
+
 
 /*
  * POST /class

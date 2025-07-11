@@ -89,6 +89,7 @@ class SqliteConstants {
                                                VALUES ((?), (?))
                                                RETURNING id;`
 
+
     //DELETE queries
 
     static readonly DELETE_FROM_CLASSES = `DELETE
