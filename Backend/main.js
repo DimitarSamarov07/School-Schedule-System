@@ -167,7 +167,20 @@ app.get("/date", async (req, res) => {
             }
             return res.status(500).send({"error": err});
         })
+})
 
+app.get("/allAdvertisements", async (req, res) => {
+
+    return await manager.getAllAds()
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No advertisements found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
 })
 
 

@@ -19,6 +19,7 @@ import AdvertisingResponse from "./response_models/AdvertisingResponse.js";
 import DateModel from "./data_models/DateModel.js";
 
 import bcrypt from "bcrypt";
+import Advertising from "./data_models/Advertising.js";
 
 /**
  * Represents a manager for handling SQLite-related operations.
@@ -84,6 +85,29 @@ class SqliteMaster {
             }, () => {
                 resolve(schedulesToReturn);
             })
+        });
+    }
+    static async getAllAds() : Promise<AdvertisingResponse>{
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_ADVERTISEMENTS, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
+                        return;
+                    }
+
+                    try {
+                        for (const row of rows) {
+                                return resolve(new AdvertisingResponse(row.Id, row.Content, row.ImagePath));
+                        }
+
+                    } catch (e) {
+                        console.error(e);
+                        reject("Error parsing time entries.");
+                    }
+                });
+            });
         });
     }
 
