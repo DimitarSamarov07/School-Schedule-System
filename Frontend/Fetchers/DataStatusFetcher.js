@@ -1,9 +1,10 @@
 async function fetchDataStatus() {
+    const IsHoliday = document.getElementById("IsHoliday");
     const url = 'http://192.168.88.10:6969/date';
     try {
-        const fullDate = new Date();
+        // const fullDate = new Date();
         //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
-        const date = "2025-07-07";
+        const date = "2025-01-06";
 
         const params = new URLSearchParams();
         params.append("date", date);
@@ -14,13 +15,19 @@ async function fetchDataStatus() {
         }
 
         const json = await response.json();
+
+        if(json.IsHoliday === 0){
+            IsHoliday.innerHTML="False"
+        }
+        else{
+            IsHoliday.innerHTML="True"
+        }
+
         console.log(json);
-        return json;
 
     } catch (error) {
         console.error(error.message);
+        IsHoliday.innerHTML="Problem"
     }
 }
 fetchDataStatus();
-
-export default fetchDataStatus;

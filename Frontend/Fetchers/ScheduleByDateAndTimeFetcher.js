@@ -65,7 +65,7 @@ async function fetchAndStartRotatingSchedules() {
         const date = "2025-01-06";
 
         // needs testing
-        // const time = fetchRunningTime().endTime;
+        // const time = fetchTime().endTime;
         //const fullDate = new Date();
         //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`
 
@@ -85,3 +85,22 @@ async function fetchAndStartRotatingSchedules() {
     }
 }
 document.addEventListener("DOMContentLoaded", fetchAndStartRotatingSchedules);
+
+//stupid solution
+async function fetchTime() {
+    const url = 'http://192.168.88.10:6969/runningTime';
+    try {
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            console.error(new Error(`Response status: ${response.status}`));
+        }
+
+        const json = await response.json();
+        const {numberInSchedule, startTime, endTime} = json.currentHour;
+        return json;
+
+    } catch (error) {
+        console.error("Fetch error:", error.message);
+    }
+}
