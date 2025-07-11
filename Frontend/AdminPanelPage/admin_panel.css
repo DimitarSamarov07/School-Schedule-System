@@ -1,3 +1,19 @@
+header {
+    background-color: #7FC4B7;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+#clock {
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+#break-time {
+    font-size: 1em;
+    font-weight: 700;
+}
 footer {
     background-color: #7FC4B7;
     color: white;
@@ -114,3 +130,7 @@ footer a:hover {
     color: white;
     font-weight: bold;
 }
+textarea {
+    width:265px;
+    height: 200px;
+    resize: none;}

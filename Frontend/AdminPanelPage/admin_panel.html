@@ -12,17 +12,15 @@
 </header>
  
 <main>
-  
+
    <div class="grid-container">
     <div class="card" align="left">
       <h2>Teachers</h2>
-      <ul contenteditable="true">
-        <li>Атанас Костов</li>
-        <li>Кремена Иванова</li>
-        <li>Богдана Адаму</li>
-        <li>Георги Густинов</li>
-      </ul>
-      <button>Save</button>
+        <ul id="teacherList" contenteditable="true">
+            <li>Angel Ivanov</li>
+            <li>Maria Petrova</li>
+        </ul>
+      <button onclick="saveTeachers()">Save</button>
     </div>
  
     <div class="card">
@@ -253,9 +251,47 @@
  
   generateCalendar();
 
+  async function saveTeachers() {
+      const ul = document.getElementById("teacherList");
+      const items = ul.querySelectorAll("li");
 
+      for (const li of items) {
+          const text = li.innerText.trim();
+          if (!text || li.dataset.saved === "true") continue;
 
+          const words = text.split(/\s+/);
+          const firstName = words[0] || "";
+          const lastName = words.slice(1).join(" ") || "";
 
+          try {
+              const response = await fetch("http://192.168.88.10:6969/teacher", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ firstName, lastName }),
+                  redirect: "follow"
+              });
+
+              if (!response.ok) {
+                  throw new Error("Server error: " + response.status);
+              }
+
+              const result = await response.text();
+              console.log("Saved:", result);
+
+              li.dataset.saved = "true";
+              li.style.backgroundColor = "#d4edda";
+          } catch (error) {
+              console.error("Failed to save:", error);
+              li.style.backgroundColor = "#f8d7da";
+          }
+      }
+
+      alert("All teachers saved.");
+  }
+
+  window.saveTeachers = saveTeachers;
 </script>
 </body>
 </html>
