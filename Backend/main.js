@@ -5,6 +5,7 @@ import helmet from "helmet";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
 import authenticatorMaster from "./auth_services.ts";
+import cookieParser from "cookie-parser";
 
 // Initializing Express App
 
@@ -18,7 +19,9 @@ const limiter = rateLimit({
     skipFailedRequests: false,
     skipSuccessfulRequests: false,
 });
+
 app.use(limiter)
+app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
 app.use(helmet()) // Enhances security
 
@@ -33,6 +36,22 @@ app.use(cors({
 app.set('trust proxy', 1);
 
 let port = 6969;
+
+async function checkUserAuthenticationMiddleware(req, res, next) {
+    let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
+    if (AUTHENTICATION_ADMIN_TOKEN) {
+        let decoded = await authenticatorMaster.decodeJWT(AUTHENTICATION_ADMIN_TOKEN);
+        if (!decoded){
+            return res.status(401).send("Authentication failure.")
+        }
+        else{
+            req.username = decoded.username;
+            next();
+        }
+
+    }
+    return res.status(401).send("Authentication failure.")
+}
 
 /*
  * GET /schedulesByDate
@@ -199,7 +218,7 @@ app.get("/allAdvertisements", async (req, res) => {
  *   - 500: A database error message
  */
 
-app.post("/teacher", async (req, res) => {
+app.post("/teacher", checkUserAuthenticationMiddleware, async (req, res) => {
 
     let {firstName, lastName} = req.body;
     if (!firstName || !lastName) {
@@ -216,12 +235,12 @@ app.post("/teacher", async (req, res) => {
 });
 app.post("/register", async (req, res) => {
 
-    let {username, email,password} = req.body;
-    if ((!username || !password) || !email) {
+    let {username, email, password} = req.body;
+    if (!username || !password || !email) {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.registerNewAdmin(username,email,password)
+    return await manager.registerNewAdmin(username, email, password)
         .then(result => {
             return res.send(result);
         })
@@ -231,16 +250,16 @@ app.post("/register", async (req, res) => {
 });
 app.post("/login", async (req, res) => {
 
-    let {username,password} = req.body;
+    let {username, password} = req.body;
     if (!username || !password) {
         return res.status(406).send("Malformed parameters");
     }
-    let isAdmin = await manager.checkAdminCredentials(username,password);
-    if(!isAdmin){
+    let isAdmin = await manager.checkAdminCredentials(username, password);
+    if (!isAdmin) {
         return res.status(403).send({"error": "Invalid credentials."})
     }
     let token = authenticatorMaster.createJWT(username);
-    return res.cookie("AUTH_TOKEN",token).status(201).send();
+    return res.cookie("AUTH_TOKEN", token).status(201).send();
 });
 
 
@@ -445,7 +464,7 @@ app.post("/course", async (req, res) => {
 
 app.post("/date", async (req, res) => {
     let {date, isHoliday} = req.body;
-    if (!date || !isHoliday ) {
+    if (!date || !isHoliday) {
         return res.status(406).send("Malformed parameters");
     }
 
@@ -480,7 +499,7 @@ app.put("/teacher", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateTeacher(id,firstName, lastName)
+    return await manager.updateTeacher(id, firstName, lastName)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -687,7 +706,7 @@ app.put("/bell", async (req, res) => {
 })
 /*
  * PUT /date
- * Updates an existing date entry in the database
+ * Updates an existing date entry in theAdd an authentication service with the ability to create JWT database
  * Body params:
  *   - id: number (required) - The ID of the date entry to update
  *   - date: string (optional) - The new date in YYYY-MM-DD format
@@ -705,7 +724,7 @@ app.put("/date", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateDate(id, date,isHoliday)
+    return await manager.updateDate(id, date, isHoliday)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -754,7 +773,6 @@ app.put("/schedule", async (req, res) => {
             return res.status(500).send({"error": err});
         })
 })
-
 
 
 /*

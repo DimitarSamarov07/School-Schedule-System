@@ -16,6 +16,19 @@ class Authenticator {
         return jwt.sign({username: username}, this.secretKey, {algorithm: 'RS256'});
     }
 
+    static async decodeJWT(token: string): Promise<any> {
+        let decodedToken;
+        try {
+            decodedToken = await jwt.verify(token, this.secretKey, {
+                algorithms: ['RS256']
+            });
+            return decodedToken;
+        }
+        catch (e) {
+            return null;
+        }
+    }
+
 }
 
 export default Authenticator;
