@@ -778,7 +778,13 @@ class SqliteMaster {
                     return;
                 }
                 if (row) {
-                    return resolve(true);
+                    let pass = row[0];
+                    if(bcrypt.compare(hashedPassword, pass)){
+                        return resolve(true);
+                    }
+                    else{
+                        return resolve(false);
+                    }
                 }
                 return resolve(false);
             })

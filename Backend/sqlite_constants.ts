@@ -218,10 +218,9 @@ class SqliteConstants {
 ;`
 
     static readonly CHECK_ADMIN_CREDENTIALS =
-        `SELECT *
+        `SELECT Pass
          FROM Admins
          WHERE User = (?)
-           AND Pass = (?)
          LIMIT 1; `
 
 }
