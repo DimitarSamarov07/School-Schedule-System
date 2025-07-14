@@ -31,7 +31,6 @@ main {
     align-items: center;
     padding: 30px 20px;
 }
-
 .row {
     display: contents;
 }
@@ -67,7 +66,24 @@ footer a:hover {
 /*Schedule display*/
 @media (max-width: 600px) {
     .grid {
-        grid-template-columns: 1fr 1fr;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 10px;
+        gap: 10px;
+        grid-auto-rows: minmax(100px, auto);
+        max-width: 800px;
+        width: 100%;
+    }
+    .grid > * {
+        background-color: #7FC4B7;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .grid > *:empty {/* Remove styles for empty cells */
+        background-color: transparent;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
     }
     .row {
         display: grid;

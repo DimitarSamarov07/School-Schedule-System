@@ -85,6 +85,7 @@ async function fetchAndStartRotatingSchedules() {
     }
 }
 document.addEventListener("DOMContentLoaded", fetchAndStartRotatingSchedules);
+setInterval(fetchAndStartRotatingSchedules, 5000);
 
 //stupid solution
 async function fetchTime() {
