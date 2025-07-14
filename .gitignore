@@ -143,3 +143,6 @@ vite.config.ts.timestamp-*
 
 # Development
 Backend/dev.db
+
+# Important things
+Backend/private.key
