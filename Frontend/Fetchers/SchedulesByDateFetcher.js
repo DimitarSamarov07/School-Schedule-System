@@ -1,6 +1,6 @@
 
 async function fetchScheduleByDate () {
-    const url = 'http://192.168.88.10:6969/schedulesByDate';
+    const url = 'http://192.168.88.12:6969/schedulesByDate';
     try {
         //const fullDate = new Date();
         const date = "2025-07-07";

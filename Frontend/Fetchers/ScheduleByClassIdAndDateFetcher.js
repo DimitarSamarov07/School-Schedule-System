@@ -1,5 +1,5 @@
 ﻿async function fetchScheduleByClassIdForDate () {
-    const url = 'http://192.168.88.10:6969/schedulesByClassIdForDate';
+    const url = 'http://192.168.88.12:6969/schedulesByClassIdForDate';
     try {
         const classId = 1;
         //const fullDate = new Date();

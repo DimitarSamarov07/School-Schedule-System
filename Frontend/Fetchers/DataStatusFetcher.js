@@ -1,6 +1,6 @@
 async function fetchDataStatus() {
     const IsHoliday = document.getElementById("IsHoliday");
-    const url = 'http://192.168.88.10:6969/date';
+    const url = 'http://192.168.88.12:6969/date';
     try {
         // const fullDate = new Date();
         //const date = `${fullDate.getFullYear()}-${fullDate.getMonth() + 1}-${fullDate.getDate()}`

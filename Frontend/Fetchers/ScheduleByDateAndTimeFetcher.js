@@ -59,7 +59,7 @@ function displayBatch() {
 
 // Function to fetch schedules and start rotating
 async function fetchAndStartRotatingSchedules() {
-    const url = 'http://192.168.88.10:6969/schedulesByDateTime';
+    const url = 'http://192.168.88.12:6969/schedulesByDateTime';
     try {
         const time = "8:01";
         const date = "2025-01-06";
@@ -89,7 +89,7 @@ setInterval(fetchAndStartRotatingSchedules, 5000);
 
 //stupid solution
 async function fetchTime() {
-    const url = 'http://localhost:6969/runningTime';
+    const url = 'http://192.168.88.12:6969/runningTime';
     try {
         const response = await fetch(url);
 
