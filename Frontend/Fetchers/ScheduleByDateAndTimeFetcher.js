@@ -1,5 +1,5 @@
 let currentBatchIndex = 0;
-const batchSize = 4;
+const batchSize = 3;
 let schedules = [];
 
 // Function to display a specific batch of schedules (4)
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", fetchAndStartRotatingSchedules);
 
 //stupid solution
 async function fetchTime() {
-    const url = 'http://192.168.88.10:6969/runningTime';
+    const url = 'http://localhost:6969/runningTime';
     try {
         const response = await fetch(url);
 

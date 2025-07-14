@@ -11,7 +11,6 @@ header {
     background-color: #7FC4B7;
     color: white;
     text-align: center;
-    padding: 30px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -49,8 +48,8 @@ main {
 footer {
     background-color: #7FC4B7;
     color: white;
+    padding: 7px;
     text-align: center;
-    padding: 30px;
     font-weight: bold;
     box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
     font-size: 25px;
@@ -82,10 +81,13 @@ footer a:hover {
 #scheduleContainer {/*grid cells*/
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 40px; /* Space between rows and columns */
-    margin: 20px;
-    width: 100%;
+    gap: 25px 4px; /* Space between rows and columns */
+    margin: -7px;
     height: 50%;
+    max-height: 33%;
+    min-width: 30%;
+    max-width: 84%;
+    max-height: 79%;
 }
 .schedule-row {
     display: contents;
