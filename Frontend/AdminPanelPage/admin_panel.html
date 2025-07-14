@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Успешен Вход</title>
+  <link rel="stylesheet" href="admin_panel.css">
+</head>
+<body>
+<header>
+  <div id="clock">00:00</div>
+  <div id="break-time">Admin panel</div>
+</header>
+ 
+<main>
+
+   <div class="grid-container">
+    <div class="card" align="left">
+      <h2>Teachers</h2>
+        <ul id="teacherList" contenteditable="true">
+            <li>Angel Ivanov</li>
+            <li>Maria Petrova</li>
+        </ul>
+      <button onclick="saveTeachers()">Save</button>
+    </div>
+ 
+    <div class="card">
+      <h2>Courses</h2>
+      <ul contenteditable="true">
+        <li>Руски</li>
+        <li>Английски</li>
+        <li>Математика</li>
+      </ul>
+      <button>Save</button>
+    </div>
+ 
+    <div class="card">
+      <h2>Times</h2>
+      <ul contenteditable="true">
+        <li>08:00 - 08:45</li>
+        <li>08:55 - 9:40</li>
+        <li>9:50 - 10:35</li>
+        <li>10:55 - 11:40</li>
+        <li>11:50 - 12:35</li>
+        <li>12:45 - 13:30</li>
+        <li>13:40 - 14:25</li>
+
+      </ul>
+      <button>Save</button>
+    </div>
+ 
+    <div class="card">
+        <div id="advertising-card">
+      <h2>Advertising</h2>
+      <div id="drop-zone">
+       
+         <p>drag and drop image here</p>
+         <input type="file" id="fileInput" accept="image/*" hidden />
+         <img id="preview"  src=""  alt="Preview" style="max-width: 100%; margin-top: 10px; display: none;" />
+      
+      <button onclick="document.getElementById('fileInput').click()">upload</button>
+      <button>Save</button>
+      </div>
+      </div>
+    </div>
+   
+ 
+    <div class="card">
+      <h2>Classes</h2>
+      <ul contenteditable="true">
+        <li>12А</li>
+        <li>10А</li>
+        <li>9А</li>
+        <li>9Б</li>
+        <li>8А</li>
+      </ul>
+      <button>Save</button>
+    </div>
+ 
+    <div class="card">
+      <h2>Rooms</h2>
+      <ul contenteditable="true">
+        <li>21</li>
+        <li>22</li>
+        <li>23</li>
+        <li>24</li>
+      </ul>
+      <button>Save</button>
+    </div> 
+       <div class="card">
+      <h2>Bells</h2>
+      <ul contenteditable="true">
+        <li>bell.mp3</li>
+        <li></li>
+        <li></li>
+      </ul>
+      <button>Save</button>
+      </div>
+      
+        <div class="card" id="calendar-card">
+  <h2>Календар</h2>    
+ 
+  <div style="text-align: center; margin-bottom: 10px;">
+    <select id="month-select"></select>
+    <select id="year-select"></select>
+  </div> 
+     <div id="calendar-header" style="text-align: center; font-weight: bold; margin-bottom: 10px;"></div>
+ 
+  <div id="calendar"></div>
+ 
+  <button onclick="clearMarkedDays()">Изчисти маркировките</button>
+</div>
+  </div>
+</main>
+ 
+<footer>
+  <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+    Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+  </a>
+</footer>
+ 
+<script>
+ 
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+ 
+    if (h < 10) h = '0' + h;
+    if (m < 10) m = '0' + m;
+ 
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
+ 
+  updateClock();
+  setInterval(updateClock, 1000);
+
+
+
+  const dropZone = document.getElementById('drop-zone');
+  const fileInput = document.getElementById('fileInput');
+  const preview = document.getElementById('preview');
+ 
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.border = '2px dashed #007bff';
+    dropZone.style.backgroundColor = '#eef6ff';
+  });
+ 
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.style.border = '1px solid #ccc';
+    dropZone.style.backgroundColor = '';
+  });
+ 
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.border = '1px solid #ccc';
+    dropZone.style.backgroundColor = '';
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) {
+      showPreview(file);
+    }
+  });
+ 
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files[0];
+    if (file && file.type.startsWith('image/')) {
+      showPreview(file);
+    }
+  });
+ 
+  function showPreview(file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      preview.src = reader.result;
+      preview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+
+  
+
+ const calendar = document.getElementById('calendar');
+  const header = document.getElementById('calendar-header');
+  const monthSelect = document.getElementById('month-select');
+  const yearSelect = document.getElementById('year-select');
+ 
+  const monthNames = [
+    "Януари", "Февруари", "Март", "Април", "Май", "Юни",
+    "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"
+  ];
+ 
+ 
+  monthNames.forEach((name, index) => {
+    const option = document.createElement("option");
+    option.value = index;
+    option.textContent = name;
+    monthSelect.appendChild(option);
+  });
+ 
+  
+  for (let y = 2020; y <= 2050; y++) {
+    const option = document.createElement("option");
+    option.value = y;
+    option.textContent = y;
+    yearSelect.appendChild(option);
+  }
+ 
+  
+  const today = new Date();
+  monthSelect.value = today.getMonth();
+  yearSelect.value = today.getFullYear();
+ 
+  function generateCalendar() {
+    const year = parseInt(yearSelect.value);
+    const month = parseInt(monthSelect.value);
+ 
+    calendar.innerHTML = '';
+    header.textContent = `${monthNames[month]} ${year}`;
+ 
+    const firstDay = new Date(year, month, 1).getDay(); 
+    const days = new Date(year, month + 1, 0).getDate();
+ 
+    const offset = (firstDay === 0 ? 6 : firstDay - 1); 
+ 
+    for (let i = 0; i < offset; i++) {
+      const empty = document.createElement('div');
+      calendar.appendChild(empty);
+    }
+ 
+    for (let i = 1; i <= days; i++) {
+      const day = document.createElement('div');
+      day.classList.add('day');
+      day.textContent = i;
+ 
+      day.addEventListener('click', () => {
+        day.classList.toggle('marked');
+      });
+ 
+      calendar.appendChild(day);
+    }
+  }
+ 
+  function clearMarkedDays() {
+    document.querySelectorAll('.day.marked').forEach(d => d.classList.remove('marked'));
+  }
+ 
+  
+  monthSelect.addEventListener('change', generateCalendar);
+  yearSelect.addEventListener('change', generateCalendar);
+ 
+  generateCalendar();
+
+  async function saveTeachers() {
+      const ul = document.getElementById("teacherList");
+      const items = ul.querySelectorAll("li");
+
+      for (const li of items) {
+          const text = li.innerText.trim();
+          if (!text || li.dataset.saved === "true") continue;
+
+          const words = text.split(/\s+/);
+          const firstName = words[0] || "";
+          const lastName = words.slice(1).join(" ") || "";
+
+          try {
+              const response = await fetch("http://192.168.88.10:6969/teacher", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/json"
+                  },
+                  body: JSON.stringify({ firstName, lastName }),
+                  redirect: "follow"
+              });
+
+              if (!response.ok) {
+                  throw new Error("Server error: " + response.status);
+              }
+
+              const result = await response.text();
+              console.log("Saved:", result);
+
+              li.dataset.saved = "true";
+              li.style.backgroundColor = "#d4edda";
+          } catch (error) {
+              console.error("Failed to save:", error);
+              li.style.backgroundColor = "#f8d7da";
+          }
+      }
+
+      alert("All teachers saved.");
+  }
+
+  window.saveTeachers = saveTeachers;
+</script>
+</body>
+</html>
+
+

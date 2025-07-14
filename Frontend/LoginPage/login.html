@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8" />
+  <title>Вход в Система</title>
+  <link rel="stylesheet" href="login.css"> </head>
+<body>
+<header>
+  <div id="clock">00:00</div>
+  <div id="break-time">Вход в Система</div>
+</header>
+ 
+<main>
+  <div class="login-container">
+    <h2>Моля, влезте</h2>
+    <form id="loginForm">
+      <div class="input-group">
+        <label for="username">Потребителско име:</label>
+        <input type="text" id="username" name="username" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Парола:</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit">Продължи</button>
+      <p id="errorMessage" class="error-message"></p>
+    </form>
+  </div>
+</main>
+ 
+<footer>
+  <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+    Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+  </a>
+</footer>
+<script>
+ 
+  function updateClock() {
+    const now = new Date();
+    let h = now.getHours();
+    let m = now.getMinutes();
+ 
+    if (h < 10) h = '0' + h;
+    if (m < 10) m = '0' + m;
+ 
+    document.getElementById('clock').textContent = `${h}:${m}`;
+  }
+ 
+  updateClock();
+  setInterval(updateClock, 1000);
+
+  // Post the username and password when the 'submit' button is clicked
+  document.getElementById('loginForm').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    const usernameInput = document.getElementById('username').value;
+    const passwordInput = document.getElementById('password').value;
+    const errorMessage = document.getElementById('errorMessage');
+    const url = "waiting for end-point"
+
+    try {
+      const response = await fetch('', {
+        method: 'POST',
+        body: JSON.stringify({
+          username: usernameInput,
+          password: passwordInput,
+        }),
+      });
+
+      // error handling
+      if (response.ok) {
+        const result = await response.json();
+        if (result.success) {
+          window.location.href = '../AdminPage/admin.html';
+        } else {
+          throw new Error(result.message || 'Неуспешен вход.');
+        }
+      } else {
+        throw new Error('HTTP грешка: ' + response.status);
+      }
+    } catch (error) {
+      errorMessage.textContent = error.message;
+      errorMessage.style.display = 'block';
+    }
+  });
+
+</script>
+</body>
+</html>
+
+

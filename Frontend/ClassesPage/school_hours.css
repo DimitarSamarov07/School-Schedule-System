@@ -1,0 +1,121 @@
+body {
+    margin: 0;
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f2f4f8;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header {
+    background-color: #7FC4B7;
+    color: white;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#clock {
+    font-size: 4em;
+    font-weight: bold;
+}
+
+#class-time {
+    font-size: 3em;
+    margin-top: 10px;
+}
+
+main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+}
+.row {
+    display: contents;
+}
+
+.cell {
+    background-color: #a8e3d9;
+    padding: 10px 15px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 2em;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+footer {
+    background-color: #7FC4B7;
+    color: white;
+    padding: 7px;
+    text-align: center;
+    font-weight: bold;
+    box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+    font-size: 25px;
+;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+/*Schedule display*/
+@media (max-width: 600px) {
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        padding: 10px;
+        gap: 10px;
+        grid-auto-rows: minmax(100px, auto);
+        max-width: 800px;
+        width: 100%;
+    }
+    .grid > * {
+        background-color: #7FC4B7;
+        padding: 15px;
+        border-radius: 5px;
+    }
+    .grid > *:empty {/* Remove styles for empty cells */
+        background-color: transparent;
+        padding: 0;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    .row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-bottom: 10px;
+    }
+    .cell {
+        font-size: 2em;
+    }
+}
+#scheduleContainer {/*grid cells*/
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 25px 4px; /* Space between rows and columns */
+    margin: -7px;
+    height: 50%;
+    max-height: 33%;
+    min-width: 30%;
+    max-width: 84%;
+    max-height: 79%;
+}
+.schedule-row {
+    display: contents;
+}
+.schedule-item {/*inner text*/
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+    background-color: #7FC4B7;
+    border-radius: 5px;
+    font-size: 50px;
+    font-family: Arial, sans-serif;
+    color: white;
+    height: 100%;
+}
