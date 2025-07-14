@@ -31,3 +31,4 @@ async function fetchDataStatus() {
     }
 }
 fetchDataStatus();
+setInterval(fetchRunningTime, 1000*60*60);

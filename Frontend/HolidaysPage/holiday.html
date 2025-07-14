@@ -23,8 +23,8 @@
 </footer>
  <script src="../Fetchers/DataStatusFetcher.js">
      while (true){
-         if (now.getHours() === 7 && document.getElementById("IsHoliday").innerHTML === "True" && document.getElementById("IsHoliday").innerHTML === "Problem") {
-             window.location.href = "../ClassesPage/schedule.html";
+         if (document.getElementById("IsHoliday").innerHTML === "False" && now.getHours() > 6 && document.getElementById('runningTime').innerHTML !== `Неучебно време`) {
+             window.location.replace("../ClassesPage/school_hours.html");
          }
      }
  </script>
