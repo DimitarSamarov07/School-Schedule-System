@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+    <meta charset="UTF-8" />
+    <title>Гимназия по Информатика</title>
+    <link rel="stylesheet" href="holiday.css">
+</head>
+<body>
+<header>
+    <div id="clock">00:00</div>
+    <div id="break-time">Неучебно време</div>
+</header>
+ 
+<main>
+    <img src="https://i.ibb.co/bMK9Ln67/2.png" alt="Гимназия по информатика - Записваме" class="centered-image" align="left">
+    <img src="https://gikn.eu/wp-content/uploads/2024/02/%D1%88%D0%BA%D0%BE%D0%BB%D0%B0-%D0%BF%D0%BE-%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%B8%D1%80%D0%B0%D0%BD%D0%B5-%D0%B2-%D1%81%D1%8A%D0%B1%D0%BE%D1%82%D0%B0-17-%D1%84%D0%B5%D0%B2%D1%80%D1%83%D0%B0%D1%80%D0%B8-2024-2048x2046.jpg" alt="гимназия по информатика" class="centered-image"  align="right">
+</main>
+ 
+<footer>
+    <a href="https://gikn.eu/" target="_blank" rel="noopener noreferrer">
+        Професионална гимназия по информатика и компютърни науки “Академик Благовест Сендов”
+    </a>
+</footer>
+ <script src="../Fetchers/DataStatusFetcher.js">
+     while (true){
+         if (document.getElementById("IsHoliday").innerHTML === "False" && now.getHours() > 6 && document.getElementById('runningTime').innerHTML !== `Неучебно време`) {
+             window.location.replace("../ClassesPage/school_hours.html");
+         }
+     }
+ </script>
+<script>
+ 
+    function updateClock() {
+        const now = new Date();
+        let h = now.getHours();
+        let m = now.getMinutes();
+ 
+        if (h < 10) h = '0' + h;
+        if (m < 10) m = '0' + m;
+ 
+        document.getElementById('clock').textContent = `${h}:${m}`;
+    }
+ 
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>
+</body>
+</html>
+

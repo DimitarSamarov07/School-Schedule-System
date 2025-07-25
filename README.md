@@ -2,6 +2,7 @@
 
 ***Installing the required packages*** 
 ```bash
+    cd Backend/
     npm install
 ```
 
