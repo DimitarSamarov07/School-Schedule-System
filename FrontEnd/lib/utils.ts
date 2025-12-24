@@ -1,7 +1,17 @@
 import { ClassInfo } from "@/types/schedule";
 
-export function getFormattedScheduleStrings({ hour, startTime, endTime }: ClassInfo) {
-  // 1. Format the Hour with Bulgarian Suffixes
+/**
+ * Generates formatted schedule strings based on the provided class information.
+ *
+ * @param {Object} classInfo - The class information.
+ * @param {number} classInfo.hour - The hour of the class (e.g., 1-8).
+ * @param {string} [classInfo.startTime] - The optional start time of the class.
+ * @param {string} [classInfo.endTime] - The optional end time of the class.
+ * @return {Object} An object containing the formatted class number and time range.
+ * @return {string} return.classNumber - The formatted class number string (e.g., "1-ви час").
+ * @return {string} return.timeRange - The formatted time range string (e.g., "10:00 - 11:00").
+ */
+export function getFormattedScheduleStrings({ hour, startTime, endTime }: ClassInfo): object {
   let classNumber = "";
   if (hour >= 1 && hour <= 8) {
     const suffixes: Record<number, string> = {
@@ -17,7 +27,7 @@ export function getFormattedScheduleStrings({ hour, startTime, endTime }: ClassI
   const timeRange = (startTime && endTime) ? `${startTime} - ${endTime}` : "";
 
   return {
-    classNumber, // e.g., "1-ви час"
-    timeRange    // e.g., "08:00 - 08:45"
+    classNumber,
+    timeRange
   };
 }

@@ -1,4 +1,4 @@
-import { ScheduleItem } from "@/types/schedule";
+import {ScheduleItem} from "@/types/schedule";
 
 export default function ScheduleCard({ data }: { data: ScheduleItem }) {
   return (
@@ -12,13 +12,11 @@ export default function ScheduleCard({ data }: { data: ScheduleItem }) {
 
       {/* Lower Section: Course Details */}
       <div className="bg-primary p-7 grow flex flex-col justify-between min-h-57.5">
-        {/* TOP: Course Title */}
         <div className="space-y-1">
           <h3 className="text-3xl font-bold text-white leading-tight">
             {data.Course.Name}
           </h3>
         </div>
-        {/* BOTTOM: Coach and Room (Always stays at the bottom) */}
         <div className="space-y-1">
           <p className="text-xl text-white/80">
             {data.Course.Teacher.FirstName} {data.Course.Teacher.LastName}

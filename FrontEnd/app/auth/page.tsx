@@ -1,13 +1,11 @@
 "use client";
 
-import ScheduleCard from "@/components/ScheduleCard";
-import { useState, useEffect, useRef } from "react";
-import { GraduationCap, User } from "lucide-react";
-import {ScheduleItem} from "@/types/schedule";
-import { useRunningTime } from "@/hooks/use-running-time";
+import {useEffect, useRef, useState} from "react";
+import {GraduationCap} from "lucide-react";
+import {useRunningTime} from "@/hooks/use-running-time";
 import useSchedulesByDate from "@/hooks/use-schedules-by-date";
-import { useAutoScroll } from "@/hooks/use-auto-scrool";
-import { getFormattedScheduleStrings } from "@/lib/utils";
+import {useAutoScroll} from "@/hooks/use-auto-scroll";
+import {getFormattedScheduleStrings} from "@/lib/utils";
 import Link from "next/link";
 
 export default function Auth() {
@@ -15,10 +13,11 @@ export default function Auth() {
   const scrollRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
-  const { timeData, timeError, isLoading } = useRunningTime();
+  const { timeData, timeError} = useRunningTime();
   const { scheduleData, scheduleError } = useSchedulesByDate("2025-07-07");
   useAutoScroll({
     scrollRef,
@@ -36,7 +35,7 @@ export default function Auth() {
   const hour = timeData.currentHour.numberInSchedule;
   const startTime = timeData.currentHour.startTime;
   const endTime = timeData.currentHour.endTime;
-  const { classNumber, timeRange } = getFormattedScheduleStrings({
+  getFormattedScheduleStrings({
     hour: hour,
     startTime: startTime,
     endTime: endTime,
@@ -45,8 +44,8 @@ export default function Auth() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary via-purple-500 to-pink-500 flex items-center justify-center ">
         <div className="absolute top-30 left-0 w-full flex items-center justify-center">
-                    {/* Left Side Group */}
-                    <Link href="/" className="flex items-center gap-2">
+
+          <Link href="/" className="flex items-center gap-2">
                       <GraduationCap className="w-8 h-8" />
                       <h1 className="text-xl font-bold tracking-tight">EduSchedule</h1>
                     </Link>

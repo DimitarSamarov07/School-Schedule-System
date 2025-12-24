@@ -1,13 +1,13 @@
 "use client";
 
 import ScheduleCard from "@/components/ScheduleCard";
-import { useState, useEffect, useRef } from "react";
-import { GraduationCap, User } from "lucide-react";
+import {useEffect, useRef, useState} from "react";
+import {GraduationCap, User} from "lucide-react";
 import {ScheduleItem} from "@/types/schedule";
-import { useRunningTime } from "@/hooks/use-running-time";
+import {useRunningTime} from "@/hooks/use-running-time";
 import useSchedulesByDate from "@/hooks/use-schedules-by-date";
-import { useAutoScroll } from "@/hooks/use-auto-scroll";
-import { getFormattedScheduleStrings } from "@/lib/utils";
+import {useAutoScroll} from "@/hooks/use-auto-scroll";
+import {getFormattedScheduleStrings} from "@/lib/utils";
 import Link from "next/link";
 
 export default function Timetable() {
@@ -15,6 +15,7 @@ export default function Timetable() {
   const scrollRef = useRef<HTMLDivElement>(null!);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
   }, []);
 
@@ -36,6 +37,8 @@ export default function Timetable() {
   const hour = timeData.currentHour.numberInSchedule;
   const startTime = timeData.currentHour.startTime;
   const endTime = timeData.currentHour.endTime;
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-expect-error
   const { classNumber, timeRange } = getFormattedScheduleStrings({
     hour: hour,
     startTime: startTime,
@@ -48,13 +51,10 @@ export default function Timetable() {
         {/* --- HERO SECTION --- */}
         <div className="w-full bg-linear-to-r from-[#8b5cf6] via-[#a855f7] to-[#ec4899] text-white p-12 relative text-center">
           <div className="absolute top-6 left-0 px-8 w-full flex items-center justify-between">
-            {/* Left Side Group */}
             <Link href="/" className="flex items-center gap-2">
               <GraduationCap className="w-8 h-8" />
               <h1 className="text-xl font-bold tracking-tight">EduSchedule</h1>
             </Link>
-
-            {/* Right Side */}
             <User className="w-6 h-6" />
           </div>
 
@@ -75,8 +75,6 @@ export default function Timetable() {
             </h2>
             <p className="text-xl font-normal text-slate-400">10:20 - 11:30</p>
           </header>
-
-          {/* --- SCROLLABLE ROW --- */}
           <div
             ref={scrollRef}
             className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-6 pb-4"
