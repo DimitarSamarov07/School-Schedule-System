@@ -13,7 +13,7 @@ export default function Home() {
               <span className="font-bold text-2xl">EduSchedule</span>
             </Link>
             <Link
-              href="/timetable"
+              href="/auth"
               className="flex justify-center items-center bg-white text-black font-bold p-2 w-[7.5rem] rounded-lg hover:cursor-pointer"
             >
               Login
