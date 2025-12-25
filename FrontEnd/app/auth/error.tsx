@@ -1,6 +1,8 @@
 "use client"; // <--- Add this line at the very top
 
 import { useEffect } from "react";
+import { X } from "lucide-react";
+import Link from "next/link";
 
 export default function Error({
   error,
@@ -10,24 +12,24 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error(error);
   }, [error]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
-      <h2 className="text-2xl font-bold text-slate-900 mb-4">
-        Опа! Нещо се обърка.
+      <X color="red" size={100}></X>
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+        Ooops! Something went wrong.
       </h2>
       <p className="text-slate-500 mb-6">
-        Не успяхме да заредим разписанието.
+        We could not load the login form.
       </p>
-      <button
-        onClick={() => reset()} // Attempts to re-render the segment
-        className="px-6 py-2 bg-[#8b5cf6] text-white rounded-lg font-medium hover:bg-[#7c3aed] transition-colors"
-      >
-        Опитай пак
-      </button>
+      <Link
+          onClick={() => reset()} // Attempts to re-render the segment
+          className="px-6 py-2 bg-[#8b5cf6] text-white rounded-lg font-medium hover:bg-[#7c3aed] transition-colors"
+          href={""}      >
+        Try again
+      </Link>
     </div>
   );
 }
