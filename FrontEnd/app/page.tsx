@@ -34,11 +34,10 @@ export default function Home() {
             all in one place.
           </p>
           <div className="flex justify-center items-center">
-            <Link href="/login">
-              <button className="bg-white font-bold text-black p-4 rounded-lg flex w-[11.5rem] items-center justify-center">
+            <Link href="/auth" className="bg-white font-bold text-black p-4 rounded-lg flex w-[11.5rem] items-center justify-center">
                 Get Started
                 <ChevronRight className="w-5 h-5 ml-[0.3em] " />
-              </button>
+
             </Link>
           </div>
         </div>

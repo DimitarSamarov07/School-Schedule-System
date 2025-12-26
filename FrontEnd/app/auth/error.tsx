@@ -1,4 +1,4 @@
-"use client"; // <--- Add this line at the very top
+"use client";
 
 import { useEffect } from "react";
 import { X } from "lucide-react";
@@ -25,7 +25,7 @@ export default function Error({
         We could not load the login form.
       </p>
       <Link
-          onClick={() => reset()} // Attempts to re-render the segment
+          onClick={() => reset()}
           className="px-6 py-2 bg-[#8b5cf6] text-white rounded-lg font-medium hover:bg-[#7c3aed] transition-colors"
           href={""}      >
         Try again

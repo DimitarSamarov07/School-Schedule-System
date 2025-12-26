@@ -21,6 +21,8 @@ export default function AuthPage() {
   const [regPassword, setRegPassword] = useState('');
   const [regConfirmPassword, setRegConfirmPassword] = useState('');
 
+  const [showRegPassword, setShowRegPassword] = useState(false);
+  const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     router.push('/timetable');
@@ -150,21 +152,21 @@ export default function AuthPage() {
 
                           <div className="relative">
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={showRegPassword ? "text" : "password"}
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all pr-10"
                                 placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={regPassword}
+                                onChange={(e) => setRegPassword(e.target.value)}
                             />
 
                             <button
                                 type="button"
-                                onClick={() => setShowPassword(!showPassword)}
+                                onClick={() => setShowRegPassword(!showRegPassword)}
                                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-purple-600 transition-colors"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                aria-label={showRegPassword ? "Hide password" : "Show password"}
                             >
-                              {showPassword ? (
+                              {showRegPassword ? (
                                   <EyeOff className="w-5 h-5"/>
                               ) : (
                                   <Eye className="w-5 h-5"/>
@@ -177,21 +179,21 @@ export default function AuthPage() {
 
                           <div className="relative">
                             <input
-                                type={showPassword ? "text" : "password"}
+                                type={showRegConfirmPassword ? "text" : "password"}
                                 required
                                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all pr-10"
                                 placeholder="••••••••"
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                value={regConfirmPassword}
+                                onChange={(e) => setRegConfirmPassword(e.target.value)}
                             />
 
                             <button
                                 type="button"
-                                onClick={() => setShowPassword(!showPassword)}
+                                onClick={() => setShowRegConfirmPassword(!showRegConfirmPassword)}
                                 className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-purple-600 transition-colors"
-                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                aria-label={showRegConfirmPassword ? "Hide password" : "Show password"}
                             >
-                              {showPassword ? (
+                              {showRegConfirmPassword ? (
                                   <EyeOff className="w-5 h-5"/>
                               ) : (
                                   <Eye className="w-5 h-5"/>
