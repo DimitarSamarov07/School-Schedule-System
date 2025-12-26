@@ -111,6 +111,30 @@ class SqliteMaster {
         });
     }
 
+    static async getAllRooms() : Promise<RoomResponse>{
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_ROOMS, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
+                        return;
+                    }
+
+                    try {
+                        for (const row of rows) {
+                            return resolve(new RoomResponse(row.Id, row.Name, row.Floor));
+                        }
+
+                    } catch (e) {
+                        console.error(e);
+                        reject("Error parsing time entries.");
+                    }
+                });
+            });
+        });
+    }
+
     /**
      * Retrieves the current running time by checking database entries for active time periods
      * and breaks. It determines whether the current time is within a defined timeframe or break.
