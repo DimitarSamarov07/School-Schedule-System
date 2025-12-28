@@ -1,5 +1,4 @@
 "use client"
-// src/app/dashboard/page.tsx
 
 import {BookOpen, Loader2, Pencil, Plus, Trash2} from "lucide-react";
 import React from "react";

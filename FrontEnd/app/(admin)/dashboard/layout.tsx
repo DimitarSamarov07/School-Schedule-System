@@ -16,6 +16,7 @@ import {
 import { useRoomsManager } from "@/hooks/use-rooms-manager";
 import {useSubjectsManager} from "@/hooks/use-subjects-manager";
 import {useTeacherManager} from "@/hooks/use-teachers-manager";
+import {useGradesManager} from "@/hooks/use-grades-manager";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     const { roomsList, isLoading } = useRoomsManager();
     const { subjectList } = useSubjectsManager();
     const { teacherList } = useTeacherManager();
+    const { gradeList } = useGradesManager();
 
     const isActive = (path: string) => pathname === path;
 
@@ -59,7 +61,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                             teachers: teacherList.length,
                             classes: 40,
                             subjects: subjectList.length,
-                            grades: 5
+                            grades: gradeList.length,
                         }}
                     />
                 </div>

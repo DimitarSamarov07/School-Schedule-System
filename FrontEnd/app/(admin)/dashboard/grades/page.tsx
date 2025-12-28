@@ -1,8 +1,189 @@
-// src/app/dashboard/page.tsx
+"use client"
+
+import {GraduationCap, Loader2, Pencil, Plus, Trash2} from "lucide-react";
+import React from "react";
+import {useGradesManager} from "@/hooks/use-grades-manager";
 
 export default function GradesPage() {
-    return (
-        <h2>Grades</h2>
+    const {
+        gradeList,
+        isLoading,
+        activeModal,
+        formData,
+        selectedGrade,
+        setFormData,
+        setActiveModal,
+        handleCreate,
+        handleUpdate,
+        handleDelete,
+        closeModal,
+        openEditModal,
+        openDeleteModal
+    } = useGradesManager();
 
+    const isEmpty = !isLoading && gradeList.length === 0;
+    return (
+        <div >
+            <div className="flex items-center justify-between mb-8">
+                <div>
+                    <h2 className="text-2xl font-bold text-gray-900">Manage Grades</h2>
+                    <p className="text-sm text-gray-500 mt-1">Configure and organize your grades.</p>
+                </div>
+
+                {!isEmpty && !isLoading && (
+                    <button
+                        onClick={() => setActiveModal('add')}
+                        className="flex items-center gap-2 bg-purple-600 text-white px-5 py-2.5 rounded-lg hover:bg-purple-700 cursor-pointer transition-all active:scale-95 shadow-sm"
+                    >
+                        <Plus className="w-4 h-4" /> Add Grade
+                    </button>
+                )}
+            </div>
+
+            {isLoading ? (
+                <div className="flex flex-col items-center justify-center py-24">
+                    <Loader2 className="animate-spin text-purple-600 w-10 h-10 mb-4" />
+                    <p className="text-gray-500 animate-pulse">Loading subjects...</p>
+                </div>
+            ) : isEmpty ? (
+                <div className="flex flex-col items-center justify-center py-20 px-4 border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
+                    <div className="bg-purple-100 p-6 rounded-full mb-6">
+                        <GraduationCap className="w-16 h-16 text-purple-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No subjects created yet</h3>
+                    <p className="text-gray-500 text-center max-w-sm mb-10 leading-relaxed">
+                        It looks like your subject list is empty. Start by adding your first subject to manage your school.
+                    </p>
+                    <button
+                        onClick={() => setActiveModal('add')}
+                        className="flex items-center gap-3 bg-purple-600 text-white px-10 py-5 rounded-2xl text-xl font-bold hover:bg-purple-700 hover:scale-105 transition-all shadow-xl shadow-purple-200 cursor-pointer group"
+                    >
+                        <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
+                        Create Your First Grade
+                    </button>
+                </div>
+            ) : (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <table className="w-full text-left">
+                        <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
+                        <tr>
+                            <th className="px-6 py-4 font-semibold">Grade Name</th>
+                            <th className="px-6 py-4 font-semibold">Specialty</th>
+                            <th className="px-6 py-4 text-right font-semibold">Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody className="divide-y divide-gray-100">
+                        {gradeList.map((grade) => (
+                            <tr key={grade.id} className="hover:bg-purple-50/30 transition-colors group">
+                                <td className="px-6 py-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="p-2 bg-gray-100 rounded-lg group-hover:bg-white transition-colors">
+                                            <GraduationCap size={20}></GraduationCap>
+                                        </div>
+                                        <span className="font-bold text-gray-900">{grade.Name} клас</span>
+                                    </div>
+                                </td>
+
+                                <td className="px-6 py-4">
+                                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                            {grade.Description}
+                                        </span>
+
+                                </td>
+                                <td className="px-6 py-4 text-right space-x-1">
+                                    <button
+                                        onClick={() => openEditModal(grade)}
+                                        className="p-2.5 hover:bg-white hover:shadow-sm rounded-lg cursor-pointer transition-all"
+                                        title="Edit Grade"
+                                    >
+                                        <Pencil className="w-4 h-4 text-gray-600" />
+                                    </button>
+                                    <button
+                                        onClick={() => openDeleteModal(grade)}
+                                        className="p-2.5 hover:bg-red-50 rounded-lg cursor-pointer transition-all group/del"
+                                        title="Delete Grade"
+                                    >
+                                        <Trash2 className="w-4 h-4 text-red-400 group-hover/del:text-red-600" />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                </div>
+            )}
+
+            {activeModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div
+                        className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
+                        onClick={closeModal}
+                    />
+                    <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl overflow-hidden">
+                        <h3 className="text-xl font-bold text-gray-900 mb-6">
+                            {activeModal === 'add' ? 'Add New Grade' : activeModal === 'edit' ? `Edit ${selectedGrade?.Name}` : 'Delete Grade'}
+                        </h3>
+
+                        {activeModal === 'delete' ? (
+                            <div className="space-y-6">
+                                <p className="text-gray-600 leading-relaxed">
+                                    Are you sure you want to delete <span className="font-bold text-gray-900">{selectedGrade?.Name}</span>?
+                                    This action will remove all associated data and cannot be undone.
+                                </p>
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={closeModal}
+                                        className="flex-1 px-4 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={handleDelete}
+                                        className="flex-1 px-4 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-100 cursor-pointer"
+                                    >
+                                        Delete Grade
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="space-y-5">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Grade Name</label>
+                                    <input
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                        value={formData.Name}
+                                        onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
+                                        placeholder="e.g. Conference Grade A"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Specialty</label>
+                                    <input
+                                        className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                        value={formData.Description}
+                                        placeholder="e.g. Programming"
+                                        onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
+                                    />
+                                </div>
+                                <div className="flex flex-col gap-3 pt-4">
+                                    <button
+                                        onClick={activeModal === 'add' ? handleCreate : handleUpdate}
+                                        className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-100 cursor-pointer"
+                                    >
+                                        {activeModal === 'add' ? 'Create Grade' : 'Save Changes'}
+                                    </button>
+                                    <button
+                                        onClick={closeModal}
+                                        className="w-full py-2 text-gray-400 text-sm hover:text-gray-600 transition-colors cursor-pointer"
+                                    >
+                                        Discard Changes
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
