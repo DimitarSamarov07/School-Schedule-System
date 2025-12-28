@@ -35,7 +35,7 @@ app.use(cors({
 //
 app.set('trust proxy', 1);
 
-let port = 6969;
+let port = 3000;
 
 async function checkUserAuthenticationMiddleware(req, res, next) {
     let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
@@ -191,6 +191,20 @@ app.get("/date", async (req, res) => {
 app.get("/room", async (req, res) => {
 
     return await manager.getAllRooms()
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No advertisements found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
+})
+
+app.get("/class", async (req, res) => {
+
+    return await manager.getAllClasses()
         .then(result => {
             return res.send(result);
         })
@@ -1024,6 +1038,6 @@ app.delete("/advertising", async (req, res) => {
         })
 })
 
-await authenticatorMaster.initializeAuthenticator();
+//await authenticatorMaster.initializeAuthenticator();
 manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
