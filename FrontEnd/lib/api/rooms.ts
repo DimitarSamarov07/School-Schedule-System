@@ -5,8 +5,8 @@ import {apiRequest} from "@/lib/api/client";
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
 
-export const getRoom = () =>
-    apiRequest("/room", {
+export const getRooms = () =>
+    apiRequest(ENDPOINTS.ROOM, {
         method: 'GET'
     });
 

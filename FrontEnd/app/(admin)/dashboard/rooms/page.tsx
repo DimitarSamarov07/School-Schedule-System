@@ -28,7 +28,7 @@ export default function RoomsPage() {
             <div className="flex items-center justify-between mb-8">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-900">Manage Rooms</h2>
-                    <p className="text-sm text-gray-500 mt-1">Configure and organize your physical spaces.</p>
+                    <p className="text-sm text-gray-500 mt-1">Configure and organize your rooms.</p>
                 </div>
 
                 {!isEmpty && !isLoading && (

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {getSubject, createSubject, updateSubject, deleteSubject} from "@/lib/api/subjects";
+import {getSubjects, createSubject, updateSubject, deleteSubject} from "@/lib/api/subjects";
 import { Subject } from "@/types/subject";
 
 export function useSubjectsManager() {
@@ -15,7 +15,7 @@ export function useSubjectsManager() {
     const fetchSubjects = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
-            const response = await getSubject();
+            const response = await getSubjects();
             let data: Subject[] = [];
             if (response) {
                 data = Array.isArray(response) ? response : [response];

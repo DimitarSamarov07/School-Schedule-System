@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { getRoom, createRoom, updateRoom, deleteRoom } from "@/lib/api/rooms";
+import { getRooms, createRoom, updateRoom, deleteRoom } from "@/lib/api/rooms";
 import { Room } from "@/types/room";
 
 export function useRoomsManager() {
@@ -15,7 +15,7 @@ export function useRoomsManager() {
     const fetchRooms = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
-            const response = await getRoom();
+            const response = await getRooms();
             let data: Room[] = [];
             if (response) {
                 data = Array.isArray(response) ? response : [response];

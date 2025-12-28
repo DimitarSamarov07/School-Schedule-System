@@ -51,7 +51,7 @@ export default function SubjectsPage() {
                     <div className="bg-purple-100 p-6 rounded-full mb-6">
                         <BookOpen className="w-16 h-16 text-purple-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No rooms created yet</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No subjects created yet</h3>
                     <p className="text-gray-500 text-center max-w-sm mb-10 leading-relaxed">
                         It looks like your subject list is empty. Start by adding your first subject to manage your school.
                     </p>

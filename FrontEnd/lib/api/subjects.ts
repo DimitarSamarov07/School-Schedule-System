@@ -1,18 +1,18 @@
 import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 
-export const getSubject = () =>
-    apiRequest("/room", {
+export const getSubjects = () =>
+    apiRequest(ENDPOINTS.SUBJECTS, {
         method: 'GET'
     });
 
 export const createSubject = (name: string, color: string)=>
-    apiRequest(ENDPOINTS.ROOM, {
+    apiRequest(ENDPOINTS.SUBJECTS, {
         method: 'POST',
         body: JSON.stringify({name, color})
     });
 export const updateSubject = (id: string | number, name?: string, color?: string) =>
-    apiRequest(ENDPOINTS.ROOM, {
+    apiRequest(ENDPOINTS.SUBJECTS, {
         method: 'PUT',
         body: JSON.stringify({
             id,
