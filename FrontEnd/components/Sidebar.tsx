@@ -12,8 +12,7 @@ import {
     DoorOpen,
     LogOut,
     User,
-    Menu,
-    X
+    Menu
 } from "lucide-react";
 
 const navItems = [

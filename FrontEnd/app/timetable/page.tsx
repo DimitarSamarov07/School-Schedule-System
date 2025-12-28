@@ -19,7 +19,7 @@ export default function Timetable() {
     setMounted(true);
   }, []);
 
-  const { timeData, timeError, isLoading } = useRunningTime();
+  const { timeData, timeError } = useRunningTime();
   const { scheduleData, scheduleError } = useSchedulesByDate("2025-07-07");
   useAutoScroll({
     scrollRef,

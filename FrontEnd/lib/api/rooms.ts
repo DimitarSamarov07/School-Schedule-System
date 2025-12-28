@@ -10,12 +10,12 @@ export const getRooms = () =>
         method: 'GET'
     });
 
-export const createRoom = (name: string, floor: any)=>
+export const createRoom = (name: string, floor: number)=>
     apiRequest(ENDPOINTS.ROOM, {
         method: 'POST',
         body: JSON.stringify({name, floor})
     });
-export const updateRoom = (id: string | number, name?: string, floor?: any) =>
+export const updateRoom = (id: string | number, name?: string, floor?: number) =>
     apiRequest(ENDPOINTS.ROOM, {
         method: 'PUT',
         body: JSON.stringify({

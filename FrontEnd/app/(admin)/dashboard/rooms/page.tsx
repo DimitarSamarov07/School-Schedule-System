@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Plus, Pencil, Trash2, Loader2, DoorOpen, LayoutGrid } from "lucide-react";
+import { Plus, Pencil, Trash2, Loader2, DoorOpen } from "lucide-react";
 import { useRoomsManager } from "@/hooks/use-rooms-manager";
 
 export default function RoomsPage() {
