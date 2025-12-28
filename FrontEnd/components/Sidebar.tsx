@@ -35,10 +35,10 @@ export default function Sidebar() {
         <>
             <button
                 onClick={toggleMenu}
-                className="absolute top-4 left-4 z-50 p-2 bg-transparent text-black rounded-lg hover:bg-gray-100 transition-colors"
+                className="absolute top-4 left-4 z-50 p-2 bg-transparent text-black rounded-lg hover:bg-gray-100 transition-colors cursor-pointer"
                 aria-label="Toggle Menu"
             >
-                {isOpen ? <X size={24} className="text-white" /> : <Menu size={24} />}
+                {isOpen ? <></> : <Menu size={24} />}
             </button>
 
             <aside className={`

@@ -12,20 +12,18 @@ export function useRoomsManager() {
     const [formData, setFormData] = useState<Partial<Room>>({ Name: '', Building: '', Floor: 0 });
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
-    const fetchRooms = useCallback(async () => {
-        setIsLoading(true);
+    const fetchRooms = useCallback(async (silent = false) => {
+        if (!silent) setIsLoading(true);
         try {
             const response = await getRoom();
-            if (!response) {
-                setRoomsList([]);
-            } else if (Array.isArray(response)) {
-                setRoomsList(response as Room[]);
-            } else {
-                setRoomsList([response as Room]);
+            let data: Room[] = [];
+            if (response) {
+                data = Array.isArray(response) ? response : [response];
             }
+            setRoomsList(data);
         } catch (error) {
             console.error("Fetch error:", error);
-            setRoomsList([]);
+            if (!silent) setRoomsList([]);
         } finally {
             setIsLoading(false);
         }
@@ -33,6 +31,14 @@ export function useRoomsManager() {
 
     useEffect(() => {
         fetchRooms();
+    }, [fetchRooms]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchRooms(true);
+        }, 3000);
+
+        return () => clearInterval(interval);
     }, [fetchRooms]);
 
     const closeModal = () => {
@@ -44,7 +50,7 @@ export function useRoomsManager() {
     const handleCreate = async () => {
         try {
             await createRoom(formData.Name!, formData.Floor);
-            await fetchRooms();
+            await fetchRooms(true);
             closeModal();
         } catch (error) {
             console.error("Create error:", error);
@@ -56,7 +62,7 @@ export function useRoomsManager() {
         try {
             if (!formData.id) return;
             await updateRoom(formData.id, formData.Name, formData.Floor);
-            await fetchRooms();
+            await fetchRooms(true);
             closeModal();
         } catch (error) {
             console.error("Update error:", error);
@@ -68,7 +74,7 @@ export function useRoomsManager() {
         if (!selectedRoom?.id) return;
         try {
             await deleteRoom(selectedRoom.id);
-            await fetchRooms();
+            await fetchRooms(true);
             closeModal();
         } catch (error) {
             console.error("Delete error:", error);
@@ -100,6 +106,7 @@ export function useRoomsManager() {
         handleDelete,
         closeModal,
         openEditModal,
-        openDeleteModal
+        openDeleteModal,
+        refresh: () => fetchRooms(true)
     };
 }
