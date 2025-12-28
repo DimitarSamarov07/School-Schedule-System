@@ -14,11 +14,15 @@ import {
     RefreshCw
 } from "lucide-react";
 import { useRoomsManager } from "@/hooks/use-rooms-manager";
+import {useSubjectsManager} from "@/hooks/use-subjects-manager";
+import {useTeacherManager} from "@/hooks/use-teachers-manager";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
 
     const { roomsList, isLoading } = useRoomsManager();
+    const { subjectList } = useSubjectsManager();
+    const { teacherList } = useTeacherManager();
 
     const isActive = (path: string) => pathname === path;
 
@@ -52,10 +56,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     <StatsSummary
                         counts={{
                             rooms: roomsList.length,
-                            teachers: 5,  // Replace with dynamic data when ready
-                            classes: 40,  // Replace with dynamic data when ready
-                            subjects: 8,   // Replace with dynamic data when ready
-                            grades: 5      // Replace with dynamic data when ready
+                            teachers: teacherList.length,
+                            classes: 40,
+                            subjects: subjectList.length,
+                            grades: 5
                         }}
                     />
                 </div>
