@@ -51,7 +51,9 @@ class SqliteConstants {
         LIMIT 1;
     `
     static readonly SELECT_ALL_ADVERTISEMENTS = `SELECT *FROM Advertising`
-    static readonly SELECT_ALL_TEACHERS = `SELECT *FROM Advertising`
+    static readonly SELECT_ALL_TEACHERS = `SELECT *FROM Teachers`
+    static readonly SELECT_ALL_CLASSES = `SELECT *FROM Classes`
+
     static readonly SELECT_ALL_ROOMS = `SELECT *FROM Rooms`
 
     //INSERT queries

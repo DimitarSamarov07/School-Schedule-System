@@ -111,7 +111,7 @@ class SqliteMaster {
         });
     }
 
-    static async getAllRooms() : Promise<RoomResponse>{
+    static async getAllRooms() : Promise<RoomResponse[]>{
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
                 this.db.all(SqliteConstants.SELECT_ALL_ROOMS, [], (err, rows: any) => {
@@ -122,9 +122,31 @@ class SqliteMaster {
                     }
 
                     try {
-                        for (const row of rows) {
-                            return resolve(new RoomResponse(row.Id, row.Name, row.Floor));
-                        }
+                        const rooms = rows.map(row => new RoomResponse(row.id, row.Name, row.Floor));
+                        resolve(rooms);
+
+                    } catch (e) {
+                        console.error(e);
+                        reject("Error parsing time entries.");
+                    }
+                });
+            });
+        });
+    }
+
+    static async getAllClasses() : Promise<ClassResponse[]>{
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_CLASSES, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
+                        return;
+                    }
+
+                    try {
+                        const classes = rows.map(row => new ClassResponse(row.id, row.Name, row.Description));
+                        resolve(classes);
 
                     } catch (e) {
                         console.error(e);
