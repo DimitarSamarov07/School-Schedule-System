@@ -25,12 +25,12 @@ export default function AuthPage() {
   const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push('/timetable');
+    router.push('/dashboard');
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    router.push('/timetable');
+    router.push('/dashboard');
   };
 
   return (

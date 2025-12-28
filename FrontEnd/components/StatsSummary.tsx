@@ -1,14 +1,24 @@
 import {Calendar, Users, Book, DoorOpen, GraduationCap} from 'lucide-react';
 
-const stats = [
-    { label: 'Total Classes', value: '40', color: 'bg-purple-600', icon: Calendar },
-    { label: 'Grades', value: '5', color: 'bg-red-500', icon: GraduationCap },
-    { label: 'Teachers', value: '5', color: 'bg-green-500', icon: Users },
-    { label: 'Subjects', value: '8', color: 'bg-blue-400', icon: Book },
-    { label: 'Rooms', value: '8', color: 'bg-orange-500', icon: DoorOpen },
-];
+interface StatsSummaryProps {
+    counts: {
+        classes?: number;
+        grades?: number;
+        teachers?: number;
+        subjects?: number;
+        rooms?: number;
+    }
+}
 
-export default function StatsSummary() {
+export default function StatsSummary({ counts }: StatsSummaryProps) {
+    const stats = [
+        { label: 'Total Classes', value: counts.classes ?? 0, color: 'bg-purple-600', icon: Calendar },
+        { label: 'Grades', value: counts.grades ?? 0, color: 'bg-red-500', icon: GraduationCap },
+        { label: 'Teachers', value: counts.teachers ?? 0, color: 'bg-green-500', icon: Users },
+        { label: 'Subjects', value: counts.subjects ?? 0, color: 'bg-blue-400', icon: Book },
+        { label: 'Rooms', value: counts.rooms ?? 0, color: 'bg-orange-500', icon: DoorOpen },
+    ];
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-8">
             {stats.map((stat) => (
@@ -17,9 +27,7 @@ export default function StatsSummary() {
                         <p className="text-sm font-medium opacity-90">{stat.label}</p>
                         <p className="text-3xl font-bold">{stat.value}</p>
                     </div>
-                    <div className="text-3xl ">
-                        <stat.icon color="white" size={40} className="text-slate-900" ></stat.icon>
-                    </div>
+                    <stat.icon size={40} className="opacity-80" />
                 </div>
             ))}
         </div>

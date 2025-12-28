@@ -4,11 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Sidebar from "@/components/Sidebar";
 import StatsSummary from "@/components/StatsSummary";
-import { Calendar, Users, BookOpen, GraduationCap, DoorOpen } from "lucide-react";
+import { Calendar, Users, BookOpen, GraduationCap, DoorOpen, Timer } from "lucide-react";
+import {useRoomsManager} from "@/hooks/use-rooms-manager";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
-
+    const {roomsList} = useRoomsManager();
     const isActive = (path: string) => pathname === path;
 
     const tabBaseStyles = "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-normal transition-all rounded-md ";
@@ -21,6 +22,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Subjects", href: "/dashboard/subjects", icon: BookOpen },
         { name: "Grades", href: "/dashboard/grades", icon: GraduationCap },
         { name: "Rooms", href: "/dashboard/rooms", icon: DoorOpen },
+        { name: "Times", href: "/dashboard/times", icon: Timer },
     ];
 
     return (
@@ -37,7 +39,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 </header>
 
                 <div className="px-8 mt-8">
-                    <StatsSummary />
+                    <StatsSummary counts={{
+                        rooms: roomsList.length,
+                        teachers: 5,
+                        classes: 40,
+                        subjects: 8,
+                        grades: 5
+                    }} />
                 </div>
 
                 <div className="mt-8 mb-4 w-[95%] mx-auto bg-slate-200/50 border border-slate-200 rounded-xl overflow-hidden">
