@@ -55,6 +55,7 @@ class SqliteConstants {
     static readonly SELECT_ALL_CLASSES = `SELECT *FROM Classes`
 
     static readonly SELECT_ALL_ROOMS = `SELECT *FROM Rooms`
+    static readonly SELECT_ALL_DATES = `SELECT *FROM Dates`
 
     //INSERT queries
 
