@@ -4,6 +4,8 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+    Calendar1,
+    Timer,
     LayoutDashboard,
     Calendar,
     Users,
@@ -22,6 +24,8 @@ const navItems = [
     { name: "Subjects", href: "/dashboard/subjects", icon: BookOpen },
     { name: "Grades", href: "/dashboard/grades", icon: GraduationCap },
     { name: "Rooms", href: "/dashboard/rooms", icon: DoorOpen },
+    { name: "Times", href: "/dashboard/times", icon: Timer },
+    { name: "Dates", href: "/dashboard/dates", icon: Calendar1 },
 ];
 
 export default function Sidebar() {

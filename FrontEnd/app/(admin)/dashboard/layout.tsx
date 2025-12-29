@@ -11,7 +11,7 @@ import {
     GraduationCap,
     DoorOpen,
     Timer,
-    RefreshCw
+    RefreshCw, Calendar1
 } from "lucide-react";
 import { useRoomsManager } from "@/hooks/use-rooms-manager";
 import {useSubjectsManager} from "@/hooks/use-subjects-manager";
@@ -39,6 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         { name: "Grades", href: "/dashboard/grades", icon: GraduationCap },
         { name: "Rooms", href: "/dashboard/rooms", icon: DoorOpen },
         { name: "Times", href: "/dashboard/times", icon: Timer },
+        { name: "Dates", href: "/dashboard/dates", icon: Calendar1 },
     ];
 
     return (
