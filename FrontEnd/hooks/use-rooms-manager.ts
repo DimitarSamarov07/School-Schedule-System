@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { getRooms, createRoom, updateRoom, deleteRoom } from "@/lib/api/rooms";
 import { Room } from "@/types/room";
 
@@ -12,8 +12,15 @@ export function useRoomsManager() {
     const [formData, setFormData] = useState<Partial<Room>>({ Name: '', Building: '', Floor: 0 });
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
+    const isFetchingRef = useRef(false);
+
     const fetchRooms = useCallback(async (silent = false) => {
+        // Prevent multiple simultaneous fetches
+        if (isFetchingRef.current) return;
+
+        isFetchingRef.current = true;
         if (!silent) setIsLoading(true);
+
         try {
             const response = await getRooms();
             let data: Room[] = [];
@@ -26,17 +33,16 @@ export function useRoomsManager() {
             if (!silent) setRoomsList([]);
         } finally {
             setIsLoading(false);
+            isFetchingRef.current = false;
         }
     }, []);
 
     useEffect(() => {
         fetchRooms();
-    }, [fetchRooms]);
 
-    useEffect(() => {
         const interval = setInterval(() => {
             fetchRooms(true);
-        }, 3000);
+        }, 30000);
 
         return () => clearInterval(interval);
     }, [fetchRooms]);
