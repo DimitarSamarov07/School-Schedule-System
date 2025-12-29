@@ -1,7 +1,8 @@
 import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
+import {Grade} from "@/types/grade";
 
-export const getGrades = () =>
+export const getGrades: () => Promise<Grade[]> = () =>
     apiRequest(ENDPOINTS.CLASS, {
         method: 'GET'
     });

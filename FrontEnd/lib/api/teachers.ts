@@ -1,12 +1,13 @@
 import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 import {Subject} from "@/types/subject";
+import {Teacher} from "@/types/teacher";
 
 //Teacher POST - body - firstName, lastName, email, subject
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
 
-export const getTeachers = () =>
+export const getTeachers: () => Promise<Teacher[]> = () =>
     apiRequest("/teacher", {
         method: 'GET'
     });

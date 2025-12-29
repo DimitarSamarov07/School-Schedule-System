@@ -49,7 +49,7 @@ export function useRoomsManager() {
 
     const handleCreate = async () => {
         try {
-            await createRoom(formData.Name!, formData.Floor);
+            await createRoom(formData.Name!, formData.Floor!);
             await fetchRooms(true);
             closeModal();
         } catch (error) {

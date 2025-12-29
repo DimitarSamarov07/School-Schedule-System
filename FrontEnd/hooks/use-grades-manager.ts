@@ -16,14 +16,17 @@ export function useGradesManager() {
         if (!silent) setIsLoading(true);
         try {
             const response = await getGrades();
-            let data: Grade[] = [];
-            if (response) {
-                data = Array.isArray(response) ? response : [response];
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            if (response && !response.error) {
+                const data = Array.isArray(response) ? response : [response];
+                setGradeList(data);
+            } else {
+                setGradeList([]);
             }
-            setGradeList(data);
         } catch (error) {
-            console.error("Fetch error:", error);
-            if (!silent) setGradeList([]);
+            console.warn("Backend 404 - Endpoint not ready:", error);
+            setGradeList([]);
         } finally {
             setIsLoading(false);
         }
@@ -54,7 +57,7 @@ export function useGradesManager() {
             closeModal();
         } catch (error) {
             console.error("Create error:", error);
-            alert("Failed to create room");
+            alert("Failed to create grade");
         }
     };
 
@@ -66,7 +69,7 @@ export function useGradesManager() {
             closeModal();
         } catch (error) {
             console.error("Update error:", error);
-            alert("Failed to update room");
+            alert("Failed to update grade");
         }
     };
 

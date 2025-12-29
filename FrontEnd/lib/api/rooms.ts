@@ -1,11 +1,12 @@
 import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
+import {Room} from "@/types/room";
 
 //ROOM POST - body - name, floor
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
 
-export const getRooms = () =>
+export const getRooms: () => Promise<Room[]> = () =>
     apiRequest(ENDPOINTS.ROOM, {
         method: 'GET'
     });

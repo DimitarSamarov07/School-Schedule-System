@@ -1,29 +1,31 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {getSubjects, createSubject, updateSubject, deleteSubject} from "@/lib/api/subjects";
+import { getSubjects, createSubject, updateSubject, deleteSubject } from "@/lib/api/subjects";
 import { Subject } from "@/types/subject";
 
 export function useSubjectsManager() {
     const [subjectList, setSubjectList] = useState<Subject[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<Subject>>({ Name: '', Color: '' });
+    const [formData, setFormData] = useState<Partial<Subject>>({ Name: '', Color: 'purple' });
     const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
 
     const fetchSubjects = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
             const response = await getSubjects();
-            let data: Subject[] = [];
-            if (response) {
-                data = Array.isArray(response) ? response : [response];
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-expect-error
+            if (response && !response.error) {
+                const data = Array.isArray(response) ? response : [response];
+                setSubjectList(data);
+            } else {
+                setSubjectList([]);
             }
-            setSubjectList(data);
         } catch (error) {
-            console.error("Fetch error:", error);
-            if (!silent) setSubjectList([]);
+            console.warn("Backend 404 - Endpoint not ready:", error);
+            setSubjectList([]);
         } finally {
             setIsLoading(false);
         }
@@ -34,16 +36,13 @@ export function useSubjectsManager() {
     }, [fetchSubjects]);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            fetchSubjects(true);
-        }, 3000);
-
+        const interval = setInterval(() => fetchSubjects(true), 5000);
         return () => clearInterval(interval);
-    }, [fetchSubjects, subjectList]);
+    }, [fetchSubjects]);
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ Name: '', Color: ''});
+        setFormData({ Name: '', Color: 'purple'});
         setSelectedSubject(null);
     };
 
@@ -52,22 +51,16 @@ export function useSubjectsManager() {
             await createSubject(formData.Name!, formData.Color!);
             await fetchSubjects(true);
             closeModal();
-        } catch (error) {
-            console.error("Create error:", error);
-            alert("Failed to create room");
-        }
+        } catch (error) { console.error(error); }
     };
 
     const handleUpdate = async () => {
         try {
             if (!formData.id) return;
-            await updateSubject(formData.id, formData.Name, formData.Color);
+            await updateSubject(formData.id, formData.Name!, formData.Color!);
             await fetchSubjects(true);
             closeModal();
-        } catch (error) {
-            console.error("Update error:", error);
-            alert("Failed to update room");
-        }
+        } catch (error) { console.error(error); }
     };
 
     const handleDelete = async () => {
@@ -76,10 +69,7 @@ export function useSubjectsManager() {
             await deleteSubject(selectedSubject.id);
             await fetchSubjects(true);
             closeModal();
-        } catch (error) {
-            console.error("Delete error:", error);
-            alert("Failed to delete subject");
-        }
+        } catch (error) { console.error(error); }
     };
 
     const openEditModal = (subject: Subject) => {
@@ -94,19 +84,8 @@ export function useSubjectsManager() {
     };
 
     return {
-        subjectList: subjectList,
-        isLoading,
-        activeModal,
-        formData,
-        selectedSubject: selectedSubject,
-        setFormData,
-        setActiveModal,
-        handleCreate,
-        handleUpdate,
-        handleDelete,
-        closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchSubjects(true)
+        subjectList, isLoading, activeModal, formData, selectedSubject,
+        setFormData, setActiveModal, handleCreate, handleUpdate, handleDelete,
+        closeModal, openEditModal, openDeleteModal
     };
 }
