@@ -56,8 +56,8 @@ export default function DateListContainer({ manager }: { manager: any }) {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
-                            <th className="px-6 py-4 font-semibold">Date Name</th>
-                            <th className="px-6 py-4 font-semibold">Specialty</th>
+                            <th className="px-6 py-4 font-semibold">Date</th>
+                            <th className="px-6 py-4 font-semibold">Is Holiday</th>
                             <th className="px-6 py-4 text-right font-semibold">Actions</th>
                         </tr>
                         </thead>
@@ -66,9 +66,7 @@ export default function DateListContainer({ manager }: { manager: any }) {
                             <tr key={date.id} className="hover:bg-purple-50/30 transition-colors group">
                                 <td className="px-6 py-4 font-bold text-gray-900">{date.Date}</td>
                                 <td className="px-6 py-4">
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                            {date.IsHoliday || "No specialty"}
-                                        </span>
+                                            {date.IsHoliday ? "Yes" : "No" }
                                 </td>
                                 <td className="px-6 py-4 text-right space-x-1">
                                     <button

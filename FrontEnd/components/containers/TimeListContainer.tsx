@@ -56,8 +56,8 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
-                            <th className="px-6 py-4 font-semibold">Time Name</th>
-                            <th className="px-6 py-4 font-semibold">Specialty</th>
+                            <th className="px-6 py-4 font-semibold">Start Time</th>
+                            <th className="px-6 py-4 font-semibold">End Time</th>
                             <th className="px-6 py-4 text-right font-semibold">Actions</th>
                         </tr>
                         </thead>
@@ -66,9 +66,7 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                             <tr key={time.id} className="hover:bg-purple-50/30 transition-colors group">
                                 <td className="px-6 py-4 font-bold text-gray-900">{time.Start}</td>
                                 <td className="px-6 py-4">
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                            {time.End || "No specialty"}
-                                        </span>
+                                            {time.End}
                                 </td>
                                 <td className="px-6 py-4 text-right space-x-1">
                                     <button
