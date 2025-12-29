@@ -133,6 +133,29 @@ class SqliteMaster {
             });
         });
     }
+    static async getAllDates() : Promise<DateModelResponse[]>{
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_DATES, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
+                        return;
+                    }
+
+                    try {
+                        const rooms = rows.map(row => new DateModelResponse(row.id, row.Date, row.IsHoliday));
+                        resolve(rooms);
+
+                    } catch (e) {
+                        console.error(e);
+                        reject("Error parsing time entries.");
+                    }
+                });
+            });
+        });
+    }
+
 
     static async getAllClasses() : Promise<ClassResponse[]>{
         return new Promise((resolve, reject) => {
@@ -146,6 +169,30 @@ class SqliteMaster {
 
                     try {
                         const classes = rows.map(row => new ClassResponse(row.id, row.Name, row.Description));
+                        resolve(classes);
+
+                    } catch (e) {
+                        console.error(e);
+                        reject("Error parsing time entries.");
+                    }
+                });
+            });
+        });
+    }
+
+
+    static async getAllTimes() : Promise<TimeResponse[]>{
+        return new Promise((resolve, reject) => {
+            this.db.serialize(() => {
+                this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
+                    if (err) {
+                        console.error(err);
+                        reject("Something went wrong with the database request. Contact the administrator.");
+                        return;
+                    }
+
+                    try {
+                        const classes = rows.map(row => new TimeResponse(row.id, row.Start, row.End));
                         resolve(classes);
 
                     } catch (e) {

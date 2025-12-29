@@ -20,7 +20,7 @@ const limiter = rateLimit({
     skipSuccessfulRequests: false,
 });
 
-app.use(limiter)
+//app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
 app.use(helmet()) // Enhances security
@@ -171,23 +171,7 @@ app.get("/runningTime", async (req, res) => {
  *   - 406: "Malformed parameter" if date missing
  *   - 500: Database error message
  */
-app.get("/date", async (req, res) => {
-    let {date} = req.query;
-    if (!date) {
-        return res.status(406).send("Malformed parameter");
-    }
 
-    return await manager.getDateFromDBByDate(req.query.date)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            if (err === "No date found") {
-                return res.status(404).send({"error": err});
-            }
-            return res.status(500).send({"error": err});
-        })
-})
 app.get("/room", async (req, res) => {
 
     return await manager.getAllRooms()
@@ -205,6 +189,34 @@ app.get("/room", async (req, res) => {
 app.get("/class", async (req, res) => {
 
     return await manager.getAllClasses()
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No advertisements found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
+})
+
+app.get("/time", async (req, res) => {
+
+    return await manager.getAllTimes()
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No advertisements found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
+})
+
+app.get("/date", async (req, res) => {
+
+    return await manager.getAllDates()
         .then(result => {
             return res.send(result);
         })
