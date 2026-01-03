@@ -35,7 +35,7 @@ app.use(cors({
 //
 app.set('trust proxy', 1);
 
-let port = 3000;
+let port = 1343;
 
 async function checkUserAuthenticationMiddleware(req, res, next) {
     let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
