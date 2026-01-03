@@ -1,5 +1,8 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+import {BASE_URL, ENDPOINTS} from "@/lib/constants";
+
+
 
 /**
  * Custom hook for fetching and managing the running time data from a specified endpoint.
@@ -11,8 +14,9 @@ import fetcher from "@/lib/fetcher";
  * - `isLoading`: A boolean indicating if the data is currently being fetched.
  */
 export function useRunningTime() {
+  const URL = BASE_URL + ENDPOINTS.RUNNING_TIME;
   const { data, error, isLoading } = useSWR(
-    'http://37.63.57.37:3000/runningTime', 
+    URL,
     fetcher, 
     { refreshInterval: 10000 }
   );

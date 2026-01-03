@@ -1,5 +1,6 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
+import {BASE_URL, ENDPOINTS} from "@/lib/constants";
 
 /**
  * Retrieves schedules for a specific date using the SWR hook.
@@ -11,8 +12,9 @@ import fetcher from "@/lib/fetcher";
  * @return {boolean} return.isLoading - Indicates whether the data fetch is currently in progress.
  */
 export default function useSchedulesByDate(date: string){
-    const { data, error, isLoading } = useSWR(
-    `http://37.63.57.37:3000/schedulesByDate?date=${date}`, 
+  const URL = BASE_URL + ENDPOINTS.SCHEDULES_BY_DATE;
+  const { data, error, isLoading } = useSWR(
+    `${URL}?date=${date}`,
     fetcher, 
     { refreshInterval: 10000 }
   );
