@@ -1,5 +1,5 @@
 
-export const BASE_URL = 'http://localhost:1343';
+export const BASE_URL = '/api';
 
 export const ENDPOINTS = {
     SCHEDULES_BY_DATE: `/schedulesByDate`,
