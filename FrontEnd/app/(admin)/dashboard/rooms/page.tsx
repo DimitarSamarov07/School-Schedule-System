@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import {useRoomsManager} from "@/hooks/use-rooms-manager";
 import RoomListContainer from "@/components/containers/RoomListContainer";
 
-export default function GradesPage() {
+export default function RoomsPage() {
     const manager = useRoomsManager();
 
     return (

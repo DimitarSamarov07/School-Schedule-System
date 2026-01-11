@@ -28,24 +28,23 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     const isActive = (path: string) => pathname === path;
 
-    const tabBaseStyles = "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-sm font-normal transition-all rounded-md ";
+    const tabBaseStyles = "flex flex-1 items-center justify-center gap-2 px-4 py-3 text-m font-bold transition-all rounded-md ";
     const activeStyles = "bg-white text-black font-bold shadow-sm";
     const inactiveStyles = "text-slate-500 hover:text-slate-700 hover:bg-slate-100";
 
     const navItems = [
-        { name: "Timetable", href: "/dashboard", icon: Calendar },
-        { name: "Teachers", href: "/dashboard/teachers", icon: Users },
-        { name: "Subjects", href: "/dashboard/subjects", icon: BookOpen },
-        { name: "Grades", href: "/dashboard/grades", icon: GraduationCap },
-        { name: "Rooms", href: "/dashboard/rooms", icon: DoorOpen },
-        { name: "Times", href: "/dashboard/times", icon: Timer },
-        { name: "Dates", href: "/dashboard/dates", icon: Calendar1 },
+        { name: "Програма", href: "/dashboard", icon: Calendar },
+        { name: "Учители", href: "/dashboard/teachers", icon: Users },
+        { name: "Предмети", href: "/dashboard/subjects", icon: BookOpen },
+        { name: "Класове", href: "/dashboard/grades", icon: GraduationCap },
+        { name: "Стаи", href: "/dashboard/rooms", icon: DoorOpen },
+        { name: "Часове", href: "/dashboard/times", icon: Timer },
+        { name: "Почивки", href: "/dashboard/dates", icon: Calendar1 },
     ];
 
     return (
         <div className="flex h-screen text-slate-900 bg-slate-50">
             <main className="flex-1 overflow-y-auto">
-                {/* Header Section */}
                 <header className="py-10 px-8 bg-white border-b border-slate-200 relative">
                     <div className="absolute top-4 left-4">
                         <Sidebar />
@@ -55,7 +54,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                 <div className="px-8 mt-8">
 
-                    {/* Stats Summary - Hydrates automatically when roomsList changes */}
                     <StatsSummary
                         counts={{
                             rooms: roomsList.length,
@@ -67,7 +65,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     />
                 </div>
 
-                {/* Navigation Tabs */}
                 <div className="mt-8 mb-4 w-[95%] mx-auto bg-slate-200/50 border border-slate-200 rounded-xl overflow-hidden p-1">
                     <nav className="flex w-full gap-2">
                         {navItems.map((item) => (

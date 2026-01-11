@@ -15,7 +15,6 @@ export function useRoomsManager() {
     const isFetchingRef = useRef(false);
 
     const fetchRooms = useCallback(async (silent = false) => {
-        // Prevent multiple simultaneous fetches
         if (isFetchingRef.current) return;
 
         isFetchingRef.current = true;
