@@ -50,9 +50,12 @@ export function useDatesManager() {
         setSelectedDate(null);
     };
 
-    const handleCreate = async () => {
+    const handleCreate = async (manualDate: string, manualIsHoliday: boolean) => {
+        const dateToUse = manualDate ?? formData.Date;
+        const holidayToUse = manualIsHoliday ?? formData.IsHoliday;
+
         try {
-            await createDate(formData.Date!, formData.IsHoliday!);
+            await createDate(dateToUse, holidayToUse);
             await fetchDates(true);
             closeModal();
         } catch (error) {
