@@ -31,7 +31,7 @@ export function useAutoScroll({
     if (!scrollContainer) return;
     const autoScroll = () => {
       const { scrollLeft, clientWidth, scrollWidth } = scrollContainer;
-      if (scrollLeft + clientWidth >= scrollWidth - 20) {
+      if (scrollLeft + clientWidth >= scrollWidth - 250) {
         scrollContainer.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
         scrollContainer.scrollTo({ 

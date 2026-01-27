@@ -68,12 +68,12 @@ export default function Timetable() {
         </div>
 
         {/* --- MAIN CONTENT --- */}
-        <main className="max-w-7xl mx-auto p-5">
+        <main className="max-w-7xl mx-auto p-10">
           <header className="mb-10 text-center">
-            <h2 className="text-3xl font-bold text-slate-900">
+            <h2 className="text-4xl font-bold text-slate-900 pb-7">
               Следващ час: 3ти час
             </h2>
-            <p className="text-xl font-normal text-slate-400">10:20 - 11:30</p>
+            <p className="text-4xl font-normal text-slate-400">10:20 - 11:30</p>
           </header>
           <div
             ref={scrollRef}
