@@ -1,9 +1,10 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { Plus } from "lucide-react";
+import React, {Suspense} from "react";
+import {Plus} from "lucide-react";
 import {useTeacherManager} from "@/hooks/use-teachers-manager";
 import TeacherListContainer from "@/components/containers/TeacherListContainer";
+import TeacherLoading from "@/app/(admin)/dashboard/teachers/loading";
 
 export default function TeachersPage() {
     const manager = useTeacherManager();
@@ -26,8 +27,8 @@ export default function TeachersPage() {
                 )}
             </div>
 
-            <Suspense fallback={<p>Loading...</p>}>
-                <TeacherListContainer manager={manager} />
+            <Suspense fallback={<TeacherLoading></TeacherLoading>}>
+                <TeacherListContainer manager={manager}/>
             </Suspense>
         </div>
     );

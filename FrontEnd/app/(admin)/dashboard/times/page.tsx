@@ -1,7 +1,7 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { Plus } from "lucide-react";
+import React, {Suspense} from "react";
+import {Plus} from "lucide-react";
 import {useTimesManager} from "@/hooks/use-times-manager";
 import TimeListContainer from "@/components/containers/TimeListContainer";
 
@@ -27,7 +27,7 @@ export default function TimesPage() {
             </div>
 
             <Suspense fallback={<p>Loading...</p>}>
-                <TimeListContainer manager={manager} />
+                <TimeListContainer manager={manager}/>
             </Suspense>
         </div>
     );

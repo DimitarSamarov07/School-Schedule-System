@@ -1,9 +1,10 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { Plus } from "lucide-react";
+import React, {Suspense} from "react";
+import {Plus} from "lucide-react";
 import {useRoomsManager} from "@/hooks/use-rooms-manager";
 import RoomListContainer from "@/components/containers/RoomListContainer";
+import RoomsLoading from "@/app/(admin)/dashboard/rooms/loading";
 
 export default function RoomsPage() {
     const manager = useRoomsManager();
@@ -26,8 +27,8 @@ export default function RoomsPage() {
                 )}
             </div>
 
-            <Suspense fallback={<p>Loading...</p>}>
-                <RoomListContainer manager={manager} />
+            <Suspense fallback={<RoomsLoading></RoomsLoading>}>
+                <RoomListContainer manager={manager}/>
             </Suspense>
         </div>
     );

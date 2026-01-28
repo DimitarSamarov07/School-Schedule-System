@@ -1,6 +1,6 @@
 "use client"; // <--- Add this line at the very top
 
-import { useEffect } from "react";
+import {useEffect} from "react";
 
 export default function Error({
                                   error,

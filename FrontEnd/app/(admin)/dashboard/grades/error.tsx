@@ -1,6 +1,6 @@
 "use client"; // <--- Add this line at the very top
 
-import { useEffect } from "react";
+import {useEffect} from "react";
 
 export default function Error({
                                   error,
@@ -10,12 +10,11 @@ export default function Error({
     reset: () => void;
 }) {
     useEffect(() => {
-        // Log the error to an error reporting service
         console.error(error);
     }, [error]);
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-[400px] p-8 text-center">
+        <div className="flex flex-col items-center justify-center min-h-100 p-8 text-center">
             <h2 className="text-2xl font-bold text-slate-900 mb-4">
                 Опа! Нещо се обърка.
             </h2>

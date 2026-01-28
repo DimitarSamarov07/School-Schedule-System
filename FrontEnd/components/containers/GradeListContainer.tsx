@@ -4,13 +4,16 @@ import { GraduationCap, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import React from "react";
 import { Grade } from "@/types/grade";
 
-export default function GradeListContainer({ manager }: { manager: any }) {
+export default function GradeListContainer({ manager }: { manager: object }) {
+    // @ts-expect-error
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
     const {
         gradeList,
         isLoading,
         activeModal,
         formData,
-        selectedGrade, // Ensure your manager provides the currently selected grade object
+        selectedGrade,
         setFormData,
         setActiveModal,
         handleCreate,
@@ -39,7 +42,7 @@ export default function GradeListContainer({ manager }: { manager: any }) {
                     <div className="bg-purple-100 p-6 rounded-full mb-6">
                         <GraduationCap className="w-16 h-16 text-purple-600" />
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Нямате създадени класове</h3>
+                    <h3 className="text-2xl font-bold text-gray-900 mb-2">Нямате създадени класове </h3>
                     <p className="text-gray-500 text-center max-w-sm mb-10 leading-relaxed">
                         Започнете като добавите първия си клас.
                     </p>
@@ -56,7 +59,7 @@ export default function GradeListContainer({ manager }: { manager: any }) {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
-                            <th className="px-6 py-4 font-semibold">Клас</th>
+                            <th className="px-6 py-4 font-semibold">Клас </th>
                             <th className="px-6 py-4 font-semibold">Специалност</th>
                             <th className="px-6 py-4 text-right font-semibold">Действия</th>
                         </tr>

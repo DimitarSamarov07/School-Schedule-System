@@ -1,9 +1,10 @@
 "use client";
 
-import React, { Suspense } from "react";
-import { Plus } from "lucide-react";
+import React, {Suspense} from "react";
+import {Plus} from "lucide-react";
 import GradeListContainer from "@/components/containers/GradeListContainer";
-import { useGradesManager } from "@/hooks/use-grades-manager";
+import {useGradesManager} from "@/hooks/use-grades-manager";
+import GradesLoading from "@/app/(admin)/dashboard/grades/loading";
 
 export default function GradesPage() {
     const manager = useGradesManager();
@@ -26,8 +27,8 @@ export default function GradesPage() {
                 )}
             </div>
 
-            <Suspense fallback={<p>Loading...</p>}>
-                <GradeListContainer manager={manager} />
+            <Suspense fallback={<GradesLoading></GradesLoading>}>
+                <GradeListContainer manager={manager}/>
             </Suspense>
         </div>
     );
