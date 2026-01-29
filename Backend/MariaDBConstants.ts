@@ -64,55 +64,59 @@ class MariaDBConstants {
                                            VALUES ((?), (?), (?), (?))
                                            RETURNING id;`
 
-    static readonly INSERT_INTO_SUBJECTS = `INSERT INTO Subjects(school_id, name, description)
-                                            VALUES ((?), (?), (?))
-                                            RETURNING id;`
+    static readonly INSERT_SUBJECT = `INSERT INTO Subjects(school_id, name, description)
+                                      VALUES ((?), (?), (?))
+                                      RETURNING id;`
 
     static readonly INSERT_INTO_SCHEDULE = `INSERT INTO Schedule(school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
                                             VALUES ((?), (?), (?), (?), (?), (?), (?));`
 
-    static readonly INSERT_INTO_ROOMS = `INSERT INTO Rooms(school_id, name, floor, capacity)
-                                         VALUES ((?), (?), (?), (?))
-                                         RETURNING id;`
+    static readonly INSERT_ROOM = `INSERT INTO Rooms(school_id, name, floor, capacity)
+                                   VALUES ((?), (?), (?), (?))
+                                   RETURNING id;`
 
     //DELETE queries
 
-    static readonly DELETE_FROM_CLASSES = `DELETE
+    static readonly DELETE_CLASS = `DELETE
                                            FROM Classes
                                            WHERE id = (?)
                                            RETURNING id;`
+    static readonly DELETE_SUBJECT = `DELETE
+                                           FROM Subjects
+                                           WHERE id = (?)
+                                           RETURNING id;`
 
-    static readonly DELETE_FROM_TEACHERS = `DELETE
-                                            FROM Teachers
-                                            WHERE id = (?)
-                                            RETURNING id;`
+    static readonly DELETE_TEACHER = `DELETE
+                                      FROM Teachers
+                                      WHERE id = (?)
+                                      RETURNING id;`
 
     static readonly DELETE_FROM_SUBJECTS = `DELETE
                                             FROM Subjects
                                             WHERE id = (?)
                                             RETURNING id;`
 
-    static readonly DELETE_FROM_ROOMS = `DELETE
-                                         FROM Rooms
-                                         WHERE id = (?)
-                                         RETURNING id;`
+    static readonly DELETE_ROOM = `DELETE
+                                   FROM Rooms
+                                   WHERE id = (?)
+                                   RETURNING id;`
 
     static readonly DELETE_FROM_SCHEDULES = `DELETE
                                              FROM Schedule
                                              WHERE id = (?)
                                              RETURNING id;`
 
-    static readonly DELETE_FROM_PERIODS = `DELETE
-                                           FROM Periods
-                                           WHERE id = (?)
-                                           RETURNING id;`
+    static readonly DELETE_PERIOD = `DELETE
+                                     FROM Periods
+                                     WHERE id = (?)
+                                     RETURNING id;`
 
     //UPDATE queries
 
-    static readonly UPDATE_COURSE = `UPDATE Subjects
-                                     SET name        = COALESCE((?), name),
+    static readonly UPDATE_SUBJECT = `UPDATE Subjects
+                                      SET name        = COALESCE((?), name),
                                          description = COALESCE((?), description)
-                                     WHERE id = (?)`;
+                                      WHERE id = (?)`;
 
     static readonly UPDATE_TEACHER = `UPDATE Teachers
                                       SET name  = COALESCE((?), name),
