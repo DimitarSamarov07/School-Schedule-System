@@ -17,9 +17,15 @@ class MariaDBServices {
         });
     }
 
-    static async getAllRoomsForSchool(schoolId: number) {
+    public static async getAllRoomsForSchool(schoolId: number) {
         return await this.connectionPoolFactory(this.pool, async (conn) => {
             return await conn.query(CONSTANTS.SELECT_ROOMS_BY_SCHOOL, [schoolId]);
+        })
+    }
+
+    public static async getAllPeriodsForSchool(schoolId: number) {
+        return await this.connectionPoolFactory(this.pool, async (conn) => {
+            return await conn.query(CONSTANTS.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
         })
     }
 
