@@ -4,11 +4,13 @@ class RoomResponse extends ReturningId{
     Id: number;
     Name: string;
     Floor: number;
+    Capacity: number;
 
-    constructor(id: number, name: string, floor:number) {
-        super(id);
-        this.Name = name;
-        this.Floor = floor;
+    constructor(data: any) {
+        super(data.roomId);
+        this.Name = data.name;
+        this.Floor = data.floor;
+        this.Capacity = data.capacity;
     }
 }
 

@@ -2,14 +2,12 @@ import ReturningId from "./ReturningId.js";
 
 class SubjectResponse extends ReturningId{
     public Name: string;
-    TeacherId: number;
-    RoomId: number;
+    Description: string;
 
-    constructor(id: number, name: string, teacherId: number, roomId: number) {
-        super(id);
-        this.Name = name;
-        this.TeacherId = teacherId;
-        this.RoomId = roomId;
+    constructor(data: any) {
+        super(data.id);
+        this.Name = data.name;
+        this.Description = data.description;
     }
 }
 

@@ -1,38 +1,31 @@
 class MariaDBConstants {
     static readonly BASE_SCHEDULE_QUERY = `
-        SELECT sub.id                                                   AS 'subjectId',
-               sub.name                                                 AS 'subjectName',
-
-               t.id                                                     AS 'teacherId',
-               t.name                                                   AS 'teacherName',
-
-               c.id                                                     AS 'classId',
-               c.name                                                   AS 'className',
-
-               sch.id                                                   AS 'scheduleId',
-               sch.date                                                 AS 'date',
-               (SELECT COUNT(*)
-                FROM SchoolHolidays h
-                WHERE h.school_id = sch.school_id
-                  AND sch.date BETWEEN h.start_date AND h.end_date) > 0 AS 'isHoliday',
-
-               r.id                                                     AS 'roomId',
-               r.name                                                   AS 'roomName',
-               r.floor                                                  AS 'floor',
-
-               p.id                                                     AS 'timeId',
-               p.name                                                   AS 'periodName',
-               p.start_time                                             AS 'startTime',
-               p.end_time                                               AS 'endTime'
-
-        FROM Schedule sch
-                 JOIN Subjects sub ON sch.subject_id = sub.id
-                 JOIN Teachers t ON sch.teacher_id = t.id
-                 JOIN Classes c ON sch.class_id = c.id
-                 JOIN Rooms r ON sch.room_id = r.id
-                 JOIN Periods p ON sch.period_id = p.id
-
-        WHERE sch.school_id = (?)
+        SELECT
+            sch.id          AS 'schoolId',
+            sch.name        AS 'schoolName',
+            sch.address     AS 'schoolAddress',
+            sch.work_week_config AS 'workWeekConfig',
+            sub.name        AS 'subjectName',
+            sub.description AS 'description',
+            t.name          AS 'teacherName',
+            t.email         AS 'teacherEmail',
+            c.name          AS 'className',
+            c.home_room_id  AS 'homeRoomId',
+            r.name          AS 'roomName',
+            r.floor         AS 'floor',
+            r.capacity      AS 'capacity',
+            p.name          AS 'periodName',
+            p.start_time    AS 'startTime',
+            p.end_time      AS 'endTime',
+            s.date          AS 'date'
+        FROM Schedule s
+                 JOIN Schools sch  ON s.school_id = sch.id
+                 JOIN Subjects sub ON s.subject_id = sub.id
+                 JOIN Teachers t   ON s.teacher_id = t.id
+                 JOIN Classes c    ON s.class_id = c.id
+                 JOIN Rooms r      ON s.room_id = r.id
+                 JOIN Periods p    ON s.period_id = p.id
+        WHERE s.school_id = (?)
     `;
 
     static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} AND sch.Date = (?) `;
@@ -41,13 +34,21 @@ class MariaDBConstants {
 
     static readonly SELECT_BREAKS = `SELECT id, end_time as 'Start', LEAD(start_time) over (ORDER BY id) as 'End'
                                      from Periods `
-    static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME = `${this.BASE_SCHEDULE_QUERY} WHERE sch.date = (?) and (?) BETWEEN p.start_time AND p.end_time`
+    static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME_AND_SCHOOL = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND (?) BETWEEN p.start_time AND p.end_time`
 
     static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT name,start_time,end_time FROM Periods WHERE school_id = (?);`
     static readonly SELECT_ROOMS_BY_SCHOOL = `SELECT id,name,floor,capacity FROM Rooms WHERE school_id = (?);`
-
-    static readonly SELECT_ALL_TEACHERS = `SELECT *FROM Teachers`
-    static readonly SELECT_ALL_CLASSES = `SELECT *FROM Classes`
+    static readonly SELECT_CLASSES_BY_SCHOOL = `SELECT Classes.id   as \`class_id\`,
+                                                       Classes.name as \`class_name\`,
+                                                       r.id         as \`room_id\`,
+                                                       r.name       as \`room_name\`,
+                                                       r.floor,
+                                                       r.capacity
+                                                FROM Classes
+                                                         JOIN school_system.Rooms r on r.id = Classes.home_room_id
+                                                WHERE Classes.school_id = (?);`
+    static readonly SELECT_SUBJECTS_BY_SCHOOL = `SELECT id,name,description FROM Subjects WHERE school_id = (?);`
+    static readonly SELECT_TEACHERS_BY_SCHOOL = `SELECT id, name, email FROM Teachers WHERE school_id = (?);`
 
     //INSERT queries
 

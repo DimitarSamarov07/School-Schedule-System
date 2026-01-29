@@ -1,5 +1,5 @@
 import express from "express";
-import manager from "./mariaDB_services.js";
+import MariaDBServices  from "./MariaDBServices.ts";
 import moment from "moment";
 import helmet from "helmet";
 import cors from "cors";
@@ -24,7 +24,7 @@ const limiter = rateLimit({
 //app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
-app.use(lusca.csrf());
+//app.use(lusca.csrf());
 app.use(helmet()) // Enhances security
 
 
@@ -38,6 +38,7 @@ app.use(cors({
 app.set('trust proxy', 1);
 
 let port = 1343;
+let manager = MariaDBServices;
 
 async function checkUserAuthenticationMiddleware(req, res, next) {
     let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
@@ -75,7 +76,7 @@ app.get("/schedulesByDate", async (req, res) => {
     } catch (e) {
         return res.status(406).send("Malformed date. The correct format is YYYY-MM-DD");
     }
-    return await manager.getAllSchedulesForDate(date)
+    return await manager.Schedules.getAllSchedulesForDate(date)
         .then(result => {
             return res.send(result);
         })
@@ -83,34 +84,6 @@ app.get("/schedulesByDate", async (req, res) => {
             return res.status(500).send({"error": err});
         })
 
-});
-
-/*
- * GET /schedulesByDateTime
- * Retrieves all schedules for a given date and time
- * Query params:
- *   - date: string (YYYY-MM-DD format)
- *   - time: string (HH:MM format)
- * Returns:
- *   - 200: Array of Schedule objects
- *   - 406: "Malformed parameter" if date or time missing
- *   - 500: Database error message
- */
-app.get("/schedulesByDateTime", async (req, res) => {
-    let {date, time} = req.query;
-    if (!date || !time) {
-        return res.status(406).send("Malformed parameter");
-    }
-
-    date = moment(date, 'YYYY-MM-DD').format("YYYY-MM-DD");
-
-    return await manager.getAllSchedulesForDateTime(date, time)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
 });
 
 /*
@@ -162,26 +135,44 @@ app.get("/runningTime", async (req, res) => {
     return res.status(200).send({currentHour: result});
 })
 
-/*
- * GET /date
- * Retrieves date info from the database
- * Query params:
- *   - date: string (YYYY-MM-DD format)
- * Returns:
- *   - 200: Date object
- *   - 404: "No date found"
- *   - 406: "Malformed parameter" if date missing
- *   - 500: Database error message
- */
 
-app.get("/room", async (req, res) => {
-
-    return await manager.getAllRooms()
+app.get("/schedulesByDateTimeAndSchool", async (req, res) => {
+    let {schoolId} = req.query;
+    let {date, time} = req.body;
+    return await manager.Schedules.getSchedulesByDateAndTimeAndSchool(schoolId, date, time)
         .then(result => {
             return res.send(result);
         })
         .catch(err => {
-            if (err === "No advertisements found") {
+            if (err === "No schedules found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
+})
+
+app.get("/teacher", async (req, res) => {
+    let {schoolId} = req.query;
+    return await manager.Teachers.getAllTeachersForSchool(schoolId)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No rooms found") {
+                return res.status(404).send({"error": err});
+            }
+            return res.status(500).send({"error": err});
+        })
+})
+
+app.get("/room", async (req, res) => {
+    let {schoolId} = req.query;
+    return await manager.Rooms.getAllRoomsForSchool(schoolId)
+        .then(result => {
+            return res.send(result);
+        })
+        .catch(err => {
+            if (err === "No rooms found") {
                 return res.status(404).send({"error": err});
             }
             return res.status(500).send({"error": err});
@@ -189,13 +180,13 @@ app.get("/room", async (req, res) => {
 })
 
 app.get("/class", async (req, res) => {
-
-    return await manager.getAllClasses()
+    let {schoolId} = req.query;
+    return await manager.Classes.getAllClassesForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
         .catch(err => {
-            if (err === "No advertisements found") {
+            if (err === "No classes found") {
                 return res.status(404).send({"error": err});
             }
             return res.status(500).send({"error": err});
@@ -203,46 +194,21 @@ app.get("/class", async (req, res) => {
 })
 
 app.get("/time", async (req, res) => {
-
-    return await manager.getAllTimes()
+    let {schoolId} = req.query;
+    return await manager.Periods.getAllPeriodsForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
         .catch(err => {
-            if (err === "No advertisements found") {
+            if (err === "No breaks found") {
                 return res.status(404).send({"error": err});
             }
             return res.status(500).send({"error": err});
         })
 })
 
-app.get("/date", async (req, res) => {
 
-    return await manager.getAllDates()
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            if (err === "No advertisements found") {
-                return res.status(404).send({"error": err});
-            }
-            return res.status(500).send({"error": err});
-        })
-})
 
-app.get("/allAdvertisements", async (req, res) => {
-
-    return await manager.getAllAds()
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            if (err === "No advertisements found") {
-                return res.status(404).send({"error": err});
-            }
-            return res.status(500).send({"error": err});
-        })
-})
 
 
 // Create endpoints
@@ -1053,5 +1019,4 @@ app.delete("/advertising", async (req, res) => {
 })
 
 //await authenticatorMaster.initializeAuthenticator();
-manager.initializeConnection();
 app.listen(port, () => console.log(`App Listening on port ${port}`));

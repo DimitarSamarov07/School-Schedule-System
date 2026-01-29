@@ -1,13 +1,13 @@
 import ReturningId from "./ReturningId.js";
 
 class TeacherResponse extends ReturningId{
-    FirstName: string;
-    LastName: string;
+    Name: string;
+    Email: string;
 
-    constructor(teacherId: number, firstName: string, lastName: string) {
-        super(teacherId);
-        this.FirstName = firstName;
-        this.LastName = lastName;
+    constructor(data) {
+        super(data.teacherId);
+        this.Name = data.name;
+        this.Email = data.email;
     }
 
 }
