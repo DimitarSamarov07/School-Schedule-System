@@ -1,4 +1,4 @@
-class SqliteConstants {
+class MariaDBConstants {
     static readonly BASE_SCHEDULE_QUERY = `
         SELECT sub.id                                                   AS 'subjectId',
                sub.name                                                 AS 'subjectName',
@@ -177,4 +177,4 @@ class SqliteConstants {
 
 }
 
-export default SqliteConstants;
+export default MariaDBConstants;
