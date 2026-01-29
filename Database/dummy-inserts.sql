@@ -42,16 +42,16 @@ VALUES (1, 1, 1),
 -- ==========================================
 -- 4. Create Rooms
 -- ==========================================
-INSERT INTO Rooms (school_id, name, capacity)
-VALUES (1, 'Room 101 (Homeroom)', 30),
-       (1, 'Room 102', 30),
-       (1, 'Science Lab A', 20),
-       (1, 'Music Hall', 50),
-       (1, 'Gymnasium', 100),
-       (1, 'Library', 60),
-       (2, 'Quantum Lab', 10),
-       (2, 'Hologram Deck', 40),
-       (2, 'Server Farm', 5);
+INSERT INTO Rooms (school_id, name,floor, capacity)
+VALUES (1, 'Room 101 (Homeroom)',1, 30),
+       (1, 'Room 102', 1,30),
+       (1, 'Science Lab A',1, 20),
+       (1, 'Music Hall',1, 50),
+       (1, 'Gymnasium',2, 100),
+       (1, 'Library',2, 60),
+       (2, 'Quantum Lab',4, 10),
+       (2, 'Hologram Deck',5, 40),
+       (2, 'Server Farm',4, 5);
 
 -- ==========================================
 -- 5. Create Subjects
