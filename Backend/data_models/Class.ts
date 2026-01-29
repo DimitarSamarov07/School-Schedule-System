@@ -1,12 +1,12 @@
 class Class {
-    Id: number;
+    SchoolId: number;
     Name: string;
-    Description: string;
+    HomeRoomId: number;
 
-    constructor(id: number, name: string, description: string) {
-        this.Id = id;
+    constructor(schoolId: number, name: string, homeRoomId: number) {
+        this.SchoolId = schoolId;
         this.Name = name;
-        this.Description = description;
+        this.HomeRoomId = homeRoomId;
     }
 }
 

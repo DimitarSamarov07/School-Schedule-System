@@ -1,6 +1,6 @@
 import ReturningId from "./ReturningId.js";
 
-class CourseResponse extends ReturningId{
+class SubjectResponse extends ReturningId{
     public Name: string;
     TeacherId: number;
     RoomId: number;
@@ -13,4 +13,4 @@ class CourseResponse extends ReturningId{
     }
 }
 
-export default CourseResponse;
+export default SubjectResponse;

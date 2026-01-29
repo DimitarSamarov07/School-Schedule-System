@@ -1,12 +1,12 @@
 class Teacher {
-    Id: number;
-    FirstName: string;
-    LastName: string;
+    SchoolId: number;
+    Name: string;
+    Email: string;
 
-    constructor(teacherId: number, firstName: string, lastName: string) {
-        this.Id = teacherId;
-        this.FirstName = firstName;
-        this.LastName = lastName;
+    constructor(schoolId: number, name: string, email: string) {
+        this.SchoolId = schoolId;
+        this.Name = name;
+        this.Email = email;
     }
 
 }

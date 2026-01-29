@@ -1,16 +1,16 @@
 import Schedule from "./data_models/Schedule.js";
 import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
-import Time from "./data_models/Time.js";
-import SqliteConstants from "./sqlite_constants.js";
+import Period from "./data_models/Period.ts";
+import SqliteConstants from "./mariaDB_constants.ts";
 import RunningTime from "./response_models/RunningTime.js";
 import moment from "moment";
 import ReturningId from "./response_models/ReturningId.js";
-import CourseResponse from "./response_models/CourseResponse.js";
+import SubjectResponse from "./response_models/SubjectResponse.ts";
 import TeacherResponse from "./response_models/TeacherResponse.js";
 import ClassResponse from "./response_models/ClassResponse.js";
 import RoomResponse from "./response_models/RoomResponse.js";
-import TimeResponse from "./response_models/TimeResponse.js";
+import TimeResponse from "./response_models/PeriodResponse.ts";
 import ScheduleResponse from "./response_models/ScheduleResponse.js";
 
 import bcrypt from "bcrypt";
@@ -174,7 +174,7 @@ class SqliteMaster {
                     try {
                         const now = moment();
                         for (const row of rows) {
-                            const parsedRow = new Time(row.id, row.Start, row.End);
+                            const parsedRow = new Period(row.id, row.Start, row.End);
                             const start = moment(parsedRow.Start, 'HH:mm');
                             const end = moment(parsedRow.End, 'HH:mm');
 
@@ -193,7 +193,7 @@ class SqliteMaster {
 
                             try {
                                 for (const row of rows) {
-                                    const parsedRow = new Time(row.id, row.Start, row.End);
+                                    const parsedRow = new Period(row.id, row.Start, row.End);
                                     const start = moment(parsedRow.Start, 'HH:mm');
                                     const end = moment(parsedRow.End, 'HH:mm');
 
@@ -344,14 +344,14 @@ class SqliteMaster {
      * @param {string} name - The name of the course to be created.
      * @param {number} teacherId - The ID of the teacher assigned to the course.
      * @param {number} roomId - The ID of the room where the course will take place.
-     * @return {Promise<CourseResponse>} A promise that resolves with the created course's details encapsulated in a `CourseResponse` object.
+     * @return {Promise<SubjectResponse>} A promise that resolves with the created course's details encapsulated in a `SubjectResponse` object.
      */
-    static async createCourse(name: string, teacherId: number, roomId: number): Promise<CourseResponse> {
+    static async createCourse(name: string, teacherId: number, roomId: number): Promise<SubjectResponse> {
         let {id} = await this.createBase(SqliteConstants.INSERT_INTO_SUBJECTS, [name, teacherId, roomId])
             .catch(err => {
                 return Promise.reject(err);
             })
-        return new CourseResponse(id, name, teacherId, roomId)
+        return new SubjectResponse(id, name, teacherId, roomId)
     }
 
     /**
@@ -396,14 +396,14 @@ class SqliteMaster {
      * @param {string | null} name - The new name of the course, or null to leave it unchanged.
      * @param {number | null} teacherId - The ID of the teacher associated with the course, or null to leave it unchanged.
      * @param {number | null} roomId - The ID of the room assigned to the course, or null to leave it unchanged.
-     * @return {Promise<CourseResponse>} A promise that resolves to a CourseResponse object containing the updated course details.
+     * @return {Promise<SubjectResponse>} A promise that resolves to a SubjectResponse object containing the updated course details.
      */
-    static async updateCourse(id: number, name: string | null, teacherId: number | null, roomId: number | null): Promise<CourseResponse> {
+    static async updateCourse(id: number, name: string | null, teacherId: number | null, roomId: number | null): Promise<SubjectResponse> {
         let response = await this.updateBase(SqliteConstants.UPDATE_COURSE, [name, teacherId, roomId, id])
             .catch(err => {
                 return Promise.reject(err);
             })
-        return new CourseResponse(response.id, response.Name, response.Teacher, response.Room);
+        return new SubjectResponse(response.id, response.Name, response.Teacher, response.Room);
     }
 
     /**
