@@ -6,6 +6,7 @@ import cors from "cors";
 import rateLimit from 'express-rate-limit';
 import authenticatorMaster from "./auth_services.ts";
 import cookieParser from "cookie-parser";
+import lusca from "lusca";
 
 // Initializing Express App
 
@@ -23,6 +24,7 @@ const limiter = rateLimit({
 //app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
+app.use(lusca.csrf());
 app.use(helmet()) // Enhances security
 
 
