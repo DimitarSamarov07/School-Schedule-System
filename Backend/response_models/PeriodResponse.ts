@@ -1,13 +1,16 @@
 import ReturningId from "./ReturningId.js";
 
 class Time extends ReturningId{
+    Name: string;
     Start: string;
     End: string;
 
-    constructor(timeId: number, startTime: string, endTime: string) {
-        super(timeId);
-        this.Start = startTime;
-        this.End = endTime;
+
+    constructor(data: any) {
+        super(data.id);
+        this.Name = data.name;
+        this.Start = data.start_time;
+        this.End = data.end_time;
     }
 }
 

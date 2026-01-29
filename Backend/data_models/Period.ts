@@ -5,8 +5,8 @@ class Period {
     Start: string;
     End: string;
 
-    constructor(periodID: number,schoolId: number, name: string, startTime: string, endTime: string) {
-        this.Id = periodID;
+    constructor(schoolId: number, name: string, startTime: string, endTime: string) {
+
         this.SchoolId = schoolId;
         this.Name = name;
         this.Start = startTime;

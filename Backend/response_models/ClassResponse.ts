@@ -1,13 +1,18 @@
 import ReturningId from "./ReturningId.js";
+import RoomResponse from "./RoomResponse.ts";
 
 class ClassResponse extends ReturningId {
     Name: string;
-    Description: string;
-
-    constructor(id: number, name: string, description: string) {
-        super(id);
-        this.Name = name;
-        this.Description = description;
+    Room: RoomResponse;
+    constructor(data: any) {
+        super(data.id);
+        this.Name = data.class_name;
+        this.Room = new RoomResponse({
+            id: data.room_id,
+            name: data.room_name,
+            floor: data.floor,
+            capacity: data.capacity
+        });
     }
 }
 
