@@ -1,7 +1,6 @@
 import Schedule from "./data_models/Schedule.js";
 import type {Database} from "sqlite3"
 import sqlite3 from "sqlite3";
-import Bell from "./data_models/Bell.js";
 import Time from "./data_models/Time.js";
 import SqliteConstants from "./sqlite_constants.js";
 import RunningTime from "./response_models/RunningTime.js";
@@ -12,14 +11,9 @@ import TeacherResponse from "./response_models/TeacherResponse.js";
 import ClassResponse from "./response_models/ClassResponse.js";
 import RoomResponse from "./response_models/RoomResponse.js";
 import TimeResponse from "./response_models/TimeResponse.js";
-import DateModelResponse from "./response_models/DateModelResponse.js";
 import ScheduleResponse from "./response_models/ScheduleResponse.js";
-import BellResponse from "./response_models/BellResponse.js";
-import AdvertisingResponse from "./response_models/AdvertisingResponse.js";
-import DateModel from "./data_models/DateModel.js";
 
 import bcrypt from "bcrypt";
-import Advertising from "./data_models/Advertising.js";
 
 /**
  * Represents a manager for handling SQLite-related operations.
@@ -75,7 +69,7 @@ class SqliteMaster {
     static async getSchedulesByClassIdForDate(classId: number, date: string): Promise<Schedule[]> {
         let schedulesToReturn: Schedule[] = [];
         return new Promise((resolve, reject) => {
-            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_CLASS_ID, [date, classId], (err, row: any) => {
+            this.db.each(SqliteConstants.SELECT_SCHEDULES_FOR_DATE_AND_SUBJECT_ID, [date, classId], (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject(err)
@@ -85,29 +79,6 @@ class SqliteMaster {
             }, () => {
                 resolve(schedulesToReturn);
             })
-        });
-    }
-    static async getAllAds() : Promise<AdvertisingResponse>{
-        return new Promise((resolve, reject) => {
-            this.db.serialize(() => {
-                this.db.all(SqliteConstants.SELECT_ALL_ADVERTISEMENTS, [], (err, rows: any) => {
-                    if (err) {
-                        console.error(err);
-                        reject("Something went wrong with the database request. Contact the administrator.");
-                        return;
-                    }
-
-                    try {
-                        for (const row of rows) {
-                                return resolve(new AdvertisingResponse(row.Id, row.Content, row.ImagePath));
-                        }
-
-                    } catch (e) {
-                        console.error(e);
-                        reject("Error parsing time entries.");
-                    }
-                });
-            });
         });
     }
 
@@ -133,29 +104,6 @@ class SqliteMaster {
             });
         });
     }
-    static async getAllDates() : Promise<DateModelResponse[]>{
-        return new Promise((resolve, reject) => {
-            this.db.serialize(() => {
-                this.db.all(SqliteConstants.SELECT_ALL_DATES, [], (err, rows: any) => {
-                    if (err) {
-                        console.error(err);
-                        reject("Something went wrong with the database request. Contact the administrator.");
-                        return;
-                    }
-
-                    try {
-                        const rooms = rows.map(row => new DateModelResponse(row.id, row.Date, row.IsHoliday));
-                        resolve(rooms);
-
-                    } catch (e) {
-                        console.error(e);
-                        reject("Error parsing time entries.");
-                    }
-                });
-            });
-        });
-    }
-
 
     static async getAllClasses() : Promise<ClassResponse[]>{
         return new Promise((resolve, reject) => {
@@ -329,54 +277,6 @@ class SqliteMaster {
         });
     }
 
-    /**
-     * Retrieves a date object from the database based on the provided date string.
-     *
-     * @param {string} date - The date string in 'YYYY-MM-DD' format used to query the database.
-     * @return {Promise<DateModel>} A promise that resolves to a DateModel instance containing the date information,
-     *                              or rejects with an error message if no data is found or a database error occurs.
-     */
-    static getDateFromDBByDate(date: string): Promise<DateModel> {
-        return new Promise((resolve, reject) => {
-            this.db.all(SqliteConstants.SELECT_DATE_BY_DATE, date, (err, rows: any) => {
-                if (err) {
-                    console.error(err);
-                    reject("Database error");
-                    return;
-                }
-                if (rows.length == 0) {
-                    reject("No date found");
-                    return;
-                }
-                let row = rows[0];
-                let dateMoment = moment(row.Date, 'YYYY-MM-DD').toDate();
-                let dateModel = new DateModel(row.id, dateMoment, rows[0].IsHoliday);
-                return resolve(dateModel);
-            })
-        })
-    }
-
-
-    /**
-     * Retrieves a Bell object based on its name from the database.
-     *
-     * @param {string} bellName - The name of the bell to retrieve.
-     * @return {Promise<Bell>} A promise that resolves to a Bell object if found, or rejects with a generic error message as a string.
-     */
-    static async getBellPathByName(bellName: string): Promise<Bell> {
-        let bellToReturn: Bell = null;
-        return new Promise((resolve, reject) => {
-            this.db.each(SqliteConstants.SELECT_BELL_BY_NAME, bellName, (err, row: any) => {
-                if (err) {
-                    console.error(err);
-                    reject("Database error");
-                    return;
-                }
-                bellToReturn = new Bell(row.id, row.Name, row.SoundPath);
-                resolve(bellToReturn);
-            })
-        });
-    }
 
     /**
      * Creates a new teacher entry in the database and returns a response object with the teacher details.
@@ -431,26 +331,11 @@ class SqliteMaster {
      * @return {Promise<TimeResponse>} A promise that resolves to a TimeResponse object containing the created time details.
      */
     static async createTime(start: string, end: string): Promise<TimeResponse> {
-        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_TIMES, [start, end])
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_PERIODS, [start, end])
             .catch(err => {
                 return Promise.reject(err);
             })
         return new TimeResponse(id, start, end);
-    }
-
-    /**
-     * Creates a new date entry in the database and returns a response object.
-     *
-     * @param {string} date - The date to be recorded, formatted as a string.
-     * @param {boolean} isHoliday - Indicates whether the date is a holiday.
-     * @return {Promise<DateModelResponse>} A promise that resolves to a DateModelResponse object containing the created date information.
-     */
-    static async createDate(date: string, isHoliday: boolean): Promise<DateModelResponse> {
-        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_DATES, [date, isHoliday])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-        return new DateModelResponse(id, date, isHoliday)
     }
 
     /**
@@ -462,7 +347,7 @@ class SqliteMaster {
      * @return {Promise<CourseResponse>} A promise that resolves with the created course's details encapsulated in a `CourseResponse` object.
      */
     static async createCourse(name: string, teacherId: number, roomId: number): Promise<CourseResponse> {
-        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_COURSES, [name, teacherId, roomId])
+        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_SUBJECTS, [name, teacherId, roomId])
             .catch(err => {
                 return Promise.reject(err);
             })
@@ -484,75 +369,6 @@ class SqliteMaster {
                 return Promise.reject(err);
             })
         return new ScheduleResponse(classId, courseId, teacherId, dateId)
-    }
-
-    /**
-     * Creates a new bell using the given name and sound path, storing the information in the database.
-     *
-     * @param {string} name - The name of the bell to be created.
-     * @param {string} soundPath - The path to the sound file associated with the bell.
-     * @return {Promise<BellResponse>} A Promise that resolves to an instance of BellResponse containing the details of the created bell.
-     */
-    static async createBell(name: string, soundPath: string): Promise<BellResponse> {
-        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_BELLS, [name, soundPath])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-
-        return new BellResponse(id, name, soundPath);
-    }
-
-    /**
-     * Creates a new advertising entry in the database and returns a response object with the details of the created entry.
-     *
-     * @param {string} content The content of the advertising.
-     * @param {string} imagePath The file path to the image associated with the advertising.
-     * @return {Promise<AdvertisingResponse>} A promise that resolves with an AdvertisingResponse object containing the ID, content, and image path of the created advertising entry.
-     */
-    static async createAdvertising(content: string, imagePath: string): Promise<AdvertisingResponse> {
-        let {id} = await this.createBase(SqliteConstants.INSERT_INTO_ADVERTISING, [content, imagePath])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-
-        return new AdvertisingResponse(id, content, imagePath);
-    }
-
-
-    /**
-     * Updates an existing advertisement in the database with new content and/or imagePath values.
-     *
-     * @param {number} id - The unique identifier of the advertisement to be updated.
-     * @param {string|null} content - The new content for the advertisement. Can be null to clear the content field.
-     * @param {string|null} imagePath - The new image path for the advertisement. Can be null to clear the imagePath field.
-     * @return {Promise<AdvertisingResponse>} A promise that resolves to an updated AdvertisingResponse object.
-     */
-    static async updateAdvertising(id: number, content: string | null, imagePath: string | null) {
-        let advertisement = new AdvertisingResponse(id, content, imagePath);
-        let response = await this.updateBase(SqliteConstants.UPDATE_ADVERTISING, [content, imagePath, id])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-        Object.assign(advertisement, response);
-        return advertisement;
-    }
-
-    /**
-     * Updates an existing bell in the database with the provided details.
-     *
-     * @param {number} id - The unique identifier of the bell to update.
-     * @param {string | null} name - The new name for the bell. Can be null to retain the current name.
-     * @param {string | null} soundPath - The new sound path for the bell. Can be null to retain the current sound path.
-     * @return {Promise<BellResponse>} Returns a Promise resolving to an updated BellResponse object reflecting the updated properties of the bell.
-     */
-    static async updateBell(id: number, name: string | null, soundPath: string | null) {
-        let bell = new BellResponse(id, name, soundPath);
-        let response = await this.updateBase(SqliteConstants.UPDATE_BELL, [name, soundPath, id])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-        Object.assign(bell, response);
-        return bell;
     }
 
     /**
@@ -606,26 +422,6 @@ class SqliteMaster {
         return new RoomResponse(response.id, response.Name, response.Floor);
     }
 
-    /**
-     * Updates the date information in the database based on the provided parameters.
-     *
-     * @param {number} id - The unique identifier of the record to be updated.
-     * @param {string|null} date - The new date value to be updated, or null if no change.
-     * @param {boolean|null} isHoliday - Indicates whether the date is a holiday (true or false) or null if no change.
-     * @return {Promise<DateModelResponse>} Returns a promise that resolves to a DateModelResponse object containing updated record details, or null if the update fails.
-     */
-    static async updateDate(id: number, date: string | null, isHoliday: boolean | null): Promise<DateModelResponse> {
-        let response = await this.updateBase(SqliteConstants.UPDATE_DATE, [date, isHoliday, id])
-            .catch(err => {
-                return Promise.reject(err);
-            })
-
-        if (!response) {
-            return null;
-        }
-
-        return new DateModelResponse(response.id, response.Date, response.IsHoliday);
-    }
 
     /**
      * Updates the schedule with new class, course, time, and date information while removing the old schedule details.
@@ -665,7 +461,7 @@ class SqliteMaster {
      * @return {Promise<TimeResponse>} A promise that resolves to a TimeResponse object containing updated details, or null if the update failed.
      */
     static async updateTime(id: number, start: string | null, end: string | null): Promise<TimeResponse> {
-        let response = await this.updateBase(SqliteConstants.UPDATE_TIME, [start, end, id])
+        let response = await this.updateBase(SqliteConstants.UPDATE_PERIOD, [start, end, id])
             .catch(err => {
                 return Promise.reject(err);
             })
@@ -711,30 +507,6 @@ class SqliteMaster {
     }
 
     /**
-     * Deletes a specific advertising entry from the database based on the provided ID.
-     *
-     * @param {number} id - The ID of the advertising entry to be deleted.
-     * @return {Promise<boolean>} Returns a promise that resolves to true if the deletion was successful, or rejects with an error if it fails.
-     */
-    static async deleteAdvertising(id: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_ADVERTISING, [id]).catch(err => {
-            return Promise.reject(err);
-        })
-    }
-
-    /**
-     * Deletes a bell record from the database specified by the given ID.
-     *
-     * @param {number} id - The ID of the bell record to delete.
-     * @return {Promise<boolean>} A promise that resolves to true if the deletion was successful, or rejects with an error if the deletion fails.
-     */
-    static async deleteBell(id: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_BELLS, [id]).catch(err => {
-            return Promise.reject(err);
-        })
-    }
-
-    /**
      * Deletes a class from the database based on the given ID.
      *
      * @param {number} id - The unique identifier of the class to be deleted.
@@ -753,22 +525,11 @@ class SqliteMaster {
      * @return {Promise<boolean>} A promise that resolves to true if the course is successfully deleted, or rejects with an error if the operation fails.
      */
     static async deleteCourse(id: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_COURSES, [id]).catch(err => {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_SUBJECTS, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
 
-    /**
-     * Deletes a date record from the database based on the provided identifier.
-     *
-     * @param {number} id - The identifier of the date record to be deleted.
-     * @return {Promise<boolean>} A promise that resolves to true if the operation succeeds or rejects with an error if it fails.
-     */
-    static async deleteDate(id: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_DATES, [id]).catch(err => {
-            return Promise.reject(err);
-        })
-    }
 
     /**
      * Deletes a room from the database using the specified room ID.
@@ -790,7 +551,7 @@ class SqliteMaster {
      * @return {Promise<boolean>} A promise that resolves to true if the deletion was successful, or rejects with an error.
      */
     static async deleteTime(id: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_TIMES, [id]).catch(err => {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_PERIODS, [id]).catch(err => {
             return Promise.reject(err);
         })
     }
@@ -804,7 +565,7 @@ class SqliteMaster {
      * @return {Promise<boolean>} A promise that resolves to true if the schedule was successfully deleted, otherwise rejects with an error.
      */
     static async deleteSchedule(courseId: number, classId: number, timeId: number): Promise<boolean> {
-        return await this.deleteBase(SqliteConstants.DELETE_FROM_SCHEDULE, [courseId, classId, timeId]).catch(err => {
+        return await this.deleteBase(SqliteConstants.DELETE_FROM_SCHEDULES, [courseId, classId, timeId]).catch(err => {
             return Promise.reject(err);
         })
     }
@@ -813,7 +574,7 @@ class SqliteMaster {
         let hashedPassword = await this.hashPassword(password);
 
         return new Promise((resolve, reject) => {
-            this.db.get(SqliteConstants.CREATE_ADMIN, [username, email, hashedPassword], (err, row: any) => {
+            this.db.get(SqliteConstants.CREATE_USER, [username, email, hashedPassword], (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
@@ -831,7 +592,7 @@ class SqliteMaster {
                 return resolve(false);
             }
 
-            this.db.get(SqliteConstants.UPDATE_ADMIN_EMAIL, [newEmail, username, currentPassword], (err, row: any) => {
+            this.db.get(SqliteConstants.UPDATE_USER_EMAIL, [newEmail, username, currentPassword], (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
@@ -849,7 +610,7 @@ class SqliteMaster {
                 return resolve(false);
             }
 
-            this.db.get(SqliteConstants.UPDATE_ADMIN_PASS, [newPass, username, currentPassword], (err, row: any) => {
+            this.db.get(SqliteConstants.UPDATE_USER_PASS, [newPass, username, currentPassword], (err, row: any) => {
                 if (err) {
                     console.error(err);
                     reject("Database error");
