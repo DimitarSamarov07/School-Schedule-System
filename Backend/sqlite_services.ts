@@ -114,7 +114,7 @@ class SqliteMaster {
     static async getAllRooms() : Promise<RoomResponse[]>{
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
-                this.db.all(SqliteConstants.SELECT_ALL_ROOMS, [], (err, rows: any) => {
+                this.db.all(SqliteConstants.SELECT_ROOMS_BY_SCHOOL, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
                         reject("Something went wrong with the database request. Contact the administrator.");
@@ -184,7 +184,7 @@ class SqliteMaster {
     static async getAllTimes() : Promise<TimeResponse[]>{
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
-                this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
+                this.db.all(SqliteConstants.SELECT_PERIODS_BY_SCHOOL, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
                         reject("Something went wrong with the database request. Contact the administrator.");
@@ -216,7 +216,7 @@ class SqliteMaster {
     static async getRunningTime(): Promise<RunningTime> {
         return new Promise((resolve, reject) => {
             this.db.serialize(() => {
-                this.db.all(SqliteConstants.SELECT_ALL_TIMES, [], (err, rows: any) => {
+                this.db.all(SqliteConstants.SELECT_PERIODS_BY_SCHOOL, [], (err, rows: any) => {
                     if (err) {
                         console.error(err);
                         reject("Something went wrong with the database request. Contact the administrator.");

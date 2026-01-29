@@ -2,6 +2,16 @@ CREATE DATABASE IF NOT EXISTS school_system;
 SET default_storage_engine = InnoDB;
 USE school_system;
 
+DROP TABLE IF EXISTS `Schedule`;
+DROP TABLE IF EXISTS `SchoolHolidays`;
+DROP TABLE IF EXISTS `Periods`;
+DROP TABLE IF EXISTS `Classes`;
+DROP TABLE IF EXISTS `Subjects`;
+DROP TABLE IF EXISTS `Rooms`;
+DROP TABLE IF EXISTS `SchoolMembers`;
+DROP TABLE IF EXISTS `Users`;
+DROP TABLE IF EXISTS `Schools`;
+
 -- 1. Core Independent Tables
 CREATE TABLE IF NOT EXISTS `Schools`
 (
@@ -51,6 +61,7 @@ CREATE TABLE IF NOT EXISTS `Rooms`
     `id`        INT AUTO_INCREMENT PRIMARY KEY,
     `school_id` INT          NOT NULL,
     `name`      VARCHAR(255) NOT NULL,
+    `floor`     INT          NOT NULL,
     `capacity`  INT DEFAULT 30,
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE
 );

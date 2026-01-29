@@ -39,10 +39,8 @@ class SqliteConstants {
          WHERE Name = (?)
          LIMIT 1;`
 
-    static readonly SELECT_ALL_TIMES = `
-        SELECT id, Start, End
-        FROM Times
-    `
+    static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT name,start_time,end_time FROM Periods WHERE school_id = (?);`
+    static readonly SELECT_ROOMS_BY_SCHOOL = `SELECT id,name,floor,capacity FROM Rooms WHERE school_id = (?);`
 
     static readonly SELECT_DATE_BY_DATE = `
         SELECT id, Date, IsHoliday
@@ -54,7 +52,6 @@ class SqliteConstants {
     static readonly SELECT_ALL_TEACHERS = `SELECT *FROM Teachers`
     static readonly SELECT_ALL_CLASSES = `SELECT *FROM Classes`
 
-    static readonly SELECT_ALL_ROOMS = `SELECT *FROM Rooms`
     static readonly SELECT_ALL_DATES = `SELECT *FROM Dates`
 
     //INSERT queries
