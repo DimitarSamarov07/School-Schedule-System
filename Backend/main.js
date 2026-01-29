@@ -7,8 +7,11 @@ import rateLimit from 'express-rate-limit';
 import authenticatorMaster from "./auth_services.ts";
 import cookieParser from "cookie-parser";
 import lusca from "lusca";
+import dotenv from 'dotenv'
 
 // Initializing Express App
+
+dotenv.config({path: "./.env"});
 
 const app = express();
 const limiter = rateLimit({
