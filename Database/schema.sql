@@ -2,26 +2,12 @@ CREATE DATABASE IF NOT EXISTS school_system;
 SET default_storage_engine = InnoDB;
 USE school_system;
 
-DROP TABLE IF EXISTS `Schedule`;
-DROP TABLE IF EXISTS `SchoolHolidays`;
-DROP TABLE IF EXISTS `Periods`;
-DROP TABLE IF EXISTS `Classes`;
-DROP TABLE IF EXISTS `Subjects`;
-DROP TABLE IF EXISTS `Rooms`;
-DROP TABLE IF EXISTS `SchoolMembers`;
-DROP TABLE IF EXISTS `Users`;
-DROP TABLE IF EXISTS `Schools`;
-
--- 1. Core Independent Tables
+-- 1. Core Tables
 CREATE TABLE IF NOT EXISTS `Schools`
 (
     `id`               INT AUTO_INCREMENT PRIMARY KEY,
     `name`             VARCHAR(255) NOT NULL,
     `address`          VARCHAR(512),
-
-    -- Configuration for "Default Rest Days"
-    -- Storing as JSON allows flexibility (e.g., [1,2,3,4,5] = Mon-Fri).
-    -- Defaulting to Mon-Fri (ISO Weekday 1-5).
     `work_week_config` JSON      DEFAULT '[
       1,
       2,
@@ -29,10 +15,10 @@ CREATE TABLE IF NOT EXISTS `Schools`
       4,
       5
     ]',
-
     `created_at`       TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Users: Only for people who LOG IN (Admins, Principal, etc.)
 CREATE TABLE IF NOT EXISTS `Users`
 (
     `id`            INT AUTO_INCREMENT PRIMARY KEY,
@@ -42,17 +28,27 @@ CREATE TABLE IF NOT EXISTS `Users`
     `created_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Linker Table (Defines Teachers & Admins contextually)
+-- Links Admins to Schools (Auth Logic)
 CREATE TABLE IF NOT EXISTS `SchoolMembers`
 (
     `school_id` INT NOT NULL,
     `user_id`   INT NOT NULL,
-    `is_admin`  BOOLEAN   DEFAULT FALSE, -- True = Admin, False = Standard Teacher/Staff
+    `is_admin` BOOLEAN DEFAULT FALSE,
     `joined_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
     PRIMARY KEY (`school_id`, `user_id`),
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`user_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE
+);
+
+-- 2. The New Teachers Table (Staffing Logic)
+-- No passwords, no accounts. Just employees.
+CREATE TABLE IF NOT EXISTS `Teachers`
+(
+    `id`        INT AUTO_INCREMENT PRIMARY KEY,
+    `school_id` INT          NOT NULL,
+    `name`      VARCHAR(255) NOT NULL,
+    `email`     VARCHAR(255), -- Optional contact email
+    FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE
 );
 
 -- 3. Academic Assets
@@ -61,8 +57,8 @@ CREATE TABLE IF NOT EXISTS `Rooms`
     `id`        INT AUTO_INCREMENT PRIMARY KEY,
     `school_id` INT          NOT NULL,
     `name`      VARCHAR(255) NOT NULL,
-    `floor`     INT          NOT NULL,
-    `capacity`  INT DEFAULT 30,
+    `floor`    INT NOT NULL DEFAULT 1,
+    `capacity` INT          DEFAULT 30,
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE
 );
 
@@ -79,35 +75,34 @@ CREATE TABLE IF NOT EXISTS `Classes`
 (
     `id`           INT AUTO_INCREMENT PRIMARY KEY,
     `school_id`    INT          NOT NULL,
-    `name`         VARCHAR(255) NOT NULL, -- e.g. "Grade 10"
+    `name` VARCHAR(255) NOT NULL,
     `home_room_id` INT          NULL,
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`home_room_id`) REFERENCES `Rooms` (`id`) ON DELETE SET NULL
 );
 
--- 4. Time Management & Exceptions
+-- 4. Time Management
 CREATE TABLE IF NOT EXISTS `Periods`
 (
     `id`         INT AUTO_INCREMENT PRIMARY KEY,
     `school_id`  INT         NOT NULL,
-    `name`       VARCHAR(50) NOT NULL, -- e.g. "1st Period"
+    `name` VARCHAR(50) NOT NULL,
     `start_time` TIME        NOT NULL,
     `end_time`   TIME        NOT NULL,
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE
 );
 
--- Handles specific holidays or events
 CREATE TABLE IF NOT EXISTS `SchoolHolidays`
 (
     `id`         INT AUTO_INCREMENT PRIMARY KEY,
     `school_id`  INT          NOT NULL,
-    `name`       VARCHAR(255) NOT NULL, -- e.g. "Sports Day", "Winter Break"
+    `name`     VARCHAR(255) NOT NULL,
     `start_date` DATE         NOT NULL,
-    `end_date`   DATE         NOT NULL, -- For single day events, start_date = end_date
+    `end_date` DATE         NOT NULL,
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE
 );
 
--- The Master Schedule
+-- 5. The Master Schedule
 CREATE TABLE IF NOT EXISTS `Schedule`
 (
     `id`         INT AUTO_INCREMENT PRIMARY KEY,
@@ -122,12 +117,15 @@ CREATE TABLE IF NOT EXISTS `Schedule`
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`period_id`) REFERENCES `Periods` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`class_id`) REFERENCES `Classes` (`id`) ON DELETE CASCADE,
-    FOREIGN KEY (`teacher_id`) REFERENCES `Users` (`id`) ON DELETE CASCADE,
+    FOREIGN KEY (`teacher_id`) REFERENCES `Teachers` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`subject_id`) REFERENCES `Subjects` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`room_id`) REFERENCES `Rooms` (`id`) ON DELETE CASCADE,
 
-    -- SMART CONSTRAINTS
+    -- CONSTRAINTS
+    -- 1. Room cannot be double booked
     UNIQUE KEY `unique_room_time` (`date`, `period_id`, `room_id`),
+    -- 2. Teacher cannot be double booked
     UNIQUE KEY `unique_teacher_time` (`date`, `period_id`, `teacher_id`),
+    -- 3. Class cannot be double booked
     UNIQUE KEY `unique_class_time` (`date`, `period_id`, `class_id`)
 );
