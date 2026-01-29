@@ -1,12 +1,15 @@
 class Room {
     Id: number;
+    SchoolId: number;
     Name: string;
     Floor: number;
+    Capacity: number;
 
-    constructor(id: number, name: string, floor:number) {
-        this.Id = id;
+    constructor(schoolId: number, name: string, floor: number, capacity: number) {
+        this.SchoolId = schoolId;
         this.Name = name;
         this.Floor = floor;
+        this.Capacity = capacity;
     }
 }
 

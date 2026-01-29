@@ -364,7 +364,7 @@ app.post("/room", async (req, res) => {
  *   - start: string (HH:MM format)
  *   - end: string (HH:MM format)
  * Returns:
- *   - 200: Created the Time object with ID
+ *   - 200: Created the Period object with ID
  *   - 406: "Malformed parameters" if start/end missing
  *   - 500: Database error message
  */
