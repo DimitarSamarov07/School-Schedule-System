@@ -33,7 +33,8 @@ class MariaDBConstants {
     static readonly SELECT_SCHEDULES_FOR_DATE_AND_SUBJECT_ID = `${this.BASE_SCHEDULE_QUERY} AND sch.date = (?) AND sub.id = (?) `
 
     static readonly SELECT_BREAKS = `SELECT id, end_time as 'Start', LEAD(start_time) over (ORDER BY id) as 'End'
-                                     from Periods `
+                                     from Periods  WHERE school_id = (?);`
+
     static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME_AND_SCHOOL = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND (?) BETWEEN p.start_time AND p.end_time`
 
     static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT name,start_time,end_time FROM Periods WHERE school_id = (?);`

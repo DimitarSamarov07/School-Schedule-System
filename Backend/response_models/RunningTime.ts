@@ -1,12 +1,13 @@
 class RunningTime {
+    label: string;
     startTime: string;
     endTime: string;
-    numberInSchedule: number;
 
-    constructor(numberInSchedule: number, startTime: string, endTime: string) {
+
+    constructor(label: string, startTime: string, endTime: string) {
         this.startTime = startTime;
         this.endTime = endTime;
-        this.numberInSchedule = numberInSchedule;
+        this.label = label;
     }
 }
 
