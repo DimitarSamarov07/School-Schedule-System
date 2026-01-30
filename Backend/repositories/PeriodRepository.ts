@@ -1,6 +1,8 @@
 import PeriodResponse from "../response_models/PeriodResponse.ts";
 import CONSTANTS from "../MariaDBConstants.ts";
 import {connectionPoolFactory} from "../DBConfig.ts";
+import moment from "moment";
+import RunningTime from "../response_models/RunningTime.ts";
 
 
 export class PeriodRepository {
@@ -10,6 +12,22 @@ export class PeriodRepository {
             return rows.map((row: any) => new PeriodResponse(row));
         });
     }
+
+    public static async getRunningPeriodForSchool(schoolId: number): Promise<RunningTime> {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(CONSTANTS.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
+            let resArr = rows.map((row: any) => new PeriodResponse(row));
+            const now = moment();
+            for (let i = 0; i < resArr.length; i++) {
+                const start = moment(resArr[i].Start, 'HH:mm:ss');
+                const end = moment(resArr[i].End, 'HH:mm:ss');
+                if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
+                    return new RunningTime(resArr[i].Name, resArr[i].Start, resArr[i].End);
+                }
+            }
+        });
+    }
+
 
     public static async createPeriod(schoolId: number, name: string, startTime: string, endTime: string): Promise<PeriodResponse> {
         return await connectionPoolFactory(async (conn) => {
