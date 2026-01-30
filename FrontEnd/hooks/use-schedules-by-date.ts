@@ -1,27 +1,25 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
-import {BASE_URL, ENDPOINTS} from "@/lib/constants";
+import { BASE_URL, ENDPOINTS } from "@/lib/constants";
 
-/**
- * Retrieves schedules for a specific date using the SWR hook.
- *
- * @param {string} date - The date for which to fetch schedules, in the format 'YYYY-MM-DD'.
- * @return {Object} An object containing the fetched schedule data, any error encountered, and the loading state.
- * @return {any} return.scheduleData - The data of the schedules retrieved from the API.
- * @return {Error | undefined} return.scheduleError - Error object if an error occurred during the data fetch, otherwise undefined.
- * @return {boolean} return.isLoading - Indicates whether the data fetch is currently in progress.
- */
-export default function useSchedulesByDate(date: string){
-  const URL = BASE_URL + ENDPOINTS.SCHEDULES_BY_DATE;
+export default function useSchedulesByDateTimeAndSchool(schoolId: number, date: string, time: string) {
+
+  const queryParams = new URLSearchParams({
+    schoolId: schoolId.toString(),
+    date: date,
+    time: time
+  }).toString();
+
+  const URL = `${BASE_URL}${ENDPOINTS.SCHEDULES_BY_DATE_TIME_SCHOOL}?${queryParams}`;
   const { data, error, isLoading } = useSWR(
-    `${URL}?date=${date}`,
-    fetcher, 
-    { refreshInterval: 10000 }
+      URL,
+      fetcher,
+      { refreshInterval: 10000 }
   );
+
   return {
-    scheduleData: data,
+    scheduleData: data || [],
     scheduleError: error,
     isLoading
-  }
-
+  };
 }

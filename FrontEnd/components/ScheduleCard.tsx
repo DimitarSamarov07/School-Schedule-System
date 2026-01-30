@@ -12,14 +12,14 @@ export default function ScheduleCard({ data }: { data: ScheduleItem }) {
       <div className="bg-primary p-7 grow flex flex-col justify-between min-h-57.5">
         <div className="space-y-1">
           <h3 className="text-3xl font-bold text-white leading-tight">
-            {data.Course.Name}
+            {data.Subject.Name}
           </h3>
         </div>
         <div className="space-y-1">
           <p className="text-xl text-white/80">
-            {data.Course.Teacher.FirstName} {data.Course.Teacher.LastName}
+              {data.Teacher.Name}
           </p>
-          <p className="text-xl text-white/80">Стая {data.Course.Room.Name}</p>
+          <p className="text-xl text-white/80">Стая {data.Class.Room.Name}</p>
         </div>
       </div>
     </div>

@@ -4,11 +4,12 @@ import ScheduleCard from "@/components/ScheduleCard";
 import {useEffect, useRef, useState} from "react";
 import {GraduationCap, User} from "lucide-react";
 import {ScheduleItem} from "@/types/schedule";
-import {useRunningTime} from "@/hooks/use-running-time";
-import useSchedulesByDate from "@/hooks/use-schedules-by-date";
+import {useRunningPeriod,useNextPeriod} from "@/hooks/use-running-time";
+// import useSchedulesByDate from "@/hooks/use-schedules-by-date";
 import {useAutoScroll} from "@/hooks/use-auto-scroll";
 import {getFormattedScheduleStrings} from "@/lib/utils";
 import Link from "next/link";
+import useSchedulesByDateTimeAndSchool from "@/hooks/use-schedules-by-date";
 
 export default function Timetable() {
     const [mounted, setMounted] = useState(false);
@@ -19,8 +20,21 @@ export default function Timetable() {
         setMounted(true);
     }, []);
 
-    const {timeData, timeError} = useRunningTime();
-    const {scheduleData, scheduleError} = useSchedulesByDate("2025-07-07");
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-expect-error
+    const {timeData, timeError} = useRunningPeriod(1);
+    const {nextTimeData, nextTimeError} = useNextPeriod(1);
+    // Define your inputs
+    const schoolId = 1;
+    const date = "2023-10-16"; // Format: YYYY-MM-DD
+    const time = "08:40:00";   // Format: HH:mm:ss
+
+    // Call the hook
+    const { scheduleData, scheduleError, isLoading } = useSchedulesByDateTimeAndSchool(
+        schoolId,
+        date,
+        time
+    );
     useAutoScroll({
         scrollRef,
         data: scheduleData,
@@ -29,21 +43,14 @@ export default function Timetable() {
     });
 
     if (!mounted) return <div className="p-8 color-red-400">Initializing...</div>;
-    if (timeError || scheduleError)
-        return <div className="p-8 text-red-500">Error loading data.</div>;
-    if (!timeData || !scheduleData)
-        return <div className="p-8 text-slate-500">Loading schedule...</div>;
+     if (timeError || nextTimeError)
+         return <div className="p-8 text-red-500">Error loading data.</div>;
+     if (!timeData  || !nextTimeData)
+         return <div className="p-8 text-slate-500">Loading schedule...</div>;
 
-    const hour = timeData.currentHour.numberInSchedule;
-    const startTime = timeData.currentHour.startTime;
-    const endTime = timeData.currentHour.endTime;
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    const {classNumber, timeRange} = getFormattedScheduleStrings({
-        hour: hour,
-        startTime: startTime,
-        endTime: endTime,
-    });
+    const currPeriod = timeData;
+    const nextPeriod = nextTimeData;
+
 
     return (
         <>
@@ -62,9 +69,9 @@ export default function Timetable() {
                     <div className="mt-8 p-1">
                         <p className="text-purple-100 text-lg font-medium">В момента</p>
                         <h3 className="text-6xl font-extrabold my-2">
-                            {classNumber || "Почивка"}
+                            {currPeriod.label}
                         </h3>
-                        <p className="text-xl text-purple-100/80">{timeRange}</p>
+                        <p className="text-xl text-purple-100/80">{currPeriod.startTime} - {currPeriod.endTime}</p>
                     </div>
                 </div>
 
@@ -72,15 +79,15 @@ export default function Timetable() {
                 <main className="max-w-7xl mx-auto p-10">
                     <header className="mb-10 text-center">
                         <h2 className="text-4xl font-bold text-slate-900 pb-7">
-                            Следващ час: 3ти час
+                            Следващ час: {nextPeriod.label}
                         </h2>
-                        <p className="text-4xl font-normal text-slate-400">10:20 - 11:30</p>
+                        <p className="text-4xl font-normal text-slate-400">{nextPeriod.startTime} - {nextPeriod.endTime}</p>
                     </header>
                     <div
                         ref={scrollRef}
                         className="flex overflow-x-auto snap-x snap-mandatory scroll-smooth no-scrollbar gap-6 pb-4"
                     >
-                        {scheduleData.map((item: ScheduleItem, index: number) => (
+                        {scheduleData?.map((item: ScheduleItem, index: number) => (
                             <div
                                 key={index}
                                 className="flex-none w-full md:w-[calc(33.333%-1rem)] lg:w-[calc(25%-1.125rem)] snap-start"
