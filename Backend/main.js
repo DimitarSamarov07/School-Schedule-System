@@ -134,7 +134,8 @@ app.get("/currentPeriod", async (req, res) => {
     let result = await manager.Periods.getRunningPeriodForSchool(schoolId).catch(err => {
         return res.status(500).send({"error": err});
     });
-    return res.status(200).send({currentHour: result});
+    if (result === null) return res.status(204).send({label: null, startTime: null, endTime: null});
+    return res.status(200).send(result);
 })
 
 
@@ -143,7 +144,7 @@ app.get("/nextPeriod", async (req, res) => {
     let result = await manager.Periods.getNextRunningPeriodForSchool(schoolId).catch(err => {
         return res.status(500).send({"error": err});
     });
-    return res.status(200).send({currentHour: result});
+    return res.status(200).send( result);
 })
 
 
