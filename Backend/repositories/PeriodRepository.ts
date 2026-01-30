@@ -28,6 +28,43 @@ export class PeriodRepository {
         });
     }
 
+    public static async getNextRunningPeriodForSchool(schoolId: number): Promise<RunningTime | null> {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(CONSTANTS.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
+
+            // 1. Ensure the periods are sorted by time
+            let resArr = rows
+                .map((row: any) => new PeriodResponse(row))
+                .sort((a, b) => moment(a.Start, 'HH:mm:ss').diff(moment(b.Start, 'HH:mm:ss')));
+
+            const now = moment();
+
+            for (let i = 0; i < resArr.length; i++) {
+                const currentPeriodEnd = moment(resArr[i].End, 'HH:mm:ss');
+                if (now.isBefore(currentPeriodEnd)) {
+                    let nextRow = resArr[i+1];
+                    if (resArr[i + 1]) {
+                        return new RunningTime(
+                            nextRow.Name,
+                            nextRow.Start,
+                            nextRow.End
+                        );
+                    }
+                }
+            }
+
+            if (resArr.length > 0) {
+                return new RunningTime(
+                    resArr[resArr.length - 1].Name,
+                    resArr[resArr.length - 1].End,
+                    resArr[0].Start
+                );
+            }
+
+            return null;
+        });
+    }
+
 
     public static async createPeriod(schoolId: number, name: string, startTime: string, endTime: string): Promise<PeriodResponse> {
         return await connectionPoolFactory(async (conn) => {
