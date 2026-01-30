@@ -60,7 +60,8 @@ async function checkUserAuthenticationMiddleware(req, res, next) {
  * GET /schedulesByDate
  * Retrieves all schedules for a given date
  * Query params:
- *   - date: string (YYYY-MM-DD format)
+ *   -
+ * : string (YYYY-MM-DD format)
  * Returns:
  *   - 200: Array of Schedule objects
  *   - 406: "Malformed parameter" if the date is missing or invalid
@@ -350,57 +351,7 @@ app.post("/time", async (req, res) => {
         })
 })
 
-/*
- * POST /advertising
- * Creates a new advertising record
- * Body params:
- *   - text: string
- *   - imagePath: string
- * Returns:
- *   - 200: Created the Advertising object with ID
- *   - 406: "Malformed parameters" if text/imagePath missing
- *   - 500: Database error message
- */
-app.post("/advertising", async (req, res) => {
-    let {text, imagePath} = req.body;
-    if (!text || !imagePath) {
-        return res.status(406).send("Malformed parameters");
-    }
 
-    return await manager.createAdvertising(text, imagePath)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
-
-/*
- * POST /bell
- * Creates a new bell record
- * Body params:
- *   - name: string
- *   - soundPath: string
- * Returns:
- *   - 200: Created the Bell object with ID
- *   - 406: "Malformed parameters" if name/soundPath missing
- *   - 500: Database error message
- */
-app.post("/bell", async (req, res) => {
-    let {name, soundPath} = req.body;
-    if (!name || !soundPath) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await manager.createBell(name, soundPath)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
 
 /*
  * POST /schedule
@@ -442,41 +393,13 @@ app.post("/schedule", async (req, res) => {
  *   - 406: "Malformed parameters" if name/teacherId/roomId missing
  *   - 500: Database error message
  */
-app.post("/course", async (req, res) => {
-    let {name, teacherId, roomId} = req.body;
-    if (!name || !teacherId || !roomId) {
+app.post("/subject", async (req, res) => {
+    let {name, schoolId, description} = req.body;
+    if (!name || !description || !schoolId) {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createCourse(name, teacherId, roomId)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-
-})
-
-/*
- * POST /date
- * Creates a new date entry in the database
- * Body params:
- *   - date: string (required) - The date in YYYY-MM-DD format
- *   - isHoliday: boolean (required) - Flag indicating if the date is a holiday
- * Returns:
- *   - 200: Created date object with generated ID
- *   - 406: "Malformed parameters" if date or isHoliday is missing
- *   - 500: Database error message
- */
-
-app.post("/date", async (req, res) => {
-    let {date, isHoliday} = req.body;
-    if (!date || !isHoliday) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await manager.createDate(date, isHoliday)
+    return await manager.Subjects.createSubject(schoolId, name, description)
         .then(result => {
             return res.send(result);
         })
@@ -502,12 +425,12 @@ app.post("/date", async (req, res) => {
  *   - 500: Database error message
  */
 app.put("/teacher", async (req, res) => {
-    let {firstName, lastName, id} = req.body;
-    if ((!firstName && !lastName) || !id) {
+    let {name, email, id} = req.body;
+    if ((!name && !email) || !id) {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateTeacher(id, firstName, lastName)
+    return await manager.Teachers.updateTeacher(id, name,email )
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -534,12 +457,12 @@ app.put("/teacher", async (req, res) => {
  *   - 500: Database error message
  */
 app.put("/class", async (req, res) => {
-    let {name, description, id} = req.body;
-    if ((!name && !description) || !id) {
+    let {name, homeRoomId, id} = req.body;
+    if ((!name && !homeRoomId) || !id) {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateClass(id, name, description)
+    return await manager.Classes.updateClass(id, name, homeRoomId)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -649,101 +572,6 @@ app.put("/room", async (req, res) => {
         })
 })
 
-/*
- * PUT /advertising
- * Updates an existing advertising content
- * Body params:
- *   - id: number (required)
- *   - content: string (optional)
- *   - imagePath: string (optional)
- * Returns:
- *   - 200: Updated advertising object if successful
- *   - 406: "Malformed parameters" if id missing or both content and imagePath missing
- *   - 422: false if update failed
- *   - 500: Database error message
- */
-app.put("/advertising", async (req, res) => {
-    let {content, imagePath, id} = req.body;
-    if ((!content && !imagePath) || !id) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await manager.updateAdvertising(id, content, imagePath)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
-
-/*
- * PUT /bell
- * Updates existing bell information
- * Body params:
- *   - id: number (required)
- *   - name: string (optional)
- *   - soundPath: string (optional)
- * Returns:
- *   - 200: Updated bell object if successful
- *   - 406: "Malformed parameters" if id missing or both name and soundPath missing
- *   - 422: false if update failed
- *   - 500: Database error message
- */
-app.put("/bell", async (req, res) => {
-    let {name, soundPath, id} = req.body;
-    if ((!name && !soundPath) || !id) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await manager.updateBell(id, name, soundPath)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
-/*
- * PUT /date
- * Updates an existing date entry in theAdd an authentication service with the ability to create JWT database
- * Body params:
- *   - id: number (required) - The ID of the date entry to update
- *   - date: string (optional) - The new date in YYYY-MM-DD format
- *   - isHoliday: boolean (optional) - Flag indicating if the date is a holiday
- * Returns:
- *   - 200: Updated date object if successful
- *   - 406: "Malformed parameters" if id is missing or both date and isHoliday are missing
- *   - 422: false if update failed (e.g., date not found)
- *   - 500: Database error message
- */
-
-app.put("/date", async (req, res) => {
-    let {id, date, isHoliday} = req.body;
-    if ((!date && !isHoliday) || !id) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await manager.updateDate(id, date, isHoliday)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
 
 /*
  * PUT /schedule
@@ -796,7 +624,7 @@ app.put("/schedule", async (req, res) => {
 app.delete("/class", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.deleteClass(id)
+    return await manager.Classes.deleteClass(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -819,10 +647,10 @@ app.delete("/class", async (req, res) => {
  *   - 422: false if deletion failed
  *   - 500: Database error message
  */
-app.delete("/course", async (req, res) => {
+app.delete("/subject", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.deleteCourse(id)
+    return await manager.Subjects.deleteSubject(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -835,31 +663,7 @@ app.delete("/course", async (req, res) => {
         })
 })
 
-/*
- * DELETE /date
- * Deletes a date record by ID 
- * Query params:
- *   - id: number
- * Returns:
- *   - 200: true if deleted successfully
- *   - 422: false if deletion failed
- *   - 500: Database error message
- */
-app.delete("/date", async (req, res) => {
-    let {id} = req.query;
 
-    return await manager.deleteDate(id)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
 
 /*
  * DELETE /time
@@ -871,10 +675,10 @@ app.delete("/date", async (req, res) => {
  *   - 422: false if deletion failed
  *   - 500: Database error message
  */
-app.delete("/time", async (req, res) => {
+app.delete("/period", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.deleteTime(id)
+    return await manager.Periods.deletePeriod(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -886,32 +690,6 @@ app.delete("/time", async (req, res) => {
             return res.status(500).send({"error": err});
         })
 
-})
-
-/*
- * DELETE /bell
- * Deletes a bell record by ID
- * Query params:
- *   - id: number
- * Returns:
- *   - 200: true if deleted successfully
- *   - 422: false if deletion failed
- *   - 500: Database error message
- */
-app.delete("/bell", async (req, res) => {
-    let {id} = req.query;
-
-    return await manager.deleteBell(id)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
 })
 
 /*
@@ -927,7 +705,7 @@ app.delete("/bell", async (req, res) => {
 app.delete("/teacher", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.deleteTeacher(id)
+    return await manager.Teachers.deleteTeacher(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -953,7 +731,7 @@ app.delete("/teacher", async (req, res) => {
 app.delete("/room", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.deleteRoom(id)
+    return await manager.Rooms.deleteRoom(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -993,31 +771,7 @@ app.delete("/schedule", async (req, res) => {
             return res.status(500).send({"error": err});
         })
 })
-/*
- * DELETE /advertising
- * Deletes an advertising entry from the database
- * Query params:
- *   - id: number (required) - The ID of the advertising entry to delete
- * Returns:
- *   - 200: true if deletion was successful
- *   - 422: false if deletion failed (e.g., advertising not found)
- *   - 500: Database error message if operation fails
- */
-app.delete("/advertising", async (req, res) => {
-    let {id} = req.query;
 
-    return await manager.deleteAdvertising(id)
-        .then(result => {
-            if (result) {
-                return res.send(result);
-            } else {
-                return res.status(422).send(false);
-            }
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-})
 
 //await authenticatorMaster.initializeAuthenticator();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
