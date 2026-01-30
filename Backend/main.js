@@ -129,9 +129,18 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
  *   - 200: {currentHour: string} Current hour value
  *   - 500: Database error message
  */
-app.get("/runningTime", async (req, res) => {
+app.get("/currentPeriod", async (req, res) => {
     let {schoolId} = req.query;
     let result = await manager.Periods.getRunningPeriodForSchool(schoolId).catch(err => {
+        return res.status(500).send({"error": err});
+    });
+    return res.status(200).send({currentHour: result});
+})
+
+
+app.get("/nextPeriod", async (req, res) => {
+    let {schoolId} = req.query;
+    let result = await manager.Periods.getNextRunningPeriodForSchool(schoolId).catch(err => {
         return res.status(500).send({"error": err});
     });
     return res.status(200).send({currentHour: result});
