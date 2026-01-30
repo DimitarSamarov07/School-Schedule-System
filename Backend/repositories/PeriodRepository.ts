@@ -24,6 +24,11 @@ export class PeriodRepository {
                 if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
                     return new RunningTime(resArr[i].Name, resArr[i].Start, resArr[i].End);
                 }
+                else{
+                    return new RunningTime(
+                        "Неучебно време",null,null
+                    );
+                }
             }
         });
     }
@@ -32,7 +37,6 @@ export class PeriodRepository {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(CONSTANTS.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
 
-            // 1. Ensure the periods are sorted by time
             let resArr = rows
                 .map((row: any) => new PeriodResponse(row))
                 .sort((a, b) => moment(a.Start, 'HH:mm:ss').diff(moment(b.Start, 'HH:mm:ss')));
@@ -55,9 +59,9 @@ export class PeriodRepository {
 
             if (resArr.length > 0) {
                 return new RunningTime(
-                    resArr[resArr.length - 1].Name,
-                    resArr[resArr.length - 1].End,
-                    resArr[0].Start
+                    "Неучебно време",
+                    null,
+                    null
                 );
             }
 
