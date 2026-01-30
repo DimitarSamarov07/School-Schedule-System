@@ -13,17 +13,32 @@ import {BASE_URL, ENDPOINTS} from "@/lib/constants";
  * - `timeError`: An error object if the data fetching fails.
  * - `isLoading`: A boolean indicating if the data is currently being fetched.
  */
-export function useRunningTime() {
-  const URL = BASE_URL + ENDPOINTS.RUNNING_TIME;
+export function useRunningPeriod(schoolId: number): object {
+  const URL = BASE_URL + ENDPOINTS.RUNNING_PERIOD +`?schoolId=${schoolId}`;
   const { data, error, isLoading } = useSWR(
     URL,
-    fetcher, 
+    fetcher,
     { refreshInterval: 10000 }
   );
 
   return {
-    timeData: data,
+    timeData:  data,
     timeError: error,
+    isLoading
+  };
+}
+
+export function useNextPeriod(schoolId: number) {
+  const URL = BASE_URL + ENDPOINTS.NEXT_PERIOD + `?schoolId=${schoolId}`;
+  const { data, error, isLoading } = useSWR(
+      URL,
+      fetcher,
+      { refreshInterval: 10000 }
+  );
+
+  return {
+    nextTimeData: data,
+    nextTimeError: error,
     isLoading
   };
 }

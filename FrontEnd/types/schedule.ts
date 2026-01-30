@@ -11,13 +11,12 @@ interface ScheduleProps {
   };
 }
 export interface ScheduleItem {
-  Class: { Name: string; Description: string };
-  Course: { 
-    Name: string; 
-    Teacher: { FirstName: string; LastName: string };
-    Room: { Name: string; Floor: number };
+  Class: { Name: string; Room: { Name: string; Floor: number } };
+  Subject: {
+    Name: string;
   };
-  Times: { Start: string; End: string };
+  Teacher: { Name: string; };
+  Period: { Start: string; End: string };
   Date: { Date: string };
 }
 export interface ClassInfo {
