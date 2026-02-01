@@ -1,11 +1,11 @@
-import PeriodResponse from "../response_models/PeriodResponse.ts";
-import CONSTANTS from "../MariaDBConstants.ts";
-import {connectionPoolFactory} from "../DBConfig.ts";
+import PeriodResponse from "../../response_models/PeriodResponse.ts";
+import CONSTANTS from "../../MariaDBConstants.ts";
+import {connectionPoolFactory} from "../db_service.ts";
 import moment from "moment";
-import RunningTime from "../response_models/RunningTime.ts";
+import RunningTime from "../../response_models/RunningTime.ts";
 
 
-export class PeriodRepository {
+export class PeriodService {
     public static async getAllPeriodsForSchool(schoolId: number): Promise<PeriodResponse[]> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(CONSTANTS.SELECT_PERIODS_BY_SCHOOL, [schoolId]);

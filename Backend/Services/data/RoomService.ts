@@ -1,8 +1,8 @@
-import RoomResponse from "../response_models/RoomResponse.ts";
-import CONSTANTS from "../MariaDBConstants.ts";
-import {connectionPoolFactory} from "../DBConfig.ts";
+import RoomResponse from "../../response_models/RoomResponse.ts";
+import CONSTANTS from "../../MariaDBConstants.ts";
+import {connectionPoolFactory} from "../db_service.ts";
 
-export class RoomRepository {
+export class RoomService {
     public static async getAllRoomsForSchool(schoolId: number): Promise<RoomResponse[]> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(CONSTANTS.SELECT_ROOMS_BY_SCHOOL, [schoolId]);
