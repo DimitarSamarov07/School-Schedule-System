@@ -1,12 +1,15 @@
 import express from "express";
-import MariaDBServices  from "./MariaDBServices.ts";
 import moment from "moment";
 import helmet from "helmet";
 import cors from "cors";
 import rateLimit from 'express-rate-limit';
-import authenticatorMaster from "./auth_services.ts";
+import authenticatorMaster from "./Services/auth_services.ts";
 import cookieParser from "cookie-parser";
-import lusca from "lusca";
+import {ScheduleService as scheduleService} from "./Services/data/ScheduleService.ts";
+import {ClassService as classService} from "./Services/data/ClassService.ts";
+import {PeriodService as periodService} from "./Services/data/PeriodService.ts";
+import {RoomService as roomService} from "./Services/data/RoomService.ts";
+import {TeacherService as teacherService} from "./Services/data/TeacherService.ts";
 
 // Initializing Express App
 
@@ -38,7 +41,6 @@ app.use(cors({
 app.set('trust proxy', 1);
 
 let port = 1343;
-let manager = MariaDBServices;
 
 async function checkUserAuthenticationMiddleware(req, res, next) {
     let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
@@ -77,7 +79,7 @@ app.get("/schedulesByDate", async (req, res) => {
     } catch (e) {
         return res.status(406).send("Malformed date. The correct format is YYYY-MM-DD");
     }
-    return await manager.Schedules.getAllSchedulesForDate(date)
+    return await scheduleService.getAllSchedulesForDate(date)
         .then(result => {
             return res.send(result);
         })
@@ -113,7 +115,7 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
     if (isNaN(classIdParsed)) {
         return res.status(406).send("Malformed classId");
     }
-    return await manager.getSchedulesByClassIdForDate(classId, date)
+    return await scheduleService.getSchedulesByClassIdForDate(classId, date)
         .then(result => {
             return res.send(result);
         })
@@ -131,7 +133,7 @@ app.get("/schedulesByClassIdForDate", async (req, res) => {
  */
 app.get("/currentPeriod", async (req, res) => {
     let {schoolId} = req.query;
-    let result = await manager.Periods.getRunningPeriodForSchool(schoolId).catch(err => {
+    let result = await schoolManager.Periods.getRunningPeriodForSchool(schoolId).catch(err => {
         return res.status(500).send({"error": err});
     });
     if (result === null) return res.status(204).send({label: null, startTime: null, endTime: null});
@@ -141,7 +143,7 @@ app.get("/currentPeriod", async (req, res) => {
 
 app.get("/nextPeriod", async (req, res) => {
     let {schoolId} = req.query;
-    let result = await manager.Periods.getNextRunningPeriodForSchool(schoolId).catch(err => {
+    let result = await periodService.getNextRunningPeriodForSchool(schoolId).catch(err => {
         return res.status(500).send({"error": err});
     });
     return res.status(200).send( result);
@@ -151,7 +153,7 @@ app.get("/nextPeriod", async (req, res) => {
 app.get("/schedulesByDateTimeAndSchool", async (req, res) => {
     let {schoolId} = req.query;
     let {date, time} = req.body;
-    return await manager.Schedules.getSchedulesByDateAndTimeAndSchool(schoolId, date, time)
+    return await scheduleService.getSchoolSchedulesByDateAndTime(schoolId, date, time)
         .then(result => {
             return res.send(result);
         })
@@ -165,7 +167,7 @@ app.get("/schedulesByDateTimeAndSchool", async (req, res) => {
 
 app.get("/teacher", async (req, res) => {
     let {schoolId} = req.query;
-    return await manager.Teachers.getAllTeachersForSchool(schoolId)
+    return await teacherService.getAllTeachersForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
@@ -179,7 +181,7 @@ app.get("/teacher", async (req, res) => {
 
 app.get("/room", async (req, res) => {
     let {schoolId} = req.query;
-    return await manager.Rooms.getAllRoomsForSchool(schoolId)
+    return await roomService.getAllRoomsForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
@@ -193,7 +195,7 @@ app.get("/room", async (req, res) => {
 
 app.get("/class", async (req, res) => {
     let {schoolId} = req.query;
-    return await manager.Classes.getAllClassesForSchool(schoolId)
+    return await classService.getAllClassesForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
@@ -207,7 +209,7 @@ app.get("/class", async (req, res) => {
 
 app.get("/time", async (req, res) => {
     let {schoolId} = req.query;
-    return await manager.Periods.getAllPeriodsForSchool(schoolId)
+    return await periodService.getAllPeriodsForSchool(schoolId)
         .then(result => {
             return res.send(result);
         })
@@ -244,7 +246,7 @@ app.post("/teacher", checkUserAuthenticationMiddleware, async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createTeacher(firstName, lastName)
+    return await teacherService.createTeacher(firstName, lastName)
         .then(result => {
             return res.send(result);
         })
@@ -259,7 +261,7 @@ app.post("/register", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.registerNewAdmin(username, email, password)
+    return await schoolManager.registerNewAdmin(username, email, password)
         .then(result => {
             return res.send(result);
         })
@@ -273,7 +275,7 @@ app.post("/login", async (req, res) => {
     if (!username || !password) {
         return res.status(406).send("Malformed parameters");
     }
-    let isAdmin = await manager.checkAdminCredentials(username, password);
+    let isAdmin = await schoolManager.checkAdminCredentials(username, password);
     if (!isAdmin) {
         return res.status(403).send({"error": "Invalid credentials."})
     }
@@ -299,7 +301,7 @@ app.post("/class", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createClass(name, description)
+    return await schoolManager.createClass(name, description)
         .then(result => {
             return res.send(result);
         })
@@ -325,7 +327,7 @@ app.post("/room", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createRoom(name, floor)
+    return await schoolManager.createRoom(name, floor)
         .then(result => {
             return res.send(result);
         })
@@ -352,7 +354,7 @@ app.post("/time", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createTime(start, end)
+    return await schoolManager.createTime(start, end)
         .then(result => {
             return res.send(result);
         })
@@ -382,7 +384,7 @@ app.post("/schedule", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.createSchedule(courseId, classId, timeId, dateId)
+    return await schoolManager.createSchedule(courseId, classId, timeId, dateId)
         .then(result => {
             return res.send(result);
         })
@@ -409,7 +411,7 @@ app.post("/subject", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.Subjects.createSubject(schoolId, name, description)
+    return await schoolManager.Subjects.createSubject(schoolId, name, description)
         .then(result => {
             return res.send(result);
         })
@@ -440,7 +442,7 @@ app.put("/teacher", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.Teachers.updateTeacher(id, name,email )
+    return await schoolManager.Teachers.updateTeacher(id, name, email)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -472,7 +474,7 @@ app.put("/class", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.Classes.updateClass(id, name, homeRoomId)
+    return await schoolManager.Classes.updateClass(id, name, homeRoomId)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -505,7 +507,7 @@ app.put("/course", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateCourse(id, name, teacherId, roomId)
+    return await schoolManager.updateCourse(id, name, teacherId, roomId)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -537,7 +539,7 @@ app.put("/time", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateTime(id, start, end)
+    return await schoolManager.updateTime(id, start, end)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -569,7 +571,7 @@ app.put("/room", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager.updateRoom(id, name, floor)
+    return await schoolManager.updateRoom(id, name, floor)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -606,7 +608,7 @@ app.put("/schedule", async (req, res) => {
         return res.status(406).send("Malformed parameters");
     }
 
-    return await manager
+    return await schoolManager
         .updateSchedule(oldClassId, oldCourseId, oldDateId, newClassId, newCourseId, newTimeId, newDateId)
         .then(result => {
             if (result) {
@@ -634,7 +636,7 @@ app.put("/schedule", async (req, res) => {
 app.delete("/class", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.Classes.deleteClass(id)
+    return await schoolManager.Classes.deleteClass(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -660,7 +662,7 @@ app.delete("/class", async (req, res) => {
 app.delete("/subject", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.Subjects.deleteSubject(id)
+    return await schoolManager.Subjects.deleteSubject(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -688,7 +690,7 @@ app.delete("/subject", async (req, res) => {
 app.delete("/period", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.Periods.deletePeriod(id)
+    return await schoolManager.Periods.deletePeriod(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -715,7 +717,7 @@ app.delete("/period", async (req, res) => {
 app.delete("/teacher", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.Teachers.deleteTeacher(id)
+    return await schoolManager.Teachers.deleteTeacher(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -741,7 +743,7 @@ app.delete("/teacher", async (req, res) => {
 app.delete("/room", async (req, res) => {
     let {id} = req.query;
 
-    return await manager.Rooms.deleteRoom(id)
+    return await schoolManager.Rooms.deleteRoom(id)
         .then(result => {
             if (result) {
                 return res.send(result);
@@ -769,7 +771,7 @@ app.delete("/room", async (req, res) => {
 app.delete("/schedule", async (req, res) => {
     let {courseId, classId, timeId} = req.query;
 
-    return await manager.deleteSchedule(courseId, classId, timeId)
+    return await schoolManager.deleteSchedule(courseId, classId, timeId)
         .then(result => {
             if (result) {
                 return res.send(result);

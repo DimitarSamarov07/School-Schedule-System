@@ -1,8 +1,8 @@
-import TeacherResponse from "../response_models/TeacherResponse.ts";
-import CONSTANTS from "../MariaDBConstants.ts";
-import {connectionPoolFactory} from "../DBConfig.ts";
+import TeacherResponse from "../../response_models/TeacherResponse.ts";
+import CONSTANTS from "../../MariaDBConstants.ts";
+import {connectionPoolFactory} from "../db_service.ts";
 
-export class TeacherRepository {
+export class TeacherService {
     public static async getAllTeachersForSchool(schoolId: number): Promise<TeacherResponse[]> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(CONSTANTS.SELECT_TEACHERS_BY_SCHOOL, [schoolId]);
