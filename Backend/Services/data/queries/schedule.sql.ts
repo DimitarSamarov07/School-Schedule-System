@@ -28,8 +28,9 @@ export default class ScheduleSql {
     `;
 
     static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} AND sch.Date = (?) `;
+    static readonly SELECT_SCHOOL_SCHEDULES_FOR_DATE_INTERVAL = `${this.BASE_SCHEDULE_QUERY} AND sch.date BETWEEN (?) AND (?)`;
     static readonly SELECT_SCHEDULES_FOR_DATE_AND_SUBJECT_ID = `${this.BASE_SCHEDULE_QUERY} AND sch.date = (?) AND sub.id = (?) `
-    static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME_AND_SCHOOL = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND (?) BETWEEN p.start_time AND p.end_time`
+    static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME_FOR_SCHOOL = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND (?) BETWEEN p.start_time AND p.end_time`
 
 
     static readonly INSERT_INTO_SCHEDULE = `INSERT INTO Schedule(school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
