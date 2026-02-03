@@ -5,7 +5,7 @@ class TeacherResponse extends ReturningId{
     Email: string;
 
     constructor(data) {
-        super(data.teacherId);
+        super(data.id);
         this.Name = data.name;
         this.Email = data.email;
     }

@@ -1,6 +1,6 @@
 import ReturningId from "./ReturningId.js";
 
-class Time extends ReturningId{
+class Period extends ReturningId{
     Name: string;
     Start: string;
     End: string;
@@ -14,4 +14,4 @@ class Time extends ReturningId{
     }
 }
 
-export default Time;
+export default Period;
