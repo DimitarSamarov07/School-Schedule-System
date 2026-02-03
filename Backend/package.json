@@ -19,5 +19,8 @@
   "type": "module",
   "scripts": {
     "start": "node --import=tsx main.js"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6"
   }
 }
