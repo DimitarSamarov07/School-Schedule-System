@@ -3,12 +3,12 @@ import * as periodController from '../controllers/periodController.js';
 
 const router = express.Router();
 
-router.get('/period', periodController.getAllPeriods);
-router.post('/period', periodController.createPeriod);
-router.put('/period', periodController.updatePeriod);
-router.delete('/period', periodController.deletePeriod);
+router.get('/', periodController.getAllPeriods);
+router.post('/', periodController.createPeriod);
+router.put('/', periodController.updatePeriod);
+router.delete('/', periodController.deletePeriod);
 
-router.get('/currentPeriod', periodController.getCurrentPeriod);
-router.get('/nextPeriod', periodController.getNextPeriod);
+router.get('/current', periodController.getCurrentPeriod);
+router.get('/next', periodController.getNextPeriod);
 
 export default router;
