@@ -1,5 +1,16 @@
 import {SubjectService as subjectService} from "../Services/data/SubjectService.ts";
 
+export const getAllSubjects = async (req, res) => {
+    const {schoolId} = req.query;
+    try {
+        const result = await subjectService.getAllSubjectsForSchool(schoolId);
+        return res.send(result);
+    } catch (err) {
+        const status = err === "No subjects found" ? 404 : 500;
+        return res.status(status).send({"error": err});
+    }
+}
+
 export const createSubject = async (req, res) => {
     const {name, schoolId, description} = req.body;
 
