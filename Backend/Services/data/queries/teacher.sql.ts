@@ -14,6 +14,5 @@ export default class TeacherSql {
 
     static readonly DELETE_TEACHER = `DELETE
                                       FROM Teachers
-                                      WHERE id = (?)
-                                      RETURNING id;`
+                                      WHERE id = (?);`
 }

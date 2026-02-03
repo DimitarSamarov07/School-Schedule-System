@@ -21,6 +21,5 @@ export default class PeriodSql {
 
     static readonly DELETE_PERIOD = `DELETE
                                      FROM Periods
-                                     WHERE id = (?)
-                                     RETURNING id;`
+                                     WHERE id = (?);`
 }
