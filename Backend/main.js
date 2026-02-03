@@ -4,6 +4,12 @@ import cors from "cors";
 import rateLimit from 'express-rate-limit';
 import authenticatorMaster from "./Services/auth_services.ts";
 import cookieParser from "cookie-parser";
+import classRoutes from "./routes/classRoutes.ts";
+import periodRoutes from "./routes/periodRoutes.ts";
+import roomRoutes from "./routes/roomRoutes.ts";
+import scheduleRoutes from "./routes/scheduleRoutes.ts";
+import teacherRoutes from "./routes/teacherRoutes.ts";
+import userRoutes from "./routes/userRoutes.ts";
 
 // Initializing Express App
 
@@ -33,6 +39,15 @@ app.use(cors({
 
 //
 app.set('trust proxy', 1);
+
+// Include user-defined routes
+app.use(classRoutes, "/class");
+app.use(periodRoutes, "/period");
+app.use(roomRoutes, "/room");
+app.use(scheduleRoutes, "/schedule");
+app.use(scheduleRoutes, "/schedule");
+app.use(teacherRoutes, "/teacher");
+app.use(userRoutes, "/user");
 
 let port = 1343;
 
