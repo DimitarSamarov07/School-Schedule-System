@@ -10,6 +10,7 @@ import roomRoutes from "./routes/roomRoutes.ts";
 import scheduleRoutes from "./routes/scheduleRoutes.ts";
 import teacherRoutes from "./routes/teacherRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import subjectRoutes from "./routes/subjectRoutes.ts";
 
 // Initializing Express App
 
@@ -41,13 +42,13 @@ app.use(cors({
 app.set('trust proxy', 1);
 
 // Include user-defined routes
-app.use(classRoutes, "/class");
-app.use(periodRoutes, "/period");
-app.use(roomRoutes, "/room");
-app.use(scheduleRoutes, "/schedule");
-app.use(scheduleRoutes, "/schedule");
-app.use(teacherRoutes, "/teacher");
-app.use(userRoutes, "/user");
+app.use("/class", classRoutes);
+app.use("/period", periodRoutes);
+app.use("/room", roomRoutes);
+app.use("/schedule", subjectRoutes);
+app.use("/schedule", scheduleRoutes);
+app.use("/teacher", teacherRoutes);
+app.use("/user", userRoutes);
 
 let port = 1343;
 
