@@ -45,7 +45,7 @@ app.set('trust proxy', 1);
 app.use("/class", classRoutes);
 app.use("/period", periodRoutes);
 app.use("/room", roomRoutes);
-app.use("/schedule", subjectRoutes);
+app.use("/subject", subjectRoutes);
 app.use("/schedule", scheduleRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/user", userRoutes);
