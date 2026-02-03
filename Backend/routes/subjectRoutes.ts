@@ -1,4 +1,3 @@
-// routes/courseRoutes.js
 import express from 'express';
 import * as subjectController from '../controllers/subjectController.ts';
 

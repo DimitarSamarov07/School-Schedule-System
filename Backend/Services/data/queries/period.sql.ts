@@ -4,7 +4,7 @@ export default class PeriodSql {
                                      WHERE school_id = (?);`
 
 
-    static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT name, start_time, end_time
+    static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT id,name, start_time, end_time
                                                 FROM Periods
                                                 WHERE school_id = (?);`
 

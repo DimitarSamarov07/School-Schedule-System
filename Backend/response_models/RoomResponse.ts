@@ -7,7 +7,7 @@ class RoomResponse extends ReturningId{
     Capacity: number;
 
     constructor(data: any) {
-        super(data.roomId);
+        super(data.id);
         this.Name = data.name;
         this.Floor = data.floor;
         this.Capacity = data.capacity;

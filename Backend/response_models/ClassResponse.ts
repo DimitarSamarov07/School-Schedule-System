@@ -5,7 +5,7 @@ class ClassResponse extends ReturningId {
     Name: string;
     Room: RoomResponse;
     constructor(data: any) {
-        super(data.id);
+        super(data.class_id);
         this.Name = data.class_name;
         this.Room = new RoomResponse({
             id: data.room_id,
