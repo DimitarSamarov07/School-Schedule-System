@@ -89,6 +89,7 @@ export class PeriodService {
     public static async deletePeriod(id: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.DELETE_PERIOD, [id]);
+            console.log( rows.affectedRows > 0 );
             return rows.affectedRows > 0;
         });
 

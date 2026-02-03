@@ -4,7 +4,7 @@ export const deletePeriod = async (req, res) => {
     const {id} = req.query;
     try {
         const result = await periodService.deletePeriod(id);
-        return result ? res.send(result) : res.status(422).send(false);
+        return result ? res.status(422).send(false) : res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
     }
@@ -66,7 +66,7 @@ export const updatePeriod = async (req, res) => {
     }
     try {
         const result = await periodService.updatePeriod(id, name, start, end);
-        return result ? res.send(result) : res.status(422).send(false);
+        return result ? res.status(422).send(false) :  res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
     }

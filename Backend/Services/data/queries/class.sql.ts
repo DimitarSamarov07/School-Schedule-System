@@ -20,6 +20,5 @@ export default class ClassSql {
 
     static readonly DELETE_CLASS = `DELETE
                                     FROM Classes
-                                    WHERE id = (?)
-                                    RETURNING id;`
+                                    WHERE id = (?);`
 }
