@@ -1,8 +1,12 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { createPeriod, deletePeriod, updateTime} from "@/lib/api/times";
+import {createPeriod, deletePeriod, getPeriodsForSchool, updateTime} from "@/lib/api/times";
 import {Time} from "@/types/time";
+import {getTeachers} from "@/lib/api/teachers";
+import {Teacher} from "@/types/teacher";
+import {getRooms} from "@/lib/api/rooms";
+import {Room} from "@/types/room";
 
 export function usePeriodsManager() {
     const [timeList, setTimeList] = useState<Time[]>([]);
@@ -14,12 +18,11 @@ export function usePeriodsManager() {
 
     const fetchTimes = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
-        // @ts-ignore
         try {
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
+            const response = await getPeriodsForSchool(1);
+            let data: Time[] = [];
             if (response && !response.error) {
-                const data = Array.isArray(response) ? response : [response];
+                data = Array.isArray(response) ? response : [response];
                 setTimeList(data);
             } else {
                 setTimeList([]);
@@ -52,7 +55,7 @@ export function usePeriodsManager() {
 
     const handleCreate = async () => {
         try {
-            await createPeriod(formData.Start!, formData.End!);
+            await createPeriod(1, formData.Name!,formData.Start!, formData.End!);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -64,7 +67,7 @@ export function usePeriodsManager() {
     const handleUptime = async () => {
         try {
             if (!formData.id) return;
-            await updateTime(formData.id, formData.Start, formData.End);
+            await updateTime(formData.id,formData.Name, formData.Start, formData.End);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -76,6 +79,7 @@ export function usePeriodsManager() {
     const handleDelete = async () => {
         if (!selectedTime?.id) return;
         try {
+            console.log(selectedTime.id);
             await deletePeriod(selectedTime.id);
             await fetchTimes(true);
             closeModal();
