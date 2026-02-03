@@ -9,7 +9,7 @@ export function useRoomsManager() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<Room>>({ Name: '', Building: '', Floor: 0 });
+    const [formData, setFormData] = useState<Partial<Room>>({ Name: '', Capacity: 0, Floor: 0 });
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
     const isFetchingRef = useRef(false);
@@ -48,7 +48,7 @@ export function useRoomsManager() {
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ Name: '', Building: '', Floor: 0 });
+        setFormData({ Name: '', Capacity: 0, Floor: 0 });
         setSelectedRoom(null);
     };
 

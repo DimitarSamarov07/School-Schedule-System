@@ -56,6 +56,7 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                     <table className="w-full text-left">
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
+                            <th className="px-6 py-4 font-semibold">Име</th>
                             <th className="px-6 py-4 font-semibold">Начало</th>
                             <th className="px-6 py-4 font-semibold">Край</th>
                             <th className="px-6 py-4 text-right font-semibold">Действия</th>
@@ -64,6 +65,7 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                         <tbody className="divide-y divide-gray-100">
                         {timeList.map((time: Time) => (
                             <tr key={time.id} className="hover:bg-purple-50/30 transition-colors group">
+                                <td className="px-6 py-4 font-bold text-gray-900">{time.Name}</td>
                                 <td className="px-6 py-4 font-bold text-gray-900">{time.Start}</td>
                                 <td className="px-6 py-4">
                                             {time.End}
@@ -141,8 +143,8 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Начален час</label>
                                     <input
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                        value={formData.Description}
-                                        onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
+                                        value={formData.Start}
+                                        onChange={(e) => setFormData({ ...formData, Start: e.target.value })}
                                         placeholder="9:30"
                                     />
                                 </div>
@@ -150,8 +152,8 @@ export default function TimeListContainer({ manager }: { manager: any }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Краен час</label>
                                     <input
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                        value={formData.Description}
-                                        onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
+                                        value={formData.End}
+                                        onChange={(e) => setFormData({ ...formData, End: e.target.value })}
                                         placeholder="10:20"
                                     />
                                 </div>

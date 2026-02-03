@@ -12,7 +12,7 @@ export default function TimesPage() {
         <div className="max-w-9xl mx-auto p-6">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-900">Управлявайте вашите чсове</h2>
+                    <h2 className="text-2xl font-bold text-gray-900">Управлявайте вашите часове</h2>
                     <p className="text-sm text-gray-500 mt-1">Конфигурирайте и организирайте вашите часове.</p>
                 </div>
 

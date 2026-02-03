@@ -9,7 +9,7 @@ export const ENDPOINTS = {
     TEACHER: `/teacher`,
     CLASS: `/class`,
     ROOM: `/room`,
-    TIME: `/time`,
+    PERIOD: `/period`,
     SCHEDULE: `/schedule`,
     COURSE: `/course`,
     DATE: `/date`,

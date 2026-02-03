@@ -1,5 +1,6 @@
 export interface Time {
-    id: string ;
+    id: number ;
+    Name: string;
     Start: string;
     End: string;
 }
