@@ -6,8 +6,8 @@ import {Room} from "@/types/room";
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
 
-export const getRooms: () => Promise<Room[]> = () =>
-    apiRequest(ENDPOINTS.ROOM, {
+export const getRooms: (schoolId: number) => Promise<Room[]> = (schoolId: number) =>
+    apiRequest(ENDPOINTS.ROOM+`/all?schoolId=${schoolId}`, {
         method: 'GET'
     });
 

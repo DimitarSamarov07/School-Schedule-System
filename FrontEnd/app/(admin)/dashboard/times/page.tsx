@@ -2,11 +2,11 @@
 
 import React, {Suspense} from "react";
 import {Plus} from "lucide-react";
-import {useTimesManager} from "@/hooks/use-times-manager";
+import {usePeriodsManager} from "@/hooks/use-periods-manager";
 import TimeListContainer from "@/components/containers/TimeListContainer";
 
 export default function TimesPage() {
-    const manager = useTimesManager();
+    const manager = usePeriodsManager();
 
     return (
         <div className="max-w-9xl mx-auto p-6">

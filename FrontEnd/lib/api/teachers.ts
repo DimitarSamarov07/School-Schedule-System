@@ -7,25 +7,23 @@ import {Teacher} from "@/types/teacher";
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
 
-export const getTeachers: () => Promise<Teacher[]> = () =>
-    apiRequest("/teacher", {
+export const getTeachers: (schoolId: number) => Promise<Teacher[]> = (schoolId: number) =>
+    apiRequest(`/teacher/all?schoolId=${schoolId}`, {
         method: 'GET'
     });
 
-export const createTeacher= (firstName: string, lastName: string, email: string, subject: Subject)=>
-    apiRequest(ENDPOINTS.TEACHER, {
+export const createTeacher= (schoolId: number,name: string, email: string)=>
+    apiRequest(ENDPOINTS.TEACHER+`?schoolId=${schoolId}`, {
         method: 'POST',
-        body: JSON.stringify({firstName, lastName, email, subject})
+        body: JSON.stringify({name, email})
     });
-export const updateTeacher = (id: string | number, firstName?: string, lastName?: string, email?: string, subject?: Subject) =>
+export const updateTeacher = (id: string | number, name?: string, email?: string) =>
     apiRequest(ENDPOINTS.TEACHER, {
         method: 'PUT',
         body: JSON.stringify({
             id,
-            ...(firstName && { firstName }),
-            ...(lastName && { lastName }),
+            ...(name && { name }),
             ...(email && { email }),
-            ...(subject && { subject }),
         }),
     });
 export const deleteTeacher = (id: string | number) =>

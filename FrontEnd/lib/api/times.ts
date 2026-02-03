@@ -2,26 +2,26 @@ import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 import {Time} from "@/types/time";
 
-export const getTimes: () => Promise<Time[]> = () =>
-    apiRequest(ENDPOINTS.TIME, {
+export const getPeriodsForSchool: (schoolId: number) => Promise<Time[]> = (schoolId: number) =>
+    apiRequest(ENDPOINTS.TIME+`?schoolId=${schoolId}`, {
         method: 'GET'
     });
 
-export const createTime = (start: string, end: string)=>
-    apiRequest(ENDPOINTS.TIME, {
+export const createPeriod = (schoolId: number,name: string,start: string, end: string)=>
+    apiRequest(ENDPOINTS.TIME+`?schoolId=${schoolId}`, {
         method: 'POST',
-        body: JSON.stringify({start, end})
+        body: JSON.stringify({name,start, end})
     });
-export const updateTime = (id: string | number, start?: string, end?: string) =>
-    apiRequest(ENDPOINTS.TIME, {
+export const updateTime = (id: number,name: string, start?: string, end?: string) =>
+    apiRequest(ENDPOINTS.TIME+`?id=${id}`, {
         method: 'PUT',
         body: JSON.stringify({
-            id,
+            ...(name && { name }),
             ...(start && { start }),
             ...(end && { end }),
         }),
     });
-export const deleteTime = (id: string | number) =>
+export const deletePeriod = (id: number) =>
     apiRequest(`${ENDPOINTS.TIME}?id=${id}`, {
         method: 'DELETE',
     });

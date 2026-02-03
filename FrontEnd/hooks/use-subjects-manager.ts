@@ -14,7 +14,7 @@ export function useSubjectsManager() {
     const fetchSubjects = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
-            const response = await getSubjects();
+            const response = await getSubjects(1);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
             if (response && !response.error) {

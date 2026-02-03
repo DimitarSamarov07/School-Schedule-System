@@ -9,13 +9,13 @@ export function useTeacherManager() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<Teacher>>({ FirstName: '', LastName: '', Email: '', Subject: undefined });
+    const [formData, setFormData] = useState<Partial<Teacher>>({ Name: '', Email: '' });
     const [selectedTeacher, setSelectedTeacher] = useState<Teacher | null>(null);
 
     const fetchTeachers = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
-            const response = await getTeachers();
+            const response = await getTeachers(1);
             let data: Teacher[] = [];
             if (response) {
                 data = Array.isArray(response) ? response : [response];
@@ -43,14 +43,14 @@ export function useTeacherManager() {
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ FirstName: '', LastName: '', Email: '', Subject: undefined});
+        setFormData({ Name: '', Email: ''});
         setSelectedTeacher(null);
     };
 
     const handleCreate = async () => {
         try {
 
-            await createTeacher(formData.FirstName!,formData.LastName!, formData.Email!, formData.Subject!);
+            await createTeacher(1,formData.Name!, formData.Email!);
             await fetchTeachers(true);
             closeModal();
         } catch (error) {
@@ -62,7 +62,7 @@ export function useTeacherManager() {
     const handleUpdate = async () => {
         try {
             if (!formData.id) return;
-            await updateTeacher(formData.id, formData.FirstName!,formData.LastName!, formData.Email!, formData.Subject!);
+            await updateTeacher(formData.id, formData.Name!,formData.Email!);
             await fetchTeachers(true);
             closeModal();
         } catch (error) {

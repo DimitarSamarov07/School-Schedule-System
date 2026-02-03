@@ -58,7 +58,7 @@ export default function RoomListContainer({ manager }: { manager: any }) {
                         <tr>
                             <th className="px-6 py-4 font-semibold">Стая</th>
                             <th className="px-6 py-4 font-semibold">Сграда</th>
-                            <th className="px-6 py-4 font-semibold">Етаж</th>
+                            <th className="px-6 py-4 font-semibold">Капацитет</th>
                             <th className="px-6 py-4 text-right font-semibold">Действия</th>
                         </tr>
                         </thead>
@@ -67,11 +67,11 @@ export default function RoomListContainer({ manager }: { manager: any }) {
                             <tr key={room.id} className="hover:bg-purple-50/30 transition-colors group">
                                 <td className="px-6 py-4 font-bold text-gray-900">{room.Name}</td>
                                 <td className="px-6 py-4">
-                                            {room.Building || "Главна сграда"}
+                                    Floor {room.Floor || 0}
                                 </td>
                                 <td className="px-6 py-4">
                                         <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                             Floor {room.Floor || "0"}
+                                             {room.Capacity || 0}
                                         </span>
                                 </td>
                                 <td className="px-6 py-4 text-right space-x-1">
@@ -147,8 +147,8 @@ export default function RoomListContainer({ manager }: { manager: any }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Сграда</label>
                                     <input
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                        value={formData.Building}
-                                        onChange={(e) => setFormData({ ...formData, Building: e.target.value })}
+                                        value={formData.Floor}
+                                        onChange={(e) => setFormData({ ...formData, Floor: e.target.value })}
                                         placeholder="Примерно: Главна сграда"
                                     />
                                 </div>
@@ -156,8 +156,8 @@ export default function RoomListContainer({ manager }: { manager: any }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Етаж</label>
                                     <input
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                        value={formData.Floor}
-                                        onChange={(e) => setFormData({ ...formData, Floor: e.target.value })}
+                                        value={formData.Capacity}
+                                        onChange={(e) => setFormData({ ...formData, Capacity: e.target.value })}
                                         placeholder="Примерно: 4"
                                     />
                                 </div>

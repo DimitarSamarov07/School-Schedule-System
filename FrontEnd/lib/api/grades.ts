@@ -2,8 +2,8 @@ import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 import {Grade} from "@/types/grade";
 
-export const getGrades: () => Promise<Grade[]> = () =>
-    apiRequest(ENDPOINTS.CLASS, {
+export const getGrades: (schoolId: number) => Promise<Grade[]> = (schoolId: number) =>
+    apiRequest(ENDPOINTS.CLASS+`/all?schoolId=${schoolId}`, {
         method: 'GET'
     });
 

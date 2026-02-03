@@ -1,10 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {getTimes, createTime, deleteTime, updateTime} from "@/lib/api/times";
+import { createPeriod, deletePeriod, updateTime} from "@/lib/api/times";
 import {Time} from "@/types/time";
 
-export function useTimesManager() {
+export function usePeriodsManager() {
     const [timeList, setTimeList] = useState<Time[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -14,8 +14,8 @@ export function useTimesManager() {
 
     const fetchTimes = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
+        // @ts-ignore
         try {
-            const response = await getTimes();
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
             if (response && !response.error) {
@@ -52,7 +52,7 @@ export function useTimesManager() {
 
     const handleCreate = async () => {
         try {
-            await createTime(formData.Start!, formData.End!);
+            await createPeriod(formData.Start!, formData.End!);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -76,7 +76,7 @@ export function useTimesManager() {
     const handleDelete = async () => {
         if (!selectedTime?.id) return;
         try {
-            await deleteTime(selectedTime.id);
+            await deletePeriod(selectedTime.id);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
