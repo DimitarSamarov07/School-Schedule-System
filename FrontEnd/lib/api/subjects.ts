@@ -2,8 +2,8 @@ import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 import {Subject} from "@/types/subject";
 
-export const getSubjects: () => Promise<Subject[]> = () =>
-    apiRequest(ENDPOINTS.SUBJECTS, {
+export const getSubjects: (schoolId: number) => Promise<Subject[]> = (schoolId: number) =>
+    apiRequest(ENDPOINTS.SUBJECTS+`/all?schoolId=${schoolId}`, {
         method: 'GET'
     });
 

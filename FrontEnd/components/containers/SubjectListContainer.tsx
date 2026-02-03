@@ -57,8 +57,7 @@ export default function SubjectListContainer({ manager }: { manager: any }) {
                         <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
                         <tr>
                             <th className="px-6 py-4 font-semibold">Subject Name</th>
-                            <th className="px-6 py-4 font-semibold">Building</th>
-                            <th className="px-6 py-4 font-semibold">Floor</th>
+                            <th className="px-6 py-4 font-semibold">Description</th>
                             <th className="px-6 py-4 text-right font-semibold">Actions</th>
                         </tr>
                         </thead>
@@ -66,14 +65,10 @@ export default function SubjectListContainer({ manager }: { manager: any }) {
                         {subjectList.map((subject: Subject) => (
                             <tr key={subject.id} className="hover:bg-purple-50/30 transition-colors group">
                                 <td className="px-6 py-4 font-bold text-gray-900">{subject.Name}</td>
-                                <td className="px-6 py-4">
-                                    {subject.Name || ""}
+                                <td className="px-6 py-4 text-gray-600">
+                                    {subject.Description || "No description provided."}
                                 </td>
-                                <td className="px-6 py-4">
-                                        <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                                            {subject.Color || "red"}
-                                        </span>
-                                </td>
+
                                 <td className="px-6 py-4 text-right space-x-1">
                                     <button
                                         onClick={() => openEditModal(subject)}
@@ -148,9 +143,9 @@ export default function SubjectListContainer({ manager }: { manager: any }) {
                                     <label className="block text-sm font-semibold text-gray-700 mb-1.5">Building</label>
                                     <input
                                         className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
-                                        value={formData.Color}
-                                        onChange={(e) => setFormData({ ...formData, Color: e.target.value })}
-                                        placeholder="e.g. red"
+                                        value={formData.Description}
+                                        onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
+                                        placeholder="e.g. hello"
                                     />
                                 </div>
                                 <div className="flex flex-col gap-3 pt-4">

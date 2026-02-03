@@ -21,7 +21,7 @@ export function useRoomsManager() {
         if (!silent) setIsLoading(true);
 
         try {
-            const response = await getRooms();
+            const response = await getRooms(1);
             let data: Room[] = [];
             if (response) {
                 data = Array.isArray(response) ? response : [response];

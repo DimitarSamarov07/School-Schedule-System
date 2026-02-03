@@ -2,8 +2,8 @@ import {Subject} from "@/types/subject";
 
 export interface Teacher {
     id: string ;
-    FirstName: string;
-    LastName: string;
+    Name: string;
+
     Email: string;
-    Subject: Subject;
+
 }
