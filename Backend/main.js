@@ -51,34 +51,5 @@ async function checkUserAuthenticationMiddleware(req, res, next) {
     return res.status(401).send("Authentication failure.")
 }
 
-app.post("/register", async (req, res) => {
-
-    let {username, email, password} = req.body;
-    if (!username || !password || !email) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    return await schoolManager.registerNewAdmin(username, email, password)
-        .then(result => {
-            return res.send(result);
-        })
-        .catch(err => {
-            return res.status(500).send({"error": err});
-        })
-});
-app.post("/login", async (req, res) => {
-
-    let {username, password} = req.body;
-    if (!username || !password) {
-        return res.status(406).send("Malformed parameters");
-    }
-    let isAdmin = await schoolManager.checkAdminCredentials(username, password);
-    if (!isAdmin) {
-        return res.status(403).send({"error": "Invalid credentials."})
-    }
-    let token = authenticatorMaster.createJWT(username);
-    return res.cookie("AUTH_TOKEN", token).status(201).send();
-});
-
 //await authenticatorMaster.initializeAuthenticator();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
