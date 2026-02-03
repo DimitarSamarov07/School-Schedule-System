@@ -3,12 +3,11 @@ import * as scheduleController from '../controllers/scheduleController.js';
 
 const router = express.Router();
 
-router.get('/schedulesByDate', scheduleController.getSchedulesByDate);
-router.get('/schedulesByClassIdForDate', scheduleController.getSchedulesByClassForDate);
-router.get('/schedulesByDateTimeAndSchool', scheduleController.getSchedulesByDateTimeAndSchool);
-router.post('/schedule', scheduleController.createSchedule);
-
-router.put('/schedule', scheduleController.updateSchedule);
-router.delete('/schedule', scheduleController.deleteSchedule);
+router.get('/byDate', scheduleController.getSchedulesByDate);
+router.get('/byClassIdForDate', scheduleController.getSchedulesByClassForDate);
+router.get('/byDateTimeAndSchool', scheduleController.getSchedulesByDateTimeAndSchool);
+router.post('/', scheduleController.createSchedule);
+router.put('/', scheduleController.updateSchedule);
+router.delete('/', scheduleController.deleteSchedule);
 
 export default router;

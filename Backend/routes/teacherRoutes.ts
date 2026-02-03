@@ -3,7 +3,7 @@ import * as teacherController from '../controllers/teacherController.js';
 
 const router = express.Router();
 
-router.get('/', teacherController.getAllTeachers);
+router.get('/all', teacherController.getAllTeachers);
 router.delete('/', teacherController.deleteTeacher);
 router.put('/', teacherController.updateTeacher);
 router.post('/', teacherController.createTeacher);

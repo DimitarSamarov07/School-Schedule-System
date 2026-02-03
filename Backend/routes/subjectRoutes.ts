@@ -4,6 +4,7 @@ import * as subjectController from '../controllers/subjectController.ts';
 
 const router = express.Router();
 
+router.get("/subject", subjectController.getSubject)
 router.post('/subject', subjectController.createSubject);
 router.delete('/subject', subjectController.deleteSubject);
 router.put('/subject', subjectController.updateSubject);

@@ -3,7 +3,7 @@ import * as classController from '../controllers/classController.js';
 
 const router = express.Router();
 
-router.get('/', classController.getAllClasses);
+router.get('/all', classController.getAllClasses);
 router.post('/', classController.createClass);
 router.put('/', classController.updateClass);
 router.delete('/', classController.deleteClass);
