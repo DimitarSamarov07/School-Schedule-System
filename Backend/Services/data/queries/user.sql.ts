@@ -23,9 +23,25 @@ export default class UserSql {
            AND password_hash = (?)
         ;`
 
-    static readonly CHECK_ADMIN_CREDENTIALS =
+    static readonly GET_USER_BY_USERNAME =
+        `SELECT *
+         FROM Users
+         WHERE username = (?)
+        `;
+
+    static readonly CHECK_USER_CREDENTIALS =
         `SELECT password_hash
          FROM Users
          WHERE username = (?)
          LIMIT 1; `
+
+    static readonly GET_USER_PERMISSIONS =
+        ` SELECT *
+          FROM SchoolMembers
+          WHERE user_id = (?);
+        `;
+
+    static readonly CREATE_USER_PERMISSION =
+        `INSERT INTO SchoolMembers(user_id, school_id, is_admin)
+         VALUES ((?), (?), (?));`
 }
