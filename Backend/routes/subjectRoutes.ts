@@ -4,9 +4,9 @@ import * as subjectController from '../controllers/subjectController.ts';
 
 const router = express.Router();
 
-router.get("/subject", subjectController.getAllSubjects)
-router.post('/subject', subjectController.createSubject);
-router.delete('/subject', subjectController.deleteSubject);
-router.put('/subject', subjectController.updateSubject);
+router.get("/all", subjectController.getAllSubjects)
+router.post('/', subjectController.createSubject);
+router.delete('/', subjectController.deleteSubject);
+router.put('/', subjectController.updateSubject);
 
 export default router;
