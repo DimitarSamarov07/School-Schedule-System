@@ -2,9 +2,9 @@
 export const BASE_URL = '/api';
 
 export const ENDPOINTS = {
-    SCHEDULES_BY_DATE_TIME_SCHOOL: `/schedulesByDateTimeAndSchool`,
-    RUNNING_PERIOD: `/currentPeriod`,
-    NEXT_PERIOD: `/nextPeriod`,
+    SCHEDULES_BY_DATE_TIME_SCHOOL: `/schedule/byDateTimeAndSchool`,
+    RUNNING_PERIOD: `/period/current`,
+    NEXT_PERIOD: `/period/next`,
     SUBJECTS: `/subject`,
     TEACHER: `/teacher`,
     CLASS: `/class`,
