@@ -13,6 +13,13 @@ export class ScheduleService {
         });
     }
 
+    public static async getAllSchedulesForDateForSchool(schoolId: number, date: string): Promise<Schedule[]> {
+        return await connectionPoolFactory<Schedule[]>(async (conn) => {
+            const rows = await conn.query(ScheduleSql.SELECT_SCHEDULES_FOR_DATE, [schoolId, date]);
+            return rows.map((row: any) => Schedule.convertFromDBModel(row));
+        });
+    }
+
     public static async getSchoolSchedulesForCurrentPeriod(schoolId: number): Promise<Schedule[]> {
         let nextPeriod = await PeriodService.getRunningPeriodForSchool(schoolId);
         let currentDate = moment().format("YYYY-MM-DD");

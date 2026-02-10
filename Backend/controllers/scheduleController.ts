@@ -1,18 +1,33 @@
 import {ScheduleService as scheduleService} from "../Services/data/ScheduleService.ts";
 import moment from 'moment';
 
-export const getSchedulesByDate = async (req, res) => {
-    let {date} = req.query;
+export const getSchoolSchedulesByDate = async (req, res) => {
+    let {schoolId, date} = req.query;
     if (!date) return res.status(406).send("Malformed parameter");
 
     try {
         const formattedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-        const result = await scheduleService.getAllSchedulesForDate(formattedDate);
+        const result = await scheduleService.getAllSchedulesForDateForSchool(schoolId, formattedDate);
         return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err.message || err});
     }
 };
+
+export const getSchoolScheduleBetweenDates = async (req, res) => {
+    let {schoolId, startDate, endDate} = req.query;
+    if (!startDate || !endDate) return res.status(406).send("Malformed parameters");
+
+    try {
+        const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
+        const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
+
+        const result = await scheduleService.getAllSchedulesForSchoolBetweenDates(schoolId, formattedStartDate, formattedEndDate);
+        return res.send(result);
+    } catch (err) {
+        return res.status(500).send({"error": err.message || err});
+    }
+}
 
 export const getSchedulesByClassForDate = async (req, res) => {
     let {classId, date} = req.query;
