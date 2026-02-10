@@ -1,4 +1,3 @@
-// app/timetable/layout.tsx
 
 export default function TimetableLayout({
                                             children,

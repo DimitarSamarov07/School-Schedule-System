@@ -1,4 +1,3 @@
-// app/timetable/layout.tsx
 
 export default function TimetableLayout({
                                             children,
@@ -6,8 +5,6 @@ export default function TimetableLayout({
     children: React.ReactNode;
 }) {
     return (
-        <section className="timetable-wrapper">
             <main>{children}</main>
-        </section>
     );
 }

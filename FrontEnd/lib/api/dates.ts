@@ -1,28 +1,29 @@
 import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
-import {Date} from "@/types/date";
+import {Holiday} from "@/types/holiday";
 
-export const getDates: () => Promise<Date[]> = () =>
-    apiRequest(ENDPOINTS.DATE, {
+export const getHoliday: (schoolId: number) => Promise<Holiday[]> = (schoolId: number) =>
+    apiRequest(ENDPOINTS.HOLIDAY+`?schoolId=${schoolId}`, {
         method: 'GET'
     });
 
-export const createDate = (date: string, isHoliday: boolean)=>
-    apiRequest(ENDPOINTS.DATE, {
+export const createDate = (name: string,start: string, end: string)=>
+    apiRequest(ENDPOINTS.HOLIDAY+`?schoolId=`, {
         method: 'POST',
-        body: JSON.stringify({date, isHoliday})
+        body: JSON.stringify({name, start, end})
     });
-export const updateDate = (id: string | number, date?: string, isHoliday?: boolean) =>
-    apiRequest(ENDPOINTS.DATE, {
+export const updateDate = (id: number, name?: string, start?: string, end?: string) =>
+    apiRequest(ENDPOINTS.HOLIDAY, {
         method: 'PUT',
         body: JSON.stringify({
             id,
-            ...(date && { date }),
-            ...(isHoliday && { isHoliday }),
+            ...(start && { start }),
+            ...(end && { end }),
+            ...(name && { name }),
         }),
     });
 export const deleteDate = (id: string | number) =>
-    apiRequest(`${ENDPOINTS.DATE}?id=${id}`, {
+    apiRequest(`${ENDPOINTS.HOLIDAY}?id=${id}`, {
         method: 'DELETE',
     });
 

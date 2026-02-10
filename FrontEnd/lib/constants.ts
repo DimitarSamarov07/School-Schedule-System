@@ -12,5 +12,5 @@ export const ENDPOINTS = {
     PERIOD: `/period`,
     SCHEDULE: `/schedule`,
     COURSE: `/course`,
-    DATE: `/date`,
+    HOLIDAY: `/holiday`,
 }

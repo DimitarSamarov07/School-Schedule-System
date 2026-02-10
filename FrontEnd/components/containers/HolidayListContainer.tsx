@@ -4,7 +4,7 @@ import { Calendar1, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import React from "react";
 import { Date } from "@/types/date";
 
-export default function DateListContainer({ manager }: { manager: any }) {
+export default function HolidayListContainer({ manager }: { manager: any }) {
     const {
         dateList,
         isLoading,
