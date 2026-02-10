@@ -1,21 +1,22 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {getDates, createDate, deleteDate, updateDate} from "@/lib/api/dates";
+import {getHoliday, createDate, deleteDate, updateDate} from "@/lib/api/dates";
 import {Date} from "@/types/date";
+import {Holiday} from "@/types/holiday";
 
 export function useDatesManager() {
-    const [dateList, setDateList] = useState<Date[]>([]);
+    const [dateList, setDateList] = useState<Holiday[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<Date>>({ Date: '', IsHoliday: false });
-    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+    const [formData, setFormData] = useState<Partial<Holiday>>({ Name: '', Start: '', End: '' });
+    const [selectedDate, setSelectedDate] = useState<Holiday | null>(null);
 
     const fetchDates = useCallback(async (silent = false) => {
         if (!silent) setIsLoading(true);
         try {
-            const response = await getDates();
+            const response = await getHoliday(1);
             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-expect-error
             if (response && !response.error) {
@@ -67,7 +68,7 @@ export function useDatesManager() {
     const handleUpdate = async () => {
         try {
             if (!formData.id) return;
-            await updateDate(formData.id, formData.Date, formData.IsHoliday);
+            await updateDate(formData.id,formData.Name, formData.Start, formData.End);
             await fetchDates(true);
             closeModal();
         } catch (error) {
@@ -94,8 +95,8 @@ export function useDatesManager() {
         setActiveModal('edit');
     };
 
-    const openDeleteModal = (date: Date) => {
-        setSelectedDate(date);
+    const openDeleteModal = (holiday: Holiday) => {
+        setSelectedDate(holiday);
         setActiveModal('delete');
     };
 

@@ -4,7 +4,7 @@ import { Timer, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import React from "react";
 import { Time } from "@/types/time";
 
-export default function TimeListContainer({ manager }: { manager: any }) {
+export default function PeriodListContainer({ manager }: { manager: any }) {
     const {
         timeList,
         isLoading,

@@ -4,6 +4,8 @@ import React, {useMemo, useState} from "react";
 import {useDatesManager} from "@/hooks/use-dates-manager";
 import {AlertTriangle, Calendar, ChevronLeft, ChevronRight, Plus, X} from 'lucide-react';
 
+
+
 export default function DatesPage() {
     const locale = "bg-BG";
     const manager = useDatesManager();
@@ -121,8 +123,12 @@ export default function DatesPage() {
                                 {monthObj.days.map((date, i) => {
                                     if (!date) return <div key={`empty-${monthIdx}-${i}`}/>;
                                     const dStr = Intl.DateTimeFormat('en-CA').format(date);
-                                    const holiday = manager.dateList.find(d => d.Date.split('T')[0] === dStr && d.IsHoliday);
+                                    const holiday = manager.dateList.find(d => {
+                                        const start = d.Start.split('T')[0];
+                                        const end = d.End.split('T')[0];
 
+                                        return dStr >= start && dStr <= end ;
+                                    });
                                     return (
                                         <button
                                             key={dStr}
@@ -255,7 +261,7 @@ export default function DatesPage() {
                         <p className="text-gray-500 text-sm mb-8">
                             Това действие ще изтрие почивката на дата <br/>
                             <span
-                                className="font-bold text-gray-800">{manager.selectedDate ? new Date(manager.selectedDate.Date).toLocaleDateString(locale) : ''}</span>.
+                                className="font-bold text-gray-800">{manager.selectedDate ? new Date(manager.selectedDate).toLocaleDateString(locale) : ''}</span>.
                         </p>
                         <div className="flex gap-3">
                             <button onClick={manager.closeModal}

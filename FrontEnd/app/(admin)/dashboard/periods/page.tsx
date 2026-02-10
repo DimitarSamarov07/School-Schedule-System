@@ -3,7 +3,7 @@
 import React, {Suspense} from "react";
 import {Plus} from "lucide-react";
 import {usePeriodsManager} from "@/hooks/use-periods-manager";
-import TimeListContainer from "@/components/containers/TimeListContainer";
+import PeriodListContainer from "@/components/containers/PeriodListContainer";
 
 export default function TimesPage() {
     const manager = usePeriodsManager();
@@ -27,7 +27,7 @@ export default function TimesPage() {
             </div>
 
             <Suspense fallback={<p>Loading...</p>}>
-                <TimeListContainer manager={manager}/>
+                <PeriodListContainer manager={manager}/>
             </Suspense>
         </div>
     );
