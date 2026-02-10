@@ -15,6 +15,5 @@ export default class SubjectSql {
 
     static readonly DELETE_SUBJECT = `DELETE
                                       FROM Subjects
-                                      WHERE id = (?)
-                                      RETURNING id;`
+                                      WHERE id = (?);`
 }

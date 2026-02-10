@@ -1,7 +1,5 @@
-export default class PeriodSql {
-    static readonly SELECT_BREAKS = `SELECT id, end_time as 'Start', LEAD(start_time) over (ORDER BY id) as 'End'
-                                     from Periods
-                                     WHERE school_id = (?);`
+export default class HolidaySql {
+    static readonly SELECT_HOLIDAYS = `SELECT id, name, start_date,end_date FROM school_system.SchoolHolidays WHERE SCHOOL_ID = (?);`
 
 
     static readonly SELECT_PERIODS_BY_SCHOOL = `SELECT id,name, start_time, end_time

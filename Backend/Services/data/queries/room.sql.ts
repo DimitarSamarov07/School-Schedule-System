@@ -15,7 +15,6 @@ export default class RoomSql {
 
     static readonly DELETE_ROOM = `DELETE
                                    FROM Rooms
-                                   WHERE id = (?)
-                                   RETURNING id;`
+                                   WHERE id = (?);`
 
 }

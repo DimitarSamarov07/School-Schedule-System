@@ -45,8 +45,7 @@ export default class ScheduleSql {
 
     static readonly DELETE_FROM_SCHEDULES = `DELETE
                                              FROM Schedule
-                                             WHERE id = (?)
-                                             RETURNING id;`
+                                             WHERE id = (?);`
 
 
 }

@@ -1,6 +1,6 @@
 import ReturningId from "./ReturningId.js";
 
-class Period extends ReturningId{
+class Holiday extends ReturningId{
     Name: string;
     Start: string;
     End: string;
@@ -9,9 +9,9 @@ class Period extends ReturningId{
     constructor(data: any) {
         super(data.id);
         this.Name = data.name;
-        this.Start = data.start_time;
-        this.End = data.end_time;
+        this.Start = data.start_date;
+        this.End = data.end_date;
     }
 }
 
-export default Period;
+export default Holiday;
