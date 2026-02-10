@@ -11,6 +11,7 @@ import scheduleRoutes from "./routes/scheduleRoutes.ts";
 import teacherRoutes from "./routes/teacherRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
 import subjectRoutes from "./routes/subjectRoutes.ts";
+import holidayRoutes from "./routes/holidayRoutes.ts";
 
 // Initializing Express App
 
@@ -43,6 +44,7 @@ app.set('trust proxy', 1);
 
 // Include user-defined routes
 app.use("/class", classRoutes);
+app.use("/holiday", holidayRoutes);
 app.use("/period", periodRoutes);
 app.use("/room", roomRoutes);
 app.use("/subject", subjectRoutes);
