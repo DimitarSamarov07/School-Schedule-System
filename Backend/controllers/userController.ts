@@ -14,7 +14,7 @@ export default class UserController {
             return res.status(406).send("Malformed parameters");
         }
 
-        return await Authenticator.createNewUser(username, email, password, isAdmin)
+        return await Authenticator.createNewUser(username, password, email, isAdmin)
             .then(result => {
                 if (result) {
                     return res.send(result);

@@ -1,6 +1,6 @@
 import {env} from "node:process";
 import {promises as fs} from 'fs';
-import * as jwt from 'jsonwebtoken'
+import jwt from 'jsonwebtoken';
 import 'dotenv/config'
 import bcrypt from "bcrypt";
 import {connectionPoolFactory} from "./db_service.ts";
@@ -30,7 +30,7 @@ class Authenticator {
     static async decodeJWT(token: string): Promise<{ username: string, schoolsWithAccess: SchoolMember[] }> {
         let decodedToken;
         try {
-            decodedToken = await jwt.verify(token, this.secretKey, {
+            decodedToken = jwt.verify(token, this.secretKey, {
                 algorithms: ['RS256']
             });
             return decodedToken;
@@ -45,7 +45,7 @@ class Authenticator {
 
             if (userEntries.length > 0) {
                 const user = User.convertFromDbModel(userEntries[0]);
-                let passwordMatch = await this.hashPasswordCompare(plainPassword, userEntries[0].Password);
+                let passwordMatch = await this.hashPasswordCompare(plainPassword, user.Password);
                 if (passwordMatch) {
                     const userAccessDbObjArr = await conn.query(UserSql.GET_USER_PERMISSIONS, [user.Id]);
                     const userAccessArr = userAccessDbObjArr.map((obj) => SchoolMember.convertFromDBModel(obj))
@@ -60,9 +60,9 @@ class Authenticator {
         return await connectionPoolFactory(async (conn) => {
             let hashedPassword = await this.hashPassword(plainPassword);
 
-            let {affectedRows: userAffectedRows} = await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
-            if (userAffectedRows > 0) {
-                let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.CREATE_USER_PERMISSION, [username, schoolId, isAdmin])
+            let [userObj] = await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
+            if (userObj) {
+                let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.CREATE_USER_PERMISSION, [userObj.id, schoolId, isAdmin])
                 if (userAccessAffectedRows > 0) {
                     return true;
                 }
@@ -72,7 +72,9 @@ class Authenticator {
     }
 
     public static async hashPasswordCompare(password: string, hashedPassword: string): Promise<boolean> {
-        return bcrypt.compare(password, hashedPassword);
+        console.log(password)
+        console.log(hashedPassword)
+        return await bcrypt.compare(password, hashedPassword);
     }
 
     private static async hashPassword(password: string): Promise<string> {

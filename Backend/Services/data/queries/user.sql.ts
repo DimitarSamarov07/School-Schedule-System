@@ -1,7 +1,7 @@
 export default class UserSql {
     static readonly CREATE_USER =
         `INSERT INTO Users(username, email, password_hash)
-         VALUES ((?), (?), (?));`
+         VALUES ((?), (?), (?)) RETURNING id;`
 
     static readonly UPDATE_USER_PASS =
         `UPDATE Users

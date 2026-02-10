@@ -67,5 +67,5 @@ async function checkUserAuthenticationMiddleware(req, res, next) {
     return res.status(401).send("Authentication failure.")
 }
 
-//await authenticatorMaster.initializeAuthenticator();
+await authenticatorMaster.initializeAuthenticator();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
