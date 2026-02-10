@@ -3,7 +3,8 @@ import * as scheduleController from '../controllers/scheduleController.js';
 
 const router = express.Router();
 
-router.get('/byDate', scheduleController.getSchedulesByDate);
+router.get('/byDate', scheduleController.getSchoolSchedulesByDate);
+router.get('/betweenDates', scheduleController.getSchoolScheduleBetweenDates);
 router.get('/byClassIdForDate', scheduleController.getSchedulesByClassForDate);
 router.get('/byDateTimeAndSchool', scheduleController.getSchedulesByDateTimeAndSchool);
 router.post('/', scheduleController.createSchedule);

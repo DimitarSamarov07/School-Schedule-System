@@ -1,9 +1,6 @@
 export default class ScheduleSql {
     static readonly BASE_SCHEDULE_QUERY = `
-        SELECT sch.id               AS 'schoolId',
-               sch.name             AS 'schoolName',
-               sch.address          AS 'schoolAddress',
-               sch.work_week_config AS 'workWeekConfig',
+        SELECT school.id AS 'schoolId', school.name AS 'schoolName', school.address AS 'schoolAddress', school.work_week_config AS 'workWeekConfig',
                sub.name             AS 'subjectName',
                sub.description      AS 'description',
                t.name               AS 'teacherName',
@@ -18,7 +15,7 @@ export default class ScheduleSql {
                p.end_time           AS 'endTime',
                s.date               AS 'date'
         FROM Schedule s
-                 JOIN Schools sch ON s.school_id = sch.id
+                 JOIN Schools school ON s.school_id = school.id
                  JOIN Subjects sub ON s.subject_id = sub.id
                  JOIN Teachers t ON s.teacher_id = t.id
                  JOIN Classes c ON s.class_id = c.id
@@ -27,9 +24,9 @@ export default class ScheduleSql {
         WHERE s.school_id = (?)
     `;
 
-    static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} AND sch.Date = (?) `;
-    static readonly SELECT_SCHOOL_SCHEDULES_FOR_DATE_INTERVAL = `${this.BASE_SCHEDULE_QUERY} AND sch.date BETWEEN (?) AND (?)`;
-    static readonly SELECT_SCHEDULES_FOR_DATE_AND_SUBJECT_ID = `${this.BASE_SCHEDULE_QUERY} AND sch.date = (?) AND sub.id = (?) `
+    static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) `;
+    static readonly SELECT_SCHOOL_SCHEDULES_FOR_DATE_INTERVAL = `${this.BASE_SCHEDULE_QUERY} AND s.date BETWEEN (?) AND (?)`;
+    static readonly SELECT_SCHEDULES_FOR_DATE_AND_SUBJECT_ID = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND sub.id = (?) `
     static readonly SELECT_SCHEDULES_BY_DATE_AND_TIME_FOR_SCHOOL = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND (?) BETWEEN p.start_time AND p.end_time`
 
 
