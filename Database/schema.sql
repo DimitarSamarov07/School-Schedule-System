@@ -25,6 +25,7 @@ CREATE TABLE IF NOT EXISTS `Users`
     `username`      VARCHAR(50)  NOT NULL UNIQUE,
     `email`         VARCHAR(255) NOT NULL UNIQUE,
     `password_hash` VARCHAR(512) NOT NULL,
+    `is_sudo` BOOLEAN DEFAULT FALSE,
     `created_at`    TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

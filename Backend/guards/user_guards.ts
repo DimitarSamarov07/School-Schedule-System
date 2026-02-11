@@ -29,6 +29,10 @@ export const hasAccessToSchool = (req, res, next) => {
         return;
     }
 
+    if (token.isSudo) {
+        return next();
+    }
+
     if (!validateSchoolAccess(token, requestedSchoolId, false)) {
         return res.status(403).send("Unauthorized");
     }

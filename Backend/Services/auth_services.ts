@@ -8,6 +8,7 @@ import UserSql from "./data/queries/user.sql.ts";
 import SchoolMember from "../data_models/SchoolMember.ts";
 import User from "../data_models/User.ts";
 import UserData from "../DTO/UserData.ts";
+import {SchoolService} from "./data/SchoolService.ts";
 
 
 class Authenticator {
@@ -26,11 +27,18 @@ class Authenticator {
     static createJWT(userData: UserData): string {
         return jwt.sign({
             username: userData.User.Username,
+            email: userData.User.Email,
+            isSudo: userData.User.IsSudo,
             accessList: userData.AccessList
         }, this.secretKey, {algorithm: 'RS256'});
     }
 
-    static decodeJWT(token: string): { username: string, accessList: SchoolMember[] } | null {
+    static decodeJWT(token: string): {
+        username: string,
+        email: string,
+        isSudo: boolean,
+        accessList: SchoolMember[]
+    } | null {
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, this.secretKey, {
@@ -50,6 +58,15 @@ class Authenticator {
                 const user = User.convertFromDbModel(userEntries[0]);
                 let passwordMatch = await this.hashPasswordCompare(plainPassword, user.Password);
                 if (passwordMatch) {
+                    if (user.IsSudo) {
+                        let sudoList: SchoolMember[] = []
+                        const allSchools = await SchoolService.getAllSchools();
+                        for (let school of allSchools) {
+                            let member = new SchoolMember(school.Id, user.Id, true);
+                            sudoList.push(member);
+                        }
+                        return new UserData(user, sudoList);
+                    }
                     const userAccessDbObjArr = await conn.query(UserSql.GET_USER_PERMISSIONS, [user.Id]);
                     const userAccessArr = userAccessDbObjArr.map((obj) => SchoolMember.convertFromDBModel(obj))
                     return new UserData(user, userAccessArr);

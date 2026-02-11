@@ -11,6 +11,12 @@ class School {
         this.WorkweekConfig = workweekConfig;
     }
 
+    public static convertFromDBModel(dbModel: any): School {
+        let {id, name, address, workweek_config} = dbModel;
+
+        return new School(id, name, address, workweek_config);
+    }
+
 }
 
 export default School;
