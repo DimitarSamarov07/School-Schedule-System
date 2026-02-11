@@ -23,11 +23,43 @@ export default function AuthPage() {
 
     const [showRegPassword, setShowRegPassword] = useState(false);
     const [showRegConfirmPassword, setShowRegConfirmPassword] = useState(false);
-    const handleLogin = (e: React.FormEvent) => {
+    const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-        router.push('/dashboard');
-    };
 
+        const loginData = {
+            username: email,
+            password: password
+        };
+
+        try {
+            const response = await fetch('http://localhost:1343/user/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(loginData),
+            });
+
+            if (response.ok) {
+                // Check if the response actually has content before parsing
+                const contentType = response.headers.get("content-type");
+                if (contentType && contentType.includes("application/json")) {
+                    const data = await response.json();
+                    console.log("Login Success:", data);
+                } else {
+                    console.log("Login Success (No JSON body)");
+                }
+
+                router.push('/dashboard');
+            } else {
+                const errorText = await response.text(); // Read as text to avoid JSON crash
+                console.error("Login failed:", errorText);
+                alert("Login failed: " + (errorText || "Unknown error"));
+            }
+        } catch (error) {
+            console.error("Network or Parsing error:", error);
+        }
+    };
     const handleRegister = (e: React.FormEvent) => {
         e.preventDefault();
         router.push('/dashboard');
@@ -75,7 +107,7 @@ export default function AuthPage() {
                                     <div className="space-y-1">
                                         <label className="text-sm font-semibold text-gray-700">Email</label>
                                         <input
-                                            type="email"
+                                            type="text"
                                             required
                                             className="w-full px-4 py-2 border border-gray-300  rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent outline-none transition-all"
                                             placeholder="admin@school.edu"
