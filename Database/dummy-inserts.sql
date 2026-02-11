@@ -86,16 +86,16 @@ VALUES
 
 -- 6. CLASSES (GROUPS OF STUDENTS)
 -- ----------------------------------------------------------
-INSERT INTO Classes (school_id, name, home_room_id)
+INSERT INTO Classes (school_id, name, home_room_id, description)
 VALUES
 -- Springfield
-(1, 'Class 4A (Bart)', 1),     -- ID 1
-(1, 'Class 2A (Lisa)', 2),     -- ID 2
-(1, 'Class 5C (Milhouse)', 1), -- ID 3 (Shares homeroom with 4A but different time)
+(1, 'Class 4A (Bart)', 1, NULL),                -- ID 1
+(1, 'Class 2A (Lisa)', 2, NULL),                -- ID 2
+(1, 'Class 5C (Milhouse)', 1, 'Special needs'), -- ID 3 (Shares homeroom with 4A but different time)
 
 -- Westside
-(2, 'Cohort Alpha', 7),        -- ID 4
-(2, 'Cohort Beta', 8);
+(2, 'Cohort Alpha', 7, 'Programming'),          -- ID 4
+(2, 'Cohort Beta', 8, NULL);
 -- ID 5
 
 -- 7. PERIODS (BELL SCHEDULE)

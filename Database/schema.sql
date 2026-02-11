@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS `Classes`
     `school_id`    INT          NOT NULL,
     `name` VARCHAR(255) NOT NULL,
     `home_room_id` INT          NULL,
+    `description` VARCHAR(512),
     FOREIGN KEY (`school_id`) REFERENCES `Schools` (`id`) ON DELETE CASCADE,
     FOREIGN KEY (`home_room_id`) REFERENCES `Rooms` (`id`) ON DELETE SET NULL
 );
