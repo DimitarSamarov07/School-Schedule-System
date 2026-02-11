@@ -30,7 +30,7 @@ class Authenticator {
         }, this.secretKey, {algorithm: 'RS256'});
     }
 
-    static async decodeJWT(token: string): Promise<{ username: string, schoolsWithAccess: SchoolMember[] } | null> {
+    static decodeJWT(token: string): { username: string, schoolsWithAccess: SchoolMember[] } | null {
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, this.secretKey, {
