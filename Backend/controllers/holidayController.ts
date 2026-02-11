@@ -1,5 +1,5 @@
 import {HolidayService as holidayService} from "../Services/data/HolidayService.ts";
-import holidayResponse from "../response_models/HolidayResponse.ts";
+import {PeriodService as periodService} from "../Services/data/PeriodService.ts";
 
 export const deletePeriod = async (req, res) => {
     const {id} = req.query;
