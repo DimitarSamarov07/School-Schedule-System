@@ -3,6 +3,11 @@ export default class TeacherSql {
                                                  FROM Teachers
                                                  WHERE school_id = (?);`
 
+    static readonly SELECT_TEACHER_BY_ID = `SELECT id, name, email
+                                            FROM Teachers
+                                            WHERE id = (?)
+                                              AND school_id = (?);`
+
     static readonly INSERT_INTO_TEACHERS = `INSERT INTO Teachers(school_id, name, email)
                                             VALUES ((?), (?), (?))
                                             RETURNING id;`

@@ -10,6 +10,13 @@ export class RoomService {
         });
     }
 
+    public static async getRoomByIdForSchool(id: number, schoolId: number): Promise<RoomResponse> {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(RoomSql.SELECT_ROOM_BY_ID, [id, schoolId]);
+            return rows.map((row: any) => new RoomResponse(row))[0]
+        });
+    }
+
     public static async createRoom(schoolId: number, name: string, floor: number, capacity: number): Promise<RoomResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(RoomSql.INSERT_ROOM, [schoolId, name, floor, capacity]);

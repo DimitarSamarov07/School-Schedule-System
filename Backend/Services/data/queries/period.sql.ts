@@ -8,6 +8,11 @@ export default class PeriodSql {
                                                 FROM Periods
                                                 WHERE school_id = (?);`
 
+    static readonly SELECT_PERIOD_BY_ID = `SELECT id, name, start_time, end_time
+                                           FROM Periods
+                                           WHERE id = (?)
+                                             AND school_id = (?);`
+
     static readonly INSERT_INTO_PERIODS = `INSERT INTO Periods(school_id, name, start_time, end_time)
                                            VALUES ((?), (?), (?), (?))
                                            RETURNING id;`

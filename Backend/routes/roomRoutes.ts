@@ -5,6 +5,8 @@ import {hasAccessToSchool, hasAdminAccessToSchool} from "../guards/user_guards.t
 const router = express.Router();
 
 router.get('/all', hasAccessToSchool, roomController.getAllRooms);
+router.get("/", hasAccessToSchool, roomController.getRoomById)
+
 router.post('/', hasAdminAccessToSchool, roomController.createRoom);
 router.put('/', hasAdminAccessToSchool, roomController.updateRoom);
 router.delete('/', hasAdminAccessToSchool, roomController.deleteRoom);

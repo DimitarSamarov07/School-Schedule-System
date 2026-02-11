@@ -13,6 +13,13 @@ export class PeriodService {
         });
     }
 
+    public static async getPeriodByIdForSchool(id: number, schoolId: number) {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(PeriodSql.SELECT_PERIOD_BY_ID, [id, schoolId]);
+            return rows.map((row: any) => new PeriodResponse(row));
+        });
+    }
+
     public static async getRunningPeriodForSchool(schoolId: number): Promise<RunningTime | null> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
@@ -23,8 +30,7 @@ export class PeriodService {
                 const end = moment(resArr[i].End, 'HH:mm:ss');
                 if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
                     return new RunningTime(resArr[i].Name, resArr[i].Start, resArr[i].End);
-                }
-                else{
+                } else {
                     return new RunningTime(
                         "Неучебно време"
                     );
@@ -47,7 +53,7 @@ export class PeriodService {
             for (let i = 0; i < resArr.length; i++) {
                 const currentPeriodEnd = moment(resArr[i].End, 'HH:mm:ss');
                 if (now.isBefore(currentPeriodEnd)) {
-                    let nextRow = resArr[i+1];
+                    let nextRow = resArr[i + 1];
                     if (resArr[i + 1]) {
                         return new RunningTime(
                             nextRow.Name,
@@ -88,7 +94,7 @@ export class PeriodService {
     public static async deletePeriod(id: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.DELETE_PERIOD, [id, schoolId]);
-            console.log( rows.affectedRows > 0 );
+            console.log(rows.affectedRows > 0);
             return rows.affectedRows > 0;
         });
 

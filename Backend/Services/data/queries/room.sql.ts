@@ -3,6 +3,11 @@ export default class RoomSql {
                                               FROM Rooms
                                               WHERE school_id = (?);`
 
+    static readonly SELECT_ROOM_BY_ID = `SELECT id, name, floor, capacity
+                                         FROM Rooms
+                                         WHERE id = (?)
+                                           AND school_id = (?);`
+
     static readonly INSERT_ROOM = `INSERT INTO Rooms(school_id, name, floor, capacity)
                                    VALUES ((?), (?), (?), (?))
                                    RETURNING id;`

@@ -10,6 +10,13 @@ export class TeacherService {
         });
     }
 
+    public static async getTeacherByIdForSchool(id: number, schoolId: number) {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(TeacherSql.SELECT_TEACHER_BY_ID, [id, schoolId]);
+            return rows.map((row: any) => new TeacherResponse(row));
+        });
+    }
+
     public static async createTeacher(schoolId: number, name: string, email: string): Promise<TeacherResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(TeacherSql.INSERT_INTO_TEACHERS, [schoolId, name, email]);

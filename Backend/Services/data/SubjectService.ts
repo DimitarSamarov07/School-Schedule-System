@@ -10,6 +10,13 @@ export class SubjectService {
         });
     }
 
+    public static async getSubjectByIdForSchool(id: number, schoolId: number) {
+        return await connectionPoolFactory(async (conn) => {
+            const rows = await conn.query(SubjectSql.SELECT_SUBJECT_BY_ID, [id, schoolId]);
+            return rows.map((row: any) => new SubjectResponse(row))[0];
+        });
+    }
+
     public static async createSubject(schoolId: number, name: string, description: string): Promise<SubjectResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.INSERT_SUBJECT, [schoolId, name, description]);

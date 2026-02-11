@@ -3,6 +3,11 @@ export default class SubjectSql {
                                                  FROM Subjects
                                                  WHERE school_id = (?);`
 
+    static readonly SELECT_SUBJECT_BY_ID = `SELECT id, name, description
+                                            FROM Subjects
+                                            WHERE id = (?)
+                                              AND school_id = (?);`
+
     static readonly INSERT_SUBJECT = `INSERT INTO Subjects(school_id, name, description)
                                       VALUES ((?), (?), (?))
                                       RETURNING id;`

@@ -40,6 +40,7 @@ export default class ScheduleSql {
         WHERE s.school_id = (?)
     `;
 
+    static readonly SELECT_SCHEDULE_BY_ID = `${this.BASE_SCHEDULE_QUERY} AND s.id = (?)`;
     static readonly SELECT_SCHEDULES_FOR_DATE = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) `;
     static readonly SELECT_SCHEDULES_FOR_DATE_FOR_CLASS = `${this.BASE_SCHEDULE_QUERY} AND s.date = (?) AND c.id = (?)`;
     static readonly SELECT_SCHOOL_SCHEDULES_FOR_DATE_INTERVAL = `${this.BASE_SCHEDULE_QUERY} AND s.date BETWEEN (?) AND (?)`;
