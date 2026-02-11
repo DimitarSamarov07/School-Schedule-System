@@ -17,7 +17,8 @@ export default class PeriodSql {
                                          start_time = COALESCE((?), start_time),
                                          end_time   = COALESCE((?), end_time)
 
-                                     WHERE id = (?)`;
+                                     WHERE id = (?)
+                                       AND school_id = (?);`;
 
     static readonly DELETE_PERIOD = `DELETE
                                      FROM Periods

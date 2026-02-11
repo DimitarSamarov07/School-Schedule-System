@@ -54,7 +54,8 @@ export const getSchedulesByDateTimeAndSchool = async (req, res) => {
 };
 
 export const createSchedule = async (req, res) => {
-    const {schoolId, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
+    const {schoolId} = req.query;
+    const {date, periodId, classId, teacherId, subjectId, roomId} = req.body;
     if (!schoolId || !date || !periodId || !classId || !teacherId || !subjectId || !roomId) {
         return res.status(406).send("Malformed parameters");
     }
@@ -70,7 +71,8 @@ export const createSchedule = async (req, res) => {
 };
 
 export const updateSchedule = async (req, res) => {
-    const {id, schoolId, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
+    const {schoolId} = req.query;
+    const {id, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
 
     if (id) {
         return res.status(406).send("Malformed parameters");
