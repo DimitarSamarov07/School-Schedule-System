@@ -1,8 +1,9 @@
 "use client";
 
-import { Users, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import {Users, Loader2, Pencil, Plus, Trash2, Search} from "lucide-react";
 import React from "react";
 import {Teacher} from "@/types/teacher";
+import {Subject} from "@/types/subject";
 
 export default function TeacherListContainer({ manager }: { manager: any }) {
     const {
@@ -30,142 +31,128 @@ export default function TeacherListContainer({ manager }: { manager: any }) {
         );
     }
 
-    const isEmpty = teacherList.length === 0;
 
     return (
-        <>
-            {isEmpty ? (
-                <div className="flex flex-col items-center justify-center py-20 px-4 border-2 border-dashed border-gray-200 rounded-3xl bg-gray-50/50">
-                    <div className="bg-purple-100 p-6 rounded-full mb-6">
-                        <Users className="w-16 h-16 text-purple-600" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">No teachers created yet</h3>
-                    <p className="text-gray-500 text-center max-w-sm mb-10 leading-relaxed">
-                        Start by adding your first teacher to manage your school.
-                    </p>
-                    <button
-                        onClick={() => setActiveModal("add")}
-                        className="flex items-center gap-3 bg-purple-600 text-white px-10 py-5 rounded-2xl text-xl font-bold hover:bg-purple-700 hover:scale-105 transition-all shadow-xl shadow-purple-200 cursor-pointer group"
-                    >
-                        <Plus className="w-6 h-6 group-hover:rotate-90 transition-transform duration-300" />
-                        Create Your First Teacher
-                    </button>
+        <div className="p-10 bg-white rounded-2xl font-sans overflow-hidden ">
+            <div className="flex justify-between items-end mb-8">
+                <div>
+                    <h1 className="text-4xl font-extrabold text-[#1A1A1A] tracking-tight mb-2">Учители</h1>
+                    <p className="text-gray-500 font-medium">Управлявайте вашите учители и персонал</p>
                 </div>
-            ) : (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                    <table className="w-full text-left">
-                        <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 text-xs uppercase tracking-wider">
-                        <tr>
-                            <th className="px-6 py-4 font-semibold">Teacher Name</th>
-                            <th className="px-6 py-4 font-semibold">Email</th>
-                            <th className="px-6 py-4 text-right font-semibold">Actions</th>
-                        </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100">
-                        {teacherList.map((teacher: Teacher) => (
-                            <tr key={teacher.id} className="hover:bg-purple-50/30 transition-colors group">
-                                <td className="px-6 py-4 font-bold text-gray-900">{teacher.Name}</td>
-                                <td className="px-6 py-4">
-                                    {teacher.Email || "Main building"}
-                                </td>
-                                {/* TODO: Add color coding according to the color from the subject tab and choice list*/}
-                                <td className="px-6 py-4 text-right space-x-1">
+
+                <button
+                    onClick={() => setActiveModal("add")}
+                    className="bg-[#7C5CFC] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6b4de0] transition-all shadow-lg shadow-purple-200 active:scale-95 flex items-center gap-3 cursor-pointer"
+                >
+                    <Plus size={20}></Plus>
+                    Добави учител
+                </button>
+            </div>
+
+
+            <div className="mb-8 max-w-2xl ">
+                <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#7C5CFC] transition-colors" />
+                    <input
+                        type="text"
+                        placeholder="Търсене по име на учител..."
+                        className="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-transparent bg-white shadow-sm outline-none focus:border-[#7C5CFC]/30 focus:ring-4 focus:ring-[#7C5CFC]/5 transition-all text-lg font-medium text-gray-700"
+                    />
+                </div>
+            </div>
+
+            <div className="bg-white rounded-[2.5rem] shadow-xl shadow-gray-100/50 border border-gray-100 overflow-hidden">
+                <table className="w-full text-left">
+                    <thead className="bg-gray-100 border-b border-gray-100">
+                    <tr className="text-gray-500">
+                        <th className="px-10 py-6 font-black uppercase tracking-widest text-xs">Учител</th>
+                        <th className="px-10 py-6 font-black uppercase tracking-widest text-xs">Имейл</th>
+                        <th className="px-10 py-6 font-black uppercase tracking-widest text-xs text-right">Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-50">
+                    {teacherList.map((teacher: Teacher) => (
+                        <tr key={teacher.id} className="hover:bg-gray-50/50 transition-colors group">
+                            <td className="px-10 py-7 text-[#1A1A1A] font-bold text-xl">{teacher.Name}</td>
+                            <td className="px-10 py-7 text-gray-600 font-medium text-lg">{teacher.Email || ""}</td>
+
+                            <td className="px-10 py-7">
+                                <div className="flex justify-end gap-3">
                                     <button
                                         onClick={() => openEditModal(teacher)}
-                                        className="p-2.5 hover:bg-white hover:shadow-sm rounded-lg cursor-pointer transition-all border border-transparent hover:border-gray-100"
+                                        className="p-3 text-[#7C5CFC] hover:bg-purple-50 rounded-2xl transition-all cursor-pointer"
                                     >
-                                        <Pencil className="w-4 h-4 text-gray-500" />
+                                        <Pencil className="w-6 h-6" />
                                     </button>
                                     <button
                                         onClick={() => openDeleteModal(teacher)}
-                                        className="p-2.5 hover:bg-red-50 rounded-lg cursor-pointer transition-all group/del"
+                                        className="p-3 text-[#E74C3C] hover:bg-red-50 rounded-2xl transition-all cursor-pointer"
                                     >
-                                        <Trash2 className="w-4 h-4 text-red-400 group-hover/del:text-red-600" />
+                                        <Trash2 className="w-6 h-6" />
                                     </button>
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
 
-            {/* MODAL SYSTEM */}
+                {teacherList.length === 0 && (
+                    <div className="py-24 text-center">
+                        <p className="text-gray-400 font-medium text-xl italic">Няма намерени записи.</p>
+                    </div>
+                )}
+            </div>
+
             {activeModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div
-                        className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm transition-opacity"
-                        onClick={closeModal}
-                    />
-                    <div className="relative bg-white rounded-2xl p-8 w-full max-w-md shadow-2xl overflow-hidden">
-                        <h3 className="text-xl font-bold text-gray-900 mb-6">
-                            {activeModal === "add"
-                                ? "Add New Teacher"
-                                : activeModal === "edit"
-                                    ? `Edit Teacher: ${selectedTeacher?.Name}`
-                                    : "Delete Teacher"}
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm">
+                    <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
+                        <h3 className="text-2xl font-black text-gray-900 mb-8">
+                            {activeModal === "add" ? "Добави нов учител" : activeModal === "edit" ? `Редакция: ${teacherList?.Name}` : "Изтриване"}
                         </h3>
 
                         {activeModal === "delete" ? (
-                            <div className="space-y-6">
-                                <p className="text-gray-600 leading-relaxed">
-                                    Are you sure you want to delete <span className="font-bold text-gray-900">{selectedTeacher?.Name}</span>?
-                                    This action will remove all associated data and cannot be undone.
-                                </p>
-                                <div className="flex gap-3">
-                                    <button
-                                        onClick={closeModal}
-                                        className="flex-1 px-4 py-3 text-gray-600 font-medium hover:bg-gray-100 rounded-xl transition-colors cursor-pointer"
-                                    >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleDelete}
-                                        className="flex-1 px-4 py-3 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition-all shadow-lg shadow-red-100 cursor-pointer"
-                                    >
-                                        Delete Teacher
-                                    </button>
+                            <div className="space-y-8">
+                                <p className="text-gray-600 text-lg leading-relaxed">Сигурни ли сте че искате да изтриете учител <span className="font-bold text-black border-b-2 border-red-200">{selectedTeacher?.Name}</span>?</p>
+                                <div className="flex gap-4">
+                                    <button onClick={closeModal} className="flex-1 px-6 py-4 text-gray-500 bg-gray-100 rounded-2xl font-bold hover:bg-gray-200 transition-all">Отказ</button>
+                                    <button onClick={handleDelete} className="flex-1 px-6 py-4 bg-[#E74C3C] text-white rounded-2xl font-extrabold hover:bg-red-600 transition-all shadow-lg shadow-red-100">Изтрий</button>
                                 </div>
                             </div>
                         ) : (
-                            <div className="space-y-5">
+                            <div className="space-y-6">
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Teacher Name</label>
+                                    <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Име на Учител</label>
                                     <input
-                                        className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                        className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold"
                                         value={formData.Name}
                                         onChange={(e) => setFormData({ ...formData, Name: e.target.value })}
-                                        placeholder="e.g. 10th Teacher"
+                                        placeholder="напр. Математика"
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-semibold text-gray-700 mb-1.5">Building</label>
+                                    <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Имейл</label>
                                     <input
-                                        className="w-full border border-gray-200 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                                        className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold"
                                         value={formData.Email}
                                         onChange={(e) => setFormData({ ...formData, Email: e.target.value })}
-                                        placeholder="e.g. example@gmail.com"
+                                        placeholder="напр. 1ви срок"
                                     />
                                 </div>
-                                <div className="flex flex-col gap-3 pt-4">
+                                <div className="pt-6 flex flex-col gap-4">
                                     <button
                                         onClick={activeModal === "add" ? handleCreate : handleUpdate}
-                                        className="w-full bg-purple-600 text-white py-4 rounded-xl font-bold hover:bg-purple-700 transition-all shadow-lg shadow-purple-100 cursor-pointer"
+                                        className="w-full bg-[#7C5CFC] text-white py-4.5 rounded-2xl font-black text-xl shadow-xl shadow-purple-100 hover:-translate-y-0.5 transition-all cursor-pointer "
                                     >
-                                        {activeModal === "add" ? "Create Teacher" : "Save Changes"}
+                                        {activeModal === "add" ? "СЪЗДАЙ" : "ЗАПАЗИ"}
                                     </button>
-                                    <button
-                                        onClick={closeModal}
-                                        className="w-full py-2 text-gray-400 text-sm hover:text-gray-600 transition-colors cursor-pointer"
-                                    >
-                                        Discard Changes
-                                    </button>
+                                    <button onClick={closeModal} className="w-full text-gray-500 font-bold py-2 hover:text-gray-600 transition-colors cursor-pointer">Отказ</button>
                                 </div>
                             </div>
                         )}
                     </div>
                 </div>
             )}
-        </>
+        </div>
     );
 }

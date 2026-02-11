@@ -64,7 +64,7 @@ export function usePeriodsManager() {
         }
     };
 
-    const handleUptime = async () => {
+    const handleUpdate = async () => {
         try {
             if (!formData.id) return;
             await updateTime(formData.id,formData.Name, formData.Start, formData.End);
@@ -109,7 +109,7 @@ export function usePeriodsManager() {
         setFormData,
         setActiveModal,
         handleCreate,
-        handleUptime,
+        handleUptime: handleUpdate,
         handleDelete,
         closeModal,
         openEditModal,
