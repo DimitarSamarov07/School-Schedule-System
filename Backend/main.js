@@ -12,6 +12,7 @@ import teacherRoutes from "./routes/teacherRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
 import subjectRoutes from "./routes/subjectRoutes.ts";
 import holidayRoutes from "./routes/holidayRoutes.ts";
+import lusca from "lusca";
 
 // Initializing Express App
 
@@ -34,9 +35,10 @@ app.use(helmet()) // Enhances security
 
 
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"]
+    //allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true
 }))
 
 //
