@@ -92,8 +92,6 @@ class Authenticator {
     }
 
     public static async hashPasswordCompare(password: string, hashedPassword: string): Promise<boolean> {
-        console.log(password)
-        console.log(hashedPassword)
         return await bcrypt.compare(password, hashedPassword);
     }
 
