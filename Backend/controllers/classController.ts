@@ -1,14 +1,15 @@
 import {ClassService as classService} from "../Services/data/ClassService.ts";
 
 export const updateClass = async (req, res) => {
+    const {schoolId} = req.query;
     const {name, description, homeRoomId, id} = req.body;
 
-    if (!id || (!name && !description && !homeRoomId)) {
+    if (!id || !schoolId) {
         return res.status(406).send("Malformed parameters");
     }
 
     try {
-        const result = await classService.updateClass(id, name, description, homeRoomId);
+        const result = await classService.updateClass(id, schoolId, name, description, homeRoomId);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({"error": err.message || err});
@@ -16,9 +17,12 @@ export const updateClass = async (req, res) => {
 };
 
 export const deleteClass = async (req, res) => {
-    const {id} = req.query;
+    const {id, schoolId} = req.query;
+    if (!id || !schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
     try {
-        const result = await classService.deleteClass(id);
+        const result = await classService.deleteClass(id, schoolId);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({"error": err.message || err});
@@ -39,7 +43,7 @@ export const getAllClasses = async (req, res) => {
 export const createClass = async (req, res) => {
     const {schoolId} = req.query;
     const {name, description, homeRoomId} = req.body;
-    if (!name || !description) {
+    if (!schoolId || !name || !description || !homeRoomId) {
         return res.status(406).send("Malformed parameters");
     }
     try {

@@ -18,17 +18,17 @@ export class SubjectService {
 
     }
 
-    public static async updateSubject(id: number, name: string | null, description: string | null): Promise<SubjectResponse> {
+    public static async updateSubject(id: number, schoolId: number, name: string | null, description: string | null): Promise<SubjectResponse> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(SubjectSql.UPDATE_SUBJECT, [id, name, description]);
+            const rows = await conn.query(SubjectSql.UPDATE_SUBJECT, [name, description, id, schoolId]);
             return rows.map((row: any) => new SubjectResponse(row));
         });
 
     }
 
-    public static async deleteSubject(id: number): Promise<boolean> {
+    public static async deleteSubject(id: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(SubjectSql.DELETE_SUBJECT, [id]);
+            const rows = await conn.query(SubjectSql.DELETE_SUBJECT, [id, schoolId]);
             return rows.affectedRows > 0;
         });
 

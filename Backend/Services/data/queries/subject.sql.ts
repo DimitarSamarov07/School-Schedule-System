@@ -11,9 +11,11 @@ export default class SubjectSql {
     static readonly UPDATE_SUBJECT = `UPDATE Subjects
                                       SET name        = COALESCE((?), name),
                                           description = COALESCE((?), description)
-                                      WHERE id = (?)`;
+                                      WHERE id = (?)
+                                        AND school_id = (?);`;
 
     static readonly DELETE_SUBJECT = `DELETE
                                       FROM Subjects
-                                      WHERE id = (?);`
+                                      WHERE id = (?)
+                                        AND school_id = (?);`
 }

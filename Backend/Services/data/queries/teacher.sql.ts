@@ -10,9 +10,11 @@ export default class TeacherSql {
     static readonly UPDATE_TEACHER = `UPDATE Teachers
                                       SET name  = COALESCE((?), name),
                                           email = COALESCE((?), email)
-                                      WHERE id = (?)`
+                                      WHERE id = (?)
+                                        AND school_id = (?);`
 
     static readonly DELETE_TEACHER = `DELETE
                                       FROM Teachers
-                                      WHERE id = (?);`
+                                      WHERE id = (?)
+                                        AND school_id = (?);`
 }

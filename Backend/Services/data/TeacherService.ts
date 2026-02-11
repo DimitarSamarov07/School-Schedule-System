@@ -18,17 +18,17 @@ export class TeacherService {
 
     }
 
-    public static async updateTeacher(id: number, name: string | null, email: string | null): Promise<TeacherResponse> {
+    public static async updateTeacher(id: number, schoolId: number, name: string | null, email: string | null): Promise<TeacherResponse> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(TeacherSql.UPDATE_TEACHER, [id, name, email]);
+            const rows = await conn.query(TeacherSql.UPDATE_TEACHER, [name, email, id, schoolId]);
             return rows.map((row: any) => new TeacherResponse(row));
         });
 
     }
 
-    public static async deleteTeacher(id: number): Promise<boolean> {
+    public static async deleteTeacher(id: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(TeacherSql.DELETE_TEACHER, [id]);
+            const rows = await conn.query(TeacherSql.DELETE_TEACHER, [id, schoolId]);
             return rows.affectedRows > 0;
         });
 

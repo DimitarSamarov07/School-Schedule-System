@@ -20,17 +20,17 @@ export class ClassService {
 
     }
 
-    public static async updateClass(id: number, name: string | null, description: string | null, homeRoomId: number | null): Promise<ClassResponse> {
+    public static async updateClass(id: number, schoolId: number, name: string | null, description: string | null, homeRoomId: number | null): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(ClassSql.UPDATE_CLASS, [id, name, description, homeRoomId]);
+            const rows = await conn.query(ClassSql.UPDATE_CLASS, [name, description, homeRoomId, id, schoolId]);
             return rows.map((row: any) => new ClassResponse(row));
         });
 
     }
 
-    public static async deleteClass(id: number): Promise<boolean> {
+    public static async deleteClass(id: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(ClassSql.DELETE_CLASS, [id]);
+            const rows = await conn.query(ClassSql.DELETE_CLASS, [id, schoolId]);
             return rows.affectedRows > 0;
         });
 

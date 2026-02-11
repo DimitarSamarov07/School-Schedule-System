@@ -27,10 +27,10 @@ export const createSubject = async (req, res) => {
 };
 
 export const deleteSubject = async (req, res) => {
-    const {id} = req.query;
+    const {id, schoolId} = req.query;
 
     try {
-        const result = await subjectService.deleteSubject(id);
+        const result = await subjectService.deleteSubject(id, schoolId);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({"error": err});
@@ -38,14 +38,15 @@ export const deleteSubject = async (req, res) => {
 };
 
 export const updateSubject = async (req, res) => {
+    const {schoolId} = req.query;
     const {name, description, id} = req.body;
 
-    if ((!name && !description) || !id) {
+    if (!id || !schoolId) {
         return res.status(406).send("Malformed parameters");
     }
 
     try {
-        const result = await subjectService.updateSubject(id, name, description);
+        const result = await subjectService.updateSubject(id, schoolId, name, description);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({"error": err});
