@@ -30,16 +30,12 @@ export const getSchoolScheduleBetweenDates = async (req, res) => {
 }
 
 export const getSchedulesByClassForDate = async (req, res) => {
-    let {classId, date} = req.query;
-    if (!date || !classId) return res.status(406).send("Malformed parameters");
+    let {schoolId, classId, date} = req.query;
+    if (!schoolId || !date || !classId) return res.status(406).send("Malformed parameters");
 
     try {
         const formattedDate = moment(date).format("YYYY-MM-DD");
-        const classIdParsed = parseInt(classId);
-
-        if (isNaN(classIdParsed)) return res.status(406).send("Malformed classId");
-
-        const result = await scheduleService.getSchedulesByClassIdForDate(classIdParsed, formattedDate);
+        const result = await scheduleService.getSchoolSchedulesForDateByClass(schoolId, classId, formattedDate);
         return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err});
@@ -58,12 +54,15 @@ export const getSchedulesByDateTimeAndSchool = async (req, res) => {
 };
 
 export const createSchedule = async (req, res) => {
-    const {courseId, classId, timeId, dateId} = req.body;
-    if (!courseId || !classId || !timeId || !dateId) {
+    const {schoolId, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
+    if (!schoolId || !date || !periodId || !classId || !teacherId || !subjectId || !roomId) {
         return res.status(406).send("Malformed parameters");
     }
+
     try {
-        const result = await scheduleService.createSchedule(courseId, classId, timeId, dateId);
+        const result = await scheduleService
+            .createSchedule(schoolId, date, periodId, classId, teacherId, subjectId, roomId);
+
         return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err});
@@ -71,19 +70,15 @@ export const createSchedule = async (req, res) => {
 };
 
 export const updateSchedule = async (req, res) => {
-    const {newCourseId, oldCourseId, newClassId, oldClassId, newTimeId, newDateId, oldDateId} = req.body;
+    const {id, schoolId, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
 
-    const hasRequired = oldCourseId && oldClassId && oldDateId;
-    const hasUpdates = newCourseId || newClassId || newTimeId || newDateId;
-
-    if (!hasRequired || !hasUpdates) {
+    if (id) {
         return res.status(406).send("Malformed parameters");
     }
 
     try {
         const result = await scheduleService.updateSchedule(
-            oldClassId, oldCourseId, oldDateId,
-            newClassId, newCourseId, newTimeId, newDateId
+            id, schoolId, date, periodId, classId, teacherId, subjectId, roomId
         );
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
@@ -92,9 +87,12 @@ export const updateSchedule = async (req, res) => {
 };
 
 export const deleteSchedule = async (req, res) => {
-    const {courseId, classId, timeId} = req.query;
+    const {id, schoolId} = req.query;
+    if (!id || !schoolId)
+        return res.status(406).send("Malformed parameters");
+
     try {
-        const result = await scheduleService.deleteSchedule(courseId, classId, timeId);
+        const result = await scheduleService.deleteSchedule(id, schoolId);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({"error": err});

@@ -28,32 +28,43 @@ class Schedule {
 
     static convertFromDBModel(schedule: any) {
         let {
-            date,
+            scheduleDate,
             schoolId,
             schoolName,
             schoolAddress,
             workWeekConfig,
+
+            subjectId,
             subjectName,
             description,
+
+            teacherId,
             teacherName,
             teacherEmail,
+
+            classId,
             className,
+            classDescription,
+
+            roomId,
             roomName,
             floor,
             capacity,
+
+            periodId,
             periodName,
             startTime,
             endTime
         } = schedule;
 
-        let time = new Period(schoolId, periodName, startTime, endTime);
-        let teacher = new Teacher(schoolId, teacherName, teacherEmail);
-        let room = new Room(schoolId, roomName, floor, capacity);
-        let subject = new Subject(schoolId, subjectName, description);
-        let classModel = new Class(schoolId, className, room);
+        let period = new Period(periodId, schoolId, periodName, startTime, endTime);
+        let teacher = new Teacher(teacherId, schoolId, teacherName, teacherEmail);
+        let room = new Room(roomId, schoolId, roomName, floor, capacity);
+        let subject = new Subject(subjectId, schoolId, subjectName, description);
+        let classModel = new Class(classId, schoolId, className, classDescription, room);
         let school = new School(schoolId, schoolName, schoolAddress, workWeekConfig);
-        let dateString = moment(date).format("YYYY-MM-DD");
-        return new Schedule(classModel, dateString, teacher, subject, school, time, room);
+        let dateString = moment(scheduleDate).format("YYYY-MM-DD");
+        return new Schedule(classModel, dateString, teacher, subject, school, period, room);
 
     }
 }
