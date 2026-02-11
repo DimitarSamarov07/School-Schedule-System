@@ -18,9 +18,11 @@ export default class ClassSql {
                                     SET name         = COALESCE((?), name),
                                         description  = COALESCE((?), description),
                                         home_room_id = COALESCE((?), home_room_id)
-                                    WHERE id = (?)`;
+                                    WHERE id = (?)
+                                      AND school_id = (?);`;
 
     static readonly DELETE_CLASS = `DELETE
                                     FROM Classes
-                                    WHERE id = (?);`
+                                    WHERE id = (?)
+                                      AND school_id = (?);`
 }

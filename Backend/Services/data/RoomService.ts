@@ -26,9 +26,9 @@ export class RoomService {
 
     }
 
-    public static async deleteRoom(id: number): Promise<boolean> {
+    public static async deleteRoom(id: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(RoomSql.DELETE_ROOM, [id]);
+            const rows = await conn.query(RoomSql.DELETE_ROOM, [id, schoolId]);
             return rows.affectedRows > 0;
         });
 

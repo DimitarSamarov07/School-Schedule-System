@@ -30,9 +30,12 @@ export const updateRoom = async (req, res) => {
 };
 
 export const deleteRoom = async (req, res) => {
-    const {id} = req.query;
+    const {id, schoolId} = req.query;
+    if (!id || !schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
     try {
-        const result = await roomService.deleteRoom(id);
+        const result = await roomService.deleteRoom(id, schoolId);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({error: err});

@@ -1,9 +1,9 @@
 import {PeriodService as periodService} from "../Services/data/PeriodService.ts";
 
 export const deletePeriod = async (req, res) => {
-    const {id} = req.query;
+    const {schoolId, id} = req.query;
     try {
-        const result = await periodService.deletePeriod(id);
+        const result = await periodService.deletePeriod(id, schoolId);
         return result ? res.status(422).send(false) : res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
