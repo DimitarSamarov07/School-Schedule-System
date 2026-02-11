@@ -39,6 +39,7 @@ export const hasAccessToSchool = (req, res, next) => {
 
 const getSchoolIdFromRequest = (req, res) => {
     let {schoolId: requestedSchoolId} = req.query;
+    requestedSchoolId = parseInt(requestedSchoolId);
     if (!requestedSchoolId) {
         res.status(400).send("School ID is required for this action.");
         return null;
@@ -64,7 +65,7 @@ const getAuthTokenFromRequest = (req, res) => {
 
 const validateSchoolAccess = (token, schoolId, requireAdmin = false) => {
     if (requireAdmin) {
-        return token.schoolsWithAccess?.filter(x => x.SchoolId == schoolId && x.IsAdmin).length > 0;
+        return token.accessList?.filter(x => x.SchoolId == schoolId && x.IsAdmin).length > 0;
     }
-    return token.schoolsWithAccess?.filter(x => x.SchoolId == schoolId).length > 0;
+    return token.accessList?.filter(x => x.SchoolId == schoolId).length > 0;
 };
