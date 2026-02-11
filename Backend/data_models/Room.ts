@@ -5,7 +5,8 @@ class Room {
     Floor: number;
     Capacity: number;
 
-    constructor(schoolId: number, name: string, floor: number, capacity: number) {
+    constructor(id: number, schoolId: number, name: string, floor: number, capacity: number) {
+        this.Id = id;
         this.SchoolId = schoolId;
         this.Name = name;
         this.Floor = floor;
