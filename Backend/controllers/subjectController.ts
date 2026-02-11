@@ -12,7 +12,8 @@ export const getAllSubjects = async (req, res) => {
 }
 
 export const createSubject = async (req, res) => {
-    const {name, schoolId, description} = req.body;
+    const {schoolId} = req.query;
+    const {name, description} = req.body;
 
     if (!name || !description || !schoolId) {
         return res.status(406).send("Malformed parameters");

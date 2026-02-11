@@ -11,7 +11,8 @@ export default class RoomSql {
                                    SET name     = COALESCE((?), name),
                                        floor    = COALESCE((?), floor),
                                        capacity = COALESCE((?), capacity)
-                                   WHERE id = (?)`;
+                                   WHERE id = (?)
+                                     AND school_id = (?);`;
 
     static readonly DELETE_ROOM = `DELETE
                                    FROM Rooms

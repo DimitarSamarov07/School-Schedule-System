@@ -59,13 +59,13 @@ export const createPeriod = async (req, res) => {
 };
 
 export const updatePeriod = async (req, res) => {
-    const {id} = req.query;
-    const {name, start, end} = req.body;
+    const {schoolId} = req.query;
+    const {id, name, start, end} = req.body;
     if ((!start && !end) || !id) {
         return res.status(406).send("Malformed parameters");
     }
     try {
-        const result = await periodService.updatePeriod(id, name, start, end);
+        const result = await periodService.updatePeriod(id, schoolId, name, start, end);
         return result ? res.status(422).send(false) :  res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});

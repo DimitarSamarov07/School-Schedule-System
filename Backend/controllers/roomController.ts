@@ -16,13 +16,14 @@ export const createRoom = async (req, res) => {
 };
 
 export const updateRoom = async (req, res) => {
+    const {schoolId} = req.query;
     const {name, floor, id, capacity} = req.body;
-    if ((!name && !floor) || !id) {
+    if (!id || !schoolId) {
         return res.status(406).send("Malformed parameters");
     }
 
     try {
-        const result = await roomService.updateRoom(id, name, floor, capacity);
+        const result = await roomService.updateRoom(id, schoolId, name, floor, capacity);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
         return res.status(500).send({error: err});
