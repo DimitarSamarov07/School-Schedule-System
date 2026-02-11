@@ -1,52 +1,74 @@
 import {HolidayService as holidayService} from "../Services/data/HolidayService.ts";
-import {PeriodService as periodService} from "../Services/data/PeriodService.ts";
-
-export const deletePeriod = async (req, res) => {
-    const {id} = req.query;
-    try {
-        const result = await holidayService.deletePeriod(id);
-        return result ? res.status(422).send(false) : res.send(result);
-    } catch (err) {
-        return res.status(500).send({error: err});
-    }
-};
-
 
 export const getAllHolidays = async (req, res) => {
     const {schoolId} = req.query;
+
+    if (!schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
+
     try {
         const result = await holidayService.getAllHolidaysForSchool(schoolId);
         return res.send(result);
     } catch (err) {
-        const status = err === "No holidays found" ? 404 : 500;
-        return res.status(status).send({error: err});
+        return res.status(500).send({error: err});
     }
 };
 
-export const createPeriod = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, start, end} = req.body;
-    if (!start || !end) {
+export const getHolidayById = async (req, res) => {
+    const {id, schoolId} = req.query;
+    if (!id || !schoolId) {
         return res.status(406).send("Malformed parameters");
     }
     try {
-        const result = await periodService.createPeriod(schoolId, name, start, end);
+        const result = await holidayService.getHolidayById(id, schoolId);
         return res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
     }
-};
+}
 
-export const updatePeriod = async (req, res) => {
-    const {id} = req.query;
-    const {name, start, end} = req.body;
-    if ((!start && !end) || !id) {
+export const createHoliday = async (req, res) => {
+    const {schoolId} = req.query;
+    const {name, startDate, endDate} = req.body;
+    if (!schoolId || !name || !startDate || !endDate) {
         return res.status(406).send("Malformed parameters");
     }
+
     try {
-        const result = await periodService.updatePeriod(id, name, start, end);
-        return result ? res.status(422).send(false) :  res.send(result);
+        const result = await holidayService.createHolidayForSchool(schoolId, name, startDate, endDate);
+        return res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
     }
-};
+}
+
+export const updateHoliday = async (req, res) => {
+    const {schoolId} = req.query;
+    const {name, startDate, endDate, id} = req.body;
+    if (!id) {
+        return res.status(406).send("Malformed parameters");
+    }
+
+    try {
+        const result = await holidayService.updateHolidayForSchool(id, schoolId, name, startDate, endDate);
+        return res.send(result);
+    } catch (err) {
+        return res.status(500).send({error: err});
+    }
+}
+
+export const deleteHoliday = async (req, res) => {
+    const {id, schoolId} = req.query;
+
+    if (!id || !schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
+
+    try {
+        const result = await holidayService.deleteHolidayForSchool(id, schoolId);
+        return res.second(result);
+    } catch (e) {
+        return res.status(500).send({error: e});
+    }
+}
