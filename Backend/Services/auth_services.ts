@@ -17,11 +17,19 @@ class Authenticator {
     static saltRounds = 10;
 
     static async initializeAuthenticator(): Promise<void> {
-        let secretLocation = env.JWT_SECRET_PK_LOCATION;
-        if (!secretLocation) {
-            secretLocation = './private.key';
+        let jwtSecretLocation = env.JWT_SECRET_PK_LOCATION;
+        if (!jwtSecretLocation) {
+            jwtSecretLocation = './private.key';
         }
-        this.secretKey = await fs.readFile(secretLocation, 'utf-8');
+        this.secretKey = await fs.readFile(jwtSecretLocation, 'utf-8');
+    }
+
+    static async retrieveCSRFKey(): Promise<string> {
+        let csrfSecretLocation = env.CSRF_SECRET_PK_LOCATION;
+        if (!csrfSecretLocation) {
+            csrfSecretLocation = './csrf.key';
+        }
+        return await fs.readFile(csrfSecretLocation, 'utf-8');
     }
 
     static createJWT(userData: UserData): string {

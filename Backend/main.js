@@ -14,6 +14,7 @@ import subjectRoutes from "./routes/subjectRoutes.ts";
 import holidayRoutes from "./routes/holidayRoutes.ts";
 
 // Initializing Express App
+import {doubleCsrf} from "csrf-csrf";
 
 const app = express();
 const limiter = rateLimit({
@@ -26,10 +27,23 @@ const limiter = rateLimit({
     skipSuccessfulRequests: false,
 });
 
+const {
+    doubleCsrfProtection,
+    generateToken
+} = doubleCsrf({
+    getSecret: () => authenticatorMaster.retrieveCSRFKey(),
+    cookieName: "x-csrf-token",
+    cookieOptions: {
+        sameSite: "lax",
+        path: "/",
+        secure: true
+    },
+});
+
 //app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
-//app.use(lusca.csrf());
+app.use(doubleCsrfProtection);
 app.use(helmet()) // Enhances security
 
 
@@ -39,8 +53,14 @@ app.use(cors({
     credentials: true
 }))
 
-//
 app.set('trust proxy', 1);
+
+
+app.get("/csrf-token", (req, res) => {
+    const token = generateToken(req, res);
+    return res.json({csrfToken: token});
+});
+
 
 // Include user-defined routes
 app.use("/class", classRoutes);
