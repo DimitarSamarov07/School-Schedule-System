@@ -17,6 +17,9 @@ class Authenticator {
 
     static async initializeAuthenticator(): Promise<void> {
         let secretLocation = env.JWT_SECRET_PK_LOCATION;
+        if (!secretLocation) {
+            secretLocation = './private.key';
+        }
         this.secretKey = await fs.readFile(secretLocation, 'utf-8');
     }
 
@@ -27,7 +30,7 @@ class Authenticator {
         }, this.secretKey, {algorithm: 'RS256'});
     }
 
-    static async decodeJWT(token: string): Promise<{ username: string, schoolsWithAccess: SchoolMember[] }> {
+    static async decodeJWT(token: string): Promise<{ username: string, schoolsWithAccess: SchoolMember[] } | null> {
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, this.secretKey, {
@@ -39,8 +42,8 @@ class Authenticator {
         }
     }
 
-    static async getUserData(username: string, plainPassword: string): Promise<UserData> {
-        return await connectionPoolFactory(async (conn): Promise<UserData> => {
+    static async getUserData(username: string, plainPassword: string): Promise<UserData | null> {
+        return await connectionPoolFactory(async (conn): Promise<UserData | null> => {
             const userEntries = await conn.query(UserSql.GET_USER_BY_USERNAME, [username]);
 
             if (userEntries.length > 0) {
