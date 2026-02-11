@@ -12,17 +12,17 @@ export class ClassService {
 
     }
 
-    public static async createClass(schoolId: number, name: string, homeRoomId: number): Promise<ClassResponse> {
+    public static async createClass(schoolId: number, name: string, description: string | null, homeRoomId: number): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(ClassSql.INSERT_INTO_CLASSES, [schoolId, name, homeRoomId]);
+            const rows = await conn.query(ClassSql.INSERT_INTO_CLASSES, [schoolId, name, description, homeRoomId]);
             return rows.map((row: any) => new ClassResponse(row));
         });
 
     }
 
-    public static async updateClass(id: number, name: string | null, homeRoomId: number | null): Promise<ClassResponse> {
+    public static async updateClass(id: number, name: string | null, description: string | null, homeRoomId: number | null): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
-            const rows = await conn.query(ClassSql.UPDATE_CLASS, [id, name, homeRoomId]);
+            const rows = await conn.query(ClassSql.UPDATE_CLASS, [id, name, description, homeRoomId]);
             return rows.map((row: any) => new ClassResponse(row));
         });
 
