@@ -1,10 +1,11 @@
 class Subject {
-    SchoolId: number;
+    public Id: number;
+    public SchoolId: number;
     public Name: string;
     public Description: string;
 
-    constructor(schoolId: number, name: string, description: string) {
-
+    constructor(id: number, schoolId: number, name: string, description: string) {
+        this.Id = id;
         this.SchoolId = schoolId;
         this.Name = name;
         this.Description = description;
