@@ -1,14 +1,15 @@
 import express from 'express';
 import * as scheduleController from '../controllers/scheduleController.js';
+import {hasAccessToSchool, hasAdminAccessToSchool} from "../guards/user_guards.ts";
 
 const router = express.Router();
 
-router.get('/byDate', scheduleController.getSchoolSchedulesByDate);
-router.get('/betweenDates', scheduleController.getSchoolScheduleBetweenDates);
-router.get('/byClassIdForDate', scheduleController.getSchedulesByClassForDate);
-router.get('/byDateTimeAndSchool', scheduleController.getSchedulesByDateTimeAndSchool);
-router.post('/', scheduleController.createSchedule);
-router.put('/', scheduleController.updateSchedule);
-router.delete('/', scheduleController.deleteSchedule);
+router.get('/byDate', hasAccessToSchool, scheduleController.getSchoolSchedulesByDate);
+router.get('/betweenDates', hasAccessToSchool, scheduleController.getSchoolScheduleBetweenDates);
+router.get('/byClassIdForDate', hasAccessToSchool, scheduleController.getSchedulesByClassForDate);
+router.get('/byDateTimeAndSchool', hasAccessToSchool, scheduleController.getSchedulesByDateTimeAndSchool);
+router.post('/', hasAdminAccessToSchool, scheduleController.createSchedule);
+router.put('/', hasAdminAccessToSchool, scheduleController.updateSchedule);
+router.delete('/', hasAdminAccessToSchool, scheduleController.deleteSchedule);
 
 export default router;
