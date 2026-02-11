@@ -13,7 +13,7 @@ export class PeriodService {
         });
     }
 
-    public static async getRunningPeriodForSchool(schoolId: number): Promise<RunningTime> {
+    public static async getRunningPeriodForSchool(schoolId: number): Promise<RunningTime | null> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
             let resArr = rows.map((row: any) => new PeriodResponse(row));
@@ -26,10 +26,11 @@ export class PeriodService {
                 }
                 else{
                     return new RunningTime(
-                        "Неучебно време",null,null
+                        "Неучебно време"
                     );
                 }
             }
+            return null;
         });
     }
 
@@ -59,9 +60,7 @@ export class PeriodService {
 
             if (resArr.length > 0) {
                 return new RunningTime(
-                    "Неучебно време",
-                    null,
-                    null
+                    "Неучебно време"
                 );
             }
 
