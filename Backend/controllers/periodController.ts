@@ -33,6 +33,21 @@ export const getNextPeriod = async (req, res) => {
     }
 };
 
+export const getPeriodById = async (req, res) => {
+    const {id, schoolId} = req.query;
+
+    if (!id || !schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
+
+    try {
+        const result = await periodService.getPeriodByIdForSchool(id, schoolId);
+        return res.status(200).send(result);
+    } catch (err) {
+        return res.status(500).send({error: err});
+    }
+}
+
 export const getAllPeriods = async (req, res) => {
     const {schoolId} = req.query;
     try {

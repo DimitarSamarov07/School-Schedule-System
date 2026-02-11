@@ -29,6 +29,13 @@ export class ScheduleService {
         });
     }
 
+    public static async getSchoolScheduleById(id: number, schoolId: number): Promise<Schedule[]> {
+        return await connectionPoolFactory<Schedule[]>(async (conn) => {
+            const rows = await conn.query(ScheduleSql.SELECT_SCHEDULE_BY_ID, [schoolId, id]);
+            return rows.map((row: any) => Schedule.convertFromDBModel(row))[0];
+        });
+    }
+
     public static async getSchoolSchedulesByDateAndTime(schoolId: number, date: string, time: string): Promise<Schedule[]> {
         return await connectionPoolFactory<Schedule[]>(async (conn) => {
             const rows = await conn.query(ScheduleSql.SELECT_SCHEDULES_BY_DATE_AND_TIME_FOR_SCHOOL, [schoolId, date, time]);

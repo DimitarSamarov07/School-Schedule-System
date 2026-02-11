@@ -1,6 +1,20 @@
 import {ScheduleService as scheduleService} from "../Services/data/ScheduleService.ts";
 import moment from 'moment';
 
+
+export const getScheduleById = async (req, res) => {
+    const {id, schoolId} = req.query;
+    if (!id || !schoolId)
+        return res.status(406).send("Malformed parameters");
+
+    try {
+        const result = scheduleService.getSchoolScheduleById(id, schoolId);
+        return res.send(result);
+    } catch (err) {
+        return res.status(500).send({"error": err});
+    }
+}
+
 export const getSchoolSchedulesByDate = async (req, res) => {
     let {schoolId, date} = req.query;
     if (!date) return res.status(406).send("Malformed parameter");

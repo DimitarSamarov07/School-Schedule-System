@@ -53,3 +53,18 @@ export const getAllRooms = async (req, res) => {
         return res.status(status).send({error: err});
     }
 };
+
+export const getRoomById = async (req, res) => {
+    const {id, schoolId} = req.query;
+
+    if (!id || !schoolId) {
+        return res.status(406).send("Malformed parameters");
+    }
+
+    try {
+        const result = await roomService.getRoomByIdForSchool(id, schoolId);
+        return res.send(result);
+    } catch (err) {
+        return res.status(500).send({error: err});
+    }
+};

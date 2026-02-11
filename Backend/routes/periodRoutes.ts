@@ -4,7 +4,8 @@ import {hasAccessToSchool, hasAdminAccessToSchool} from "../guards/user_guards.t
 
 const router = express.Router();
 
-router.get('/', hasAccessToSchool, periodController.getAllPeriods);
+router.get('/', hasAccessToSchool, periodController.getPeriodById);
+router.get('/all', hasAccessToSchool, periodController.getAllPeriods);
 router.get('/current', hasAccessToSchool, periodController.getCurrentPeriod);
 router.get('/next', hasAccessToSchool, periodController.getNextPeriod);
 
