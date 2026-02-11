@@ -11,7 +11,7 @@ export const pool = mariadb.createPool({
 });
 
 export async function connectionPoolFactory<T>(functionToExecute: (conn: PoolConnection) => Promise<T>): Promise<T> {
-    let connection: PoolConnection;
+    let connection: PoolConnection | null = null;
     try {
         connection = await pool.getConnection()
         return await functionToExecute(connection);
