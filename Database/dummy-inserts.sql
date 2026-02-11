@@ -13,12 +13,12 @@ VALUES ('Springfield High', '123 Evergreen Terrace', '[1, 2, 3, 4, 5]'), -- ID 1
 -- 2. USERS
 -- ----------------------------------------------------------
 -- Only these people can log in to the app
-INSERT INTO Users (username, email, password_hash)
-VALUES ('super_admin', 'root@system.com', 'hash_root'),               -- ID 1
-       ('principal_skinner', 'skinner@springfield.edu', 'hash_skin'), -- ID 2
-       ('dean_pelton', 'dean@westside.edu', 'hash_dean'),             -- ID 3
-       ('dean_pelton12', 'dean1@westside.edu', 'hash_dean1'),         -- ID 4
-       ('dean_pelton21', 'dean3@westside.edu', 'hash_dean2'); -- ID 5
+INSERT INTO Users (username, email, password_hash, is_sudo)
+VALUES ('super_admin', 'root@system.com', 'hash_root', TRUE),               -- ID 1
+       ('principal_skinner', 'skinner@springfield.edu', 'hash_skin', TRUE), -- ID 2
+       ('dean_pelton', 'dean@westside.edu', 'hash_dean', FALSE),            -- ID 3
+       ('dean_pelton12', 'dean1@westside.edu', 'hash_dean1', FALSE),        -- ID 4
+       ('dean_pelton21', 'dean3@westside.edu', 'hash_dean2', FALSE); -- ID 5
 
 INSERT INTO SchoolMembers (school_id, user_id, is_admin)
 VALUES (1, 2, 1), -- Skinner manages Springfield
