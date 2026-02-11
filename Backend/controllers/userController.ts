@@ -39,4 +39,8 @@ export default class UserController {
         let token = authenticatorMaster.createJWT(userData);
         return res.cookie("AUTH_TOKEN", token).status(201).send();
     }
+
+    public static async logout(req, res) {
+        return res.clearCookie("AUTH_TOKEN").status(200).send();
+    }
 }
