@@ -4,17 +4,16 @@ import Authenticator from "../Services/auth_services.ts";
 export default class UserController {
 
     public static async register(req, res) {
-
+        let {schoolId} = req.query;
         let {
             username, email, password, isAdmin
         } = req.body;
 
-
-        if (!username || !password || !email || !isAdmin) {
+        if (!username || !password || !email || !schoolId) {
             return res.status(406).send("Malformed parameters");
         }
 
-        return await Authenticator.createNewUser(username, password, email, isAdmin)
+        return await Authenticator.createNewUser(username, password, email, schoolId, !!isAdmin)
             .then(result => {
                 if (result) {
                     return res.send(result);
