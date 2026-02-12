@@ -3,7 +3,7 @@ import {apiRequest} from "@/lib/api/client";
 import {Time} from "@/types/time";
 
 export const getPeriodsForSchool: (schoolId: number) => Promise<Time[]> = (schoolId: number) =>
-    apiRequest(ENDPOINTS.PERIOD+`?schoolId=${schoolId}`, {
+    apiRequest(ENDPOINTS.PERIOD+`/all?schoolId=${schoolId}`, {
         method: 'GET'
     });
 

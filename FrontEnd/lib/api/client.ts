@@ -1,34 +1,63 @@
 import { BASE_URL } from '@/lib/constants';
 
+/**
+ * SHARED STATE
+ */
+let memoizedCsrfToken: string | null = null;
+
+// The "Lock" mechanism
+let resolveCsrfReady: () => void;
+const csrfReadyPromise = new Promise<void>((resolve) => {
+    resolveCsrfReady = resolve;
+});
+
+/**
+ * Updates the internal token and unlocks any pending requests.
+ */
+export const setCsrfToken = (token: string) => {
+    console.log(`[CSRF] Token received and locked in.`);
+    memoizedCsrfToken = token;
+    // This "opens the gate" for all awaiting requests
+    resolveCsrfReady();
+};
+
+/**
+ * CORE API WRAPPER
+ */
 export async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
+    const isCsrfHandshake = endpoint === '/csrf-token';
+
+    if (!isCsrfHandshake && !memoizedCsrfToken) {
+        await csrfReadyPromise;
+    }
+
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
 
     try {
+        const headers = new Headers(options.headers);
+        if (!headers.has('Content-Type')) {
+            headers.set('Content-Type', 'application/json');
+        }
+        if (memoizedCsrfToken) {
+            headers.set('x-csrf-token', memoizedCsrfToken);
+        }
+
+
         const response = await fetch(`${BASE_URL}${endpoint}`, {
             ...options,
-            // CRITICAL: Tells the browser to handle the JWT cookie
+            headers,
             credentials: 'include',
             signal: controller.signal,
-            headers: {
-                'Content-Type': 'application/json',
-                ...options.headers,
-            },
         });
 
         clearTimeout(timeoutId);
 
-        if (response.status === 404) {
-            console.warn(`[API] 404 at ${endpoint}. Returning empty data.`);
-            return [] as unknown as T;
-        }
-
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.message || `Status ${response.status}`);
+            throw new Error(errorData.message || `Error: ${response.status}`);
         }
 
-        // Check if there is content to parse to avoid JSON.parse errors
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
             return await response.json();
@@ -40,13 +69,7 @@ export async function apiRequest<T>(endpoint: string, options: RequestInit = {})
         clearTimeout(timeoutId);
 
         if (error.name === 'AbortError') {
-            console.error(`[API] Timeout at ${endpoint}.`);
-            return [] as unknown as T;
-        }
-
-        if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-            console.error(`[API] Network Error. Check CORS or Server status.`);
-            return [] as unknown as T;
+            console.error(`[API] Timeout reaching ${endpoint}`);
         }
 
         throw error;
