@@ -7,6 +7,7 @@ import {useGradesManager} from "@/hooks/use-grades-manager";
 import GradesLoading from "@/app/(admin)/dashboard/classes/loading";
 
 export default function GradesPage() {
+
     const manager = useGradesManager();
 
     return (
