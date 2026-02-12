@@ -26,7 +26,6 @@ export default class UserController {
     }
 
     public static async login(req, res) {
-
         let {username, password} = req.body;
         if (!username || !password) {
             return res.status(406).send("Malformed parameters");
