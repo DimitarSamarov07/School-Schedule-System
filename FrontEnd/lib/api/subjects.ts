@@ -7,22 +7,22 @@ export const getSubjects: (schoolId: number) => Promise<Subject[]> = (schoolId: 
         method: 'GET'
     });
 
-export const createSubject = (name: string, color: string)=>
-    apiRequest(ENDPOINTS.SUBJECTS, {
+export const createSubject = (schoolId: number,name: string, description: string)=>
+    apiRequest(ENDPOINTS.SUBJECTS+`?schoolId=${schoolId}`, {
         method: 'POST',
-        body: JSON.stringify({name, color})
+        body: JSON.stringify({name, description})
     });
-export const updateSubject = (id: string | number, name?: string, color?: string) =>
-    apiRequest(ENDPOINTS.SUBJECTS, {
+export const updateSubject = (schoolId: number,id: number, name?: string, description?: string) =>
+    apiRequest(ENDPOINTS.SUBJECTS+`?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({
             id,
             ...(name && { name }),
-            ...(color && { color }),
+            ...(description && { description }),
         }),
     });
-export const deleteSubject = (id: string | number) =>
-    apiRequest(`${ENDPOINTS.SUBJECTS}?id=${id}`, {
+export const deleteSubject = (id: number,schoolId: number) =>
+    apiRequest(`${ENDPOINTS.SUBJECTS}?id=${id}&&schoolId=${schoolId}`, {
         method: 'DELETE',
     });
 

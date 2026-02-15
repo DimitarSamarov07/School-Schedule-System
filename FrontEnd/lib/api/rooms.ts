@@ -11,22 +11,23 @@ export const getRooms: (schoolId: number) => Promise<Room[]> = (schoolId: number
         method: 'GET'
     });
 
-export const createRoom = (name: string, floor: number)=>
-    apiRequest(ENDPOINTS.ROOM, {
+export const createRoom = (schoolId: number,name: string, floor: number, capacity: number)=>
+    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
         method: 'POST',
-        body: JSON.stringify({name, floor})
+        body: JSON.stringify({name, floor,capacity})
     });
-export const updateRoom = (id: string | number, name?: string, floor?: number) =>
-    apiRequest(ENDPOINTS.ROOM, {
+export const updateRoom = (schoolId: number,id: number, name?: string, floor?: number, capacity?: number) =>
+    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({
             id,
             ...(name && { name }),
             ...(floor && { floor }),
+            ...(capacity && { capacity }),
         }),
     });
-export const deleteRoom = (id: string | number) =>
-    apiRequest(`${ENDPOINTS.ROOM}?id=${id}`, {
+export const deleteRoom = (id: number, schoolId: number) =>
+    apiRequest(`${ENDPOINTS.ROOM}?id=${id}&&schoolId=${schoolId}`, {
         method: 'DELETE',
     });
 

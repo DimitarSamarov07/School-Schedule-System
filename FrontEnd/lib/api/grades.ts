@@ -12,7 +12,7 @@ export const createGrade = (schoolId: number,name: string, description: string,h
         method: 'POST',
         body: JSON.stringify({name, description,homeroomId})
     });
-export const updateGrade = (schoolId:  number,id: number, name?: string, description?: string, homeroomId: number) =>
+export const updateGrade = (schoolId:  number,id: number, name?: string, description?: string, homeroomId?: number) =>
     apiRequest(ENDPOINTS.CLASS+`?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({

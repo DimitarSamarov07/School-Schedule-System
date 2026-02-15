@@ -12,17 +12,18 @@ export const createPeriod = (schoolId: number,name: string,start: string, end: s
         method: 'POST',
         body: JSON.stringify({name,start, end})
     });
-export const updateTime = (id: number, name: string | undefined, start?: string | undefined, end?: string | undefined) =>
-    apiRequest(ENDPOINTS.PERIOD+`?id=${id}`, {
+export const updateTime = (schoolId: number,id: number, name: string | undefined, start?: string | undefined, end?: string | undefined) =>
+    apiRequest(ENDPOINTS.PERIOD+`?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({
+            id,
             ...(name && { name }),
             ...(start && { start }),
             ...(end && { end }),
         }),
     });
-export const deletePeriod = (id: number) =>
-    apiRequest(`${ENDPOINTS.PERIOD}?id=${id}`, {
+export const deletePeriod = (id: number, schoolId: number) =>
+    apiRequest(`${ENDPOINTS.PERIOD}?id=${id}&schoolId=${schoolId}`, {
         method: 'DELETE',
     });
 

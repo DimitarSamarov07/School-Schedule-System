@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { createPeriod, deletePeriod, getPeriodsForSchool, updateTime } from "@/lib/api/times";
+import { createPeriod, deletePeriod, getPeriodsForSchool, updateTime } from "@/lib/api/periods";
 import { Time } from "@/types/time";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
@@ -17,24 +17,35 @@ export function usePeriodsManager() {
     const [formData, setFormData] = useState<Partial<Time>>({ Name: '', Start: '', End: '' });
     const [selectedTime, setSelectedTime] = useState<Time | null>(null);
 
-    const fetchTimes = useCallback(async (silent = false) => {
+    const fetchTimes = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
 
-        if (!silent) setIsLoading(true);
+        const shouldToggleLoading = !skipLoadingState;
+
+        const clearTimes = () => setTimeList([]);
+
+        const normalizeTimes = (value: unknown): Time[] => {
+            if (Array.isArray(value)) return value as Time[];
+            return value ? [value as Time] : [];
+        };
+
+        if (shouldToggleLoading) setIsLoading(true);
+
         try {
             const response = await getPeriodsForSchool(schoolId);
 
-            if (response && !response.error) {
-                const data = Array.isArray(response) ? response : [response];
-                setTimeList(data);
-            } else {
-                setTimeList([]);
+            // Fixed logic: check for error property properly
+            if (response && typeof response === 'object' && 'error' in response) {
+                clearTimes();
+                return;
             }
+
+            setTimeList(normalizeTimes(response));
         } catch (error) {
             console.warn("API Error:", error);
-            setTimeList([]);
+            clearTimes();
         } finally {
-            setIsLoading(false);
+            if (shouldToggleLoading) setIsLoading(false);
         }
     }, [schoolId]);
 
@@ -59,7 +70,7 @@ export function usePeriodsManager() {
     };
 
     const handleCreate = async () => {
-        if (!isAdmin || !schoolId) return alert("Unauthorized: Admin access required.");
+        if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
             await createPeriod(schoolId, formData.Name!, formData.Start!, formData.End!);
             await fetchTimes(true);
@@ -73,7 +84,7 @@ export function usePeriodsManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
             if (!formData.id) return;
-            await updateTime(formData.id, formData.Name, formData.Start, formData.End);
+            await updateTime(schoolId,Number(formData.id), formData.Name!, formData.Start!, formData.End!);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -85,7 +96,7 @@ export function usePeriodsManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!selectedTime?.id) return;
         try {
-            await deletePeriod(selectedTime.id);
+            await deletePeriod(Number(selectedTime.id), schoolId);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -96,7 +107,12 @@ export function usePeriodsManager() {
     const openEditModal = (time: Time) => {
         if (!isAdmin) return;
         setSelectedTime(time);
-        setFormData(time);
+        setFormData({
+            ...time,
+            Name: time.Name || '',
+            Start: time.Start || '',
+            End: time.End || ''
+        });
         setActiveModal('edit');
     };
 

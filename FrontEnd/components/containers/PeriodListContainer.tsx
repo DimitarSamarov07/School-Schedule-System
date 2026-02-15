@@ -111,7 +111,6 @@ export default function PeriodListContainer({ manager }: { manager: any }) {
                 )}
             </div>
 
-            {/* Modals */}
             {activeModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm">
                     <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
@@ -142,8 +141,8 @@ export default function PeriodListContainer({ manager }: { manager: any }) {
                                     <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Етаж</label>
                                     <input
                                         className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold"
-                                        value={formData.Floor}
-                                        onChange={(e) => setFormData({ ...formData, Floor: e.target.value })}
+                                        value={formData.Start}
+                                        onChange={(e) => setFormData({ ...formData, Start: e.target.value })}
                                         placeholder="напр. 3"
                                     />
                                 </div>
@@ -151,8 +150,8 @@ export default function PeriodListContainer({ manager }: { manager: any }) {
                                     <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Капацитет</label>
                                     <input
                                         className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold"
-                                        value={formData.Capacity}
-                                        onChange={(e) => setFormData({ ...formData, Capacity: e.target.value })}
+                                        value={formData.End}
+                                        onChange={(e) => setFormData({ ...formData, End: e.target.value })}
                                         placeholder="напр. 30"
                                     />
                                 </div>

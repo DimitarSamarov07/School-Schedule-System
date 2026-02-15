@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Pencil, Trash2, Search } from "lucide-react";
+import {Loader2, Pencil, Trash2, Search, Plus} from "lucide-react";
 import React from "react";
 import { Grade } from "@/types/grade";
 
@@ -39,8 +39,9 @@ export default function ClassListContainer({ manager }: { manager: any }) {
                 </div>
                 <button
                     onClick={() => setActiveModal("add")}
-                    className="bg-[#7C5CFC] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6b4de0] transition-all shadow-lg shadow-purple-200 active:scale-95 flex items-center gap-2"
+                    className="bg-[#7C5CFC] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6b4de0] transition-all shadow-lg shadow-purple-200 active:scale-95 flex items-center gap-3"
                 >
+                    <Plus size={20}></Plus>
                     Добави клас
                 </button>
             </div>
@@ -146,7 +147,7 @@ export default function ClassListContainer({ manager }: { manager: any }) {
                                     <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Специалност/забележки</label>
                                     <input
                                         className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold"
-                                        value={formData.Description}
+                                        value={formData.Description || ''}
                                         onChange={(e) => setFormData({ ...formData, Description: e.target.value })}
                                         placeholder="напр. Приложно програмиране"
                                     />
