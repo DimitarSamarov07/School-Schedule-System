@@ -25,10 +25,10 @@ export class SubjectService {
 
     }
 
-    public static async updateSubject(id: number, schoolId: number, name: string | null, description: string | null): Promise<boolean> {
+    public static async updateSubject(id: number, schoolId: number, name: string | null, description: string | null): Promise<SubjectResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.UPDATE_SUBJECT, [name, description, id, schoolId]);
-            return rows.map((row: any) => new SubjectResponse(row));
+            return new SubjectResponse(rows);
 
         });
 
