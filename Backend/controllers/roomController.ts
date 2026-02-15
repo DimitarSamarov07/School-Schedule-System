@@ -26,6 +26,7 @@ export const updateRoom = async (req, res) => {
         const result = await roomService.updateRoom(id, schoolId, name, floor, capacity);
         return result ? res.send(result) : res.status(422).send(false);
     } catch (err) {
+        console.log(err);
         return res.status(500).send({error: err});
     }
 };

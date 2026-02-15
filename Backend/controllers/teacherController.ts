@@ -27,12 +27,12 @@ export const getTeacherById = async (req, res) => {
 
 export const createTeacher = async (req, res) => {
     const {schoolId} = req.query;
-    const {firstName, lastName} = req.body;
-    if (!firstName || !lastName) {
+    const {name, email} = req.body;
+    if (!name || !email ) {
         return res.status(406).send("Malformed parameters");
     }
     try {
-        const result = await teacherService.createTeacher(schoolId, firstName, lastName);
+        const result = await teacherService.createTeacher(schoolId, name, email);
         return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err});
