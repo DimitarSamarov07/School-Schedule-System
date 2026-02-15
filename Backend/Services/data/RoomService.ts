@@ -28,9 +28,12 @@ export class RoomService {
     public static async updateRoom(id: number, schoolId: number, name: string | null, floor: number | null, capacity: number | null): Promise<RoomResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(RoomSql.UPDATE_ROOM, [name, floor, capacity, id, schoolId]);
-            return new RoomResponse(rows);
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(RoomSql.SELECT_ROOM_BY_ID, [id, schoolId]);
+                return new RoomResponse(updatedEntry.rows[0]);
+            }
+            throw new Error("No rows affected");
         });
-
     }
 
     public static async deleteRoom(id: number, schoolId: number): Promise<boolean> {

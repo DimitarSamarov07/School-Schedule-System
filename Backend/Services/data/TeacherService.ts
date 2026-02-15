@@ -28,8 +28,11 @@ export class TeacherService {
     public static async updateTeacher(id: number, schoolId: number, name: string | null, email: string | null): Promise<TeacherResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(TeacherSql.UPDATE_TEACHER, [name, email, id, schoolId]);
-            return new TeacherResponse(rows);
-
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(TeacherSql.SELECT_TEACHER_BY_ID, [id, schoolId]);
+                return new TeacherResponse(updatedEntry.rows[0]);
+            }
+            throw new Error("No rows affected");
         });
 
     }

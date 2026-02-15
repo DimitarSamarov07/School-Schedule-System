@@ -86,8 +86,11 @@ export class PeriodService {
     public static async updatePeriod(id: number, schoolId: number, name: string | null, startTime: string | null, endTime: string | null): Promise<PeriodResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.UPDATE_PERIOD, [name, startTime, endTime, id, schoolId]);
-            return new PeriodResponse(rows);
-
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(PeriodSql.SELECT_PERIOD_BY_ID, [id, schoolId]);
+                return new PeriodResponse(updatedEntry);
+            }
+            throw new Error("No rows affected");
         });
 
     }
