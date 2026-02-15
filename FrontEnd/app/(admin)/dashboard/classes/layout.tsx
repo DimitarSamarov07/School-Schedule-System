@@ -1,5 +1,5 @@
 
-export default function TimetableLayout({
+export default function ClassesLayout({
                                             children,
                                         }: {
     children: React.ReactNode;
