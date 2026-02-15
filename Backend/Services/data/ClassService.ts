@@ -30,7 +30,7 @@ export class ClassService {
             const rows = await conn.query(ClassSql.UPDATE_CLASS, [name, description, homeRoomId, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(ClassSql.SELECT_CLASS_BY_ID, [id, schoolId]);
-                return new ClassResponse(updatedEntry.rows[0]);
+                return new ClassResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected");
         });

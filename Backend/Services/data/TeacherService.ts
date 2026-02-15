@@ -30,7 +30,7 @@ export class TeacherService {
             const rows = await conn.query(TeacherSql.UPDATE_TEACHER, [name, email, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(TeacherSql.SELECT_TEACHER_BY_ID, [id, schoolId]);
-                return new TeacherResponse(updatedEntry.rows[0]);
+                return new TeacherResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected");
         });

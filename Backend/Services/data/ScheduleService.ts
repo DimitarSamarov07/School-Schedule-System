@@ -20,7 +20,7 @@ export class ScheduleService {
             const result = await conn.query(ScheduleSql.UPDATE_SCHEDULE, [date, periodId, classId, teacherId, subjectId, roomId, id, schoolId])
             if (result.affectedRows > 0) {
                 let updatedEntry = await conn.query(ScheduleSql.SELECT_SCHEDULE_BY_ID, [schoolId, id])
-                return Schedule.convertFromDBModel(updatedEntry.rows[0])
+                return Schedule.convertFromDBModel(updatedEntry[0])
             }
             throw new Error("No rows affected")
         });

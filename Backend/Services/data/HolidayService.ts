@@ -31,7 +31,7 @@ export class HolidayService {
             const rows = await conn.query(HolidaySql.UPDATE_HOLIDAY, [name, startDate, endDate, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(HolidaySql.SELECT_HOLIDAY_BY_ID, [id, schoolId])
-                return new ClassResponse(updatedEntry.rows[0]);
+                return new ClassResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected")
         });
