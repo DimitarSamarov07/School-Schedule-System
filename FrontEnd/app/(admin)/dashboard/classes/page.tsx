@@ -1,3 +1,6 @@
+// @ts-ignore
+// @ts-ignore
+
 "use client";
 
 import React from "react";

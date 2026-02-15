@@ -1,8 +1,13 @@
-
 import React from "react";
 import { EntityRow } from "./EntityRow";
+import type { Props } from "./Interfaces/TableInterfaces";
+import type { ColumnConfig } from "@/types/entity";
 
+type Identifiable = { id: string | number };
 
+function isIdentifiable(value: unknown): value is Identifiable {
+    return !!value && typeof value === "object" && "id" in value;
+}
 
 export function EntityTable({ list, manager, config }: Props) {
     if (!list || list.length === 0) {
@@ -18,9 +23,9 @@ export function EntityTable({ list, manager, config }: Props) {
             <table className="w-full text-left">
                 <TableHead columns={config.columns} />
                 <tbody className="divide-y divide-gray-50">
-                {list.map((item) => (
+                {list.map((item, idx) => (
                     <EntityRow
-                        key={item.id as string}
+                        key={isIdentifiable(item) ? String(item.id) : `row-${idx}`}
                         item={item}
                         columns={config.columns}
                         manager={manager}
@@ -33,7 +38,7 @@ export function EntityTable({ list, manager, config }: Props) {
     );
 }
 
-function TableHead({ columns }: { columns: any[] }) {
+function TableHead({ columns }: { columns: ColumnConfig[] }) {
     return (
         <thead className="bg-gray-100 border-b border-gray-100">
         <tr>

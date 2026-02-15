@@ -1,49 +1,55 @@
 import { Pencil, Trash2 } from "lucide-react";
-import {RowProps} from "@/components/entity/Interfaces/RowInterfaces";
+import { RowProps } from "@/components/entity/Interfaces/RowInterfaces";
 
+type UnknownRecord = Record<string, unknown>;
 
-export function EntityRow({ item, columns, manager, config }: RowProps) {
-    const getNestedValue = (obj: any, path: string): any => {
-        return path.split(".").reduce((o, p) => o?.[p], obj);
-    };
+function getNestedValue(obj: unknown, path: string): unknown {
+  return path.split(".").reduce<unknown>((current, key) => {
+    if (current && typeof current === "object") {
+      return (current as UnknownRecord)[key];
+    }
+    return undefined;
+  }, obj);
+}
 
-    const openEdit = () => manager.openEditModal(item);
-    const openDelete = () => manager.openDeleteModal(item);
+export function EntityRow({ item, columns, manager }: RowProps) {
+  const openEdit = () => manager.openEditModal?.(item);
+  const openDelete = () => manager.openDeleteModal?.(item);
 
-    return (
-        <tr className="hover:bg-gray-50/50 transition-colors group">
-            {columns.map((column, colIndex) => (
-                <td
-                    key={colIndex}
-                    className={`px-10 py-7 ${column.align === "right" ? "text-right" : ""}`}
-                >
-                    {column.render ? (
-                        column.render(item)
-                    ) : (
-                        <span className="text-[#1A1A1A] font-bold text-xl">
-              {getNestedValue(item, column.key) || ""}
+  return (
+    <tr className="hover:bg-gray-50/50 transition-colors group">
+      {columns.map((column, colIndex) => (
+        <td
+          key={colIndex}
+          className={`px-10 py-7 ${column.align === "right" ? "text-right" : ""}`}
+        >
+          {column.render ? (
+            column.render(item)
+          ) : (
+            <span className="text-[#1A1A1A] font-bold text-xl">
+              {String(getNestedValue(item, column.key) ?? "")}
             </span>
-                    )}
-                </td>
-            ))}
-            <td className="px-10 py-7">
-                <div className="flex justify-end gap-3">
-                    <button
-                        onClick={openEdit}
-                        className="p-3 text-[#7C5CFC] hover:bg-purple-50 rounded-2xl transition-all group-hover:scale-105"
-                        disabled={!manager.isAdmin}
-                    >
-                        <Pencil className="w-6 h-6" />
-                    </button>
-                    <button
-                        onClick={openDelete}
-                        className="p-3 text-[#E74C3C] hover:bg-red-50 rounded-2xl transition-all group-hover:scale-105"
-                        disabled={!manager.isAdmin}
-                    >
-                        <Trash2 className="w-6 h-6" />
-                    </button>
-                </div>
-            </td>
-        </tr>
-    );
+          )}
+        </td>
+      ))}
+      <td className="px-10 py-7">
+        <div className="flex justify-end gap-3">
+          <button
+            onClick={openEdit}
+            className="p-3 text-[#7C5CFC] hover:bg-purple-50 rounded-2xl transition-all group-hover:scale-105"
+            disabled={!manager.isAdmin}
+          >
+            <Pencil className="w-6 h-6" />
+          </button>
+          <button
+            onClick={openDelete}
+            className="p-3 text-[#E74C3C] hover:bg-red-50 rounded-2xl transition-all group-hover:scale-105"
+            disabled={!manager.isAdmin}
+          >
+            <Trash2 className="w-6 h-6" />
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
 }

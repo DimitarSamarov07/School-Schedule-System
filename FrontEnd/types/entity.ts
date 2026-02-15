@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from "react";
+
 export interface ColumnConfig {
     key: string;
     label: string;
@@ -8,7 +10,7 @@ export interface ColumnConfig {
 export interface FormFieldConfig {
     key: string;
     label: string;
-    type: "text" | "textarea" | string;  // ✅ Loose union
+    type: "text" | "textarea" | string;  
     placeholder?: string;
 }
 
@@ -22,17 +24,23 @@ export interface EntityConfig {
 }
 
 export interface ManagerProps {
-    [key: string]: any;
-    isLoading: boolean;
-    activeModal?: string | null;
-    setActiveModal?: (modal: string | null) => void;
-    closeModal?: () => void;
-    openEditModal?: (item: any) => void;
-    openDeleteModal?: (item: any) => void;
-    handleCreate?: () => void;
-    handleUpdate?: () => void;
-    handleDelete?: () => void;
-    formData?: any;
-    setFormData?: (data: any) => void;
-    isAdmin?: boolean;
+  isLoading: boolean;
+  activeModal?: string | null;
+
+  setActiveModal?: Dispatch<SetStateAction<string | null>>;
+  closeModal?: () => void;
+
+  openEditModal?: (item: unknown) => void;
+  openDeleteModal?: (item: unknown) => void;
+
+  handleCreate?: (...args: unknown[]) => void | Promise<void>;
+  handleUpdate?: (...args: unknown[]) => void | Promise<void>;
+  handleDelete?: (...args: unknown[]) => void | Promise<void>;
+
+  formData?: Record<string, unknown>;
+  setFormData?: Dispatch<SetStateAction<Record<string, unknown>>> | ((data: Record<string, unknown>) => void);
+
+  isAdmin?: boolean;
+
+  [key: string]: unknown;
 }

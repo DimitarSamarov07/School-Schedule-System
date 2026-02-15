@@ -10,28 +10,33 @@ import {ContainerProps} from "@/components/entity/Interfaces/ContainerInterfaces
 
 
 export default function EntityListContainer({ manager, config }: ContainerProps) {
-    const list = manager[config.listKey];
-    const isLoading = manager.isLoading;
+  const rawList = manager[config.listKey];
 
-    if (isLoading || !list) {
-        return (
-            <div className="flex flex-col items-center justify-center py-24">
-                <Loader2 className="animate-spin text-[#7C5CFC] w-10 h-10 mb-4" />
-                <p className="text-gray-500 animate-pulse font-medium">
-                    Зареждане на {config.title.toLowerCase()}...
-                </p>
-            </div>
-        );
-    }
+  const list: unknown[] = Array.isArray(rawList)
+    ? rawList
+    : rawList
+      ? [rawList]
+      : [];
 
+  const isLoading = manager.isLoading;
+
+  if (isLoading) {
     return (
-        <div className="p-10 bg-white rounded-2xl font-sans overflow-hidden">
-            <EntityHeader manager={manager} config={config} />
-            <EntitySearch />
-            <EntityTable list={list} manager={manager} config={config} />
-            {manager.activeModal && (
-                <EntityModals manager={manager} config={config} />
-            )}
-        </div>
+      <div className="flex flex-col items-center justify-center py-24">
+        <Loader2 className="animate-spin text-[#7C5CFC] w-10 h-10 mb-4" />
+        <p className="text-gray-500 animate-pulse font-medium">
+          Зареждане на {config.title.toLowerCase()}...
+        </p>
+      </div>
     );
+  }
+
+  return (
+    <div className="p-10 bg-white rounded-2xl font-sans overflow-hidden">
+      <EntityHeader manager={manager} config={config} />
+      <EntitySearch />
+      <EntityTable list={list} manager={manager} config={config} />
+      {manager.activeModal && <EntityModals manager={manager} config={config} />}
+    </div>
+  );
 }
