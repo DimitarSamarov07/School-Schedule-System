@@ -1,7 +1,8 @@
 export default class UserSql {
     static readonly CREATE_USER =
         `INSERT INTO Users(username, email, password_hash)
-         VALUES ((?), (?), (?)) RETURNING id;`
+         VALUES ((?), (?), (?))
+         RETURNING id;`
 
     static readonly UPDATE_USER_PASS =
         `UPDATE Users
@@ -44,4 +45,24 @@ export default class UserSql {
     static readonly CREATE_USER_PERMISSION =
         `INSERT INTO SchoolMembers(user_id, school_id, is_admin)
          VALUES ((?), (?), (?));`
+
+    static readonly GET_USERS_BY_SCHOOL_ID =
+        `SELECT SchoolMembers.is_admin as 'isAdmin',
+                u.username             as 'username',
+                u.email                as 'email'
+         FROM SchoolMembers
+                  JOIN Users u ON SchoolMembers.user_id = u.id
+         WHERE school_id = (?);`
+
+    static readonly UPDATE_USER_PERMISSION =
+        `UPDATE SchoolMembers
+         SET is_admin = COALESCE((?), is_admin)
+         WHERE user_id = (?)
+           AND school_id = (?);`
+
+    static readonly DELETE_USER_PERMISSIONS_FOR_SCHOOL =
+        `DELETE
+         FROM SchoolMembers
+         WHERE user_id = (?)
+           AND school_id = (?);`
 }

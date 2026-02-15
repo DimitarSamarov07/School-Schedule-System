@@ -9,5 +9,10 @@ router.post("/register", hasAdminAccessToSchool, UserController.register)
 router.post("/login", UserController.login)
 router.get("/logout", UserController.logout)
 
+router.get("/promote", hasAdminAccessToSchool, UserController.promoteUserToAdmin);
+router.get("/demote", hasAdminAccessToSchool, UserController.demoteUserFromAdmin);
+router.get("/addToSchool", hasAdminAccessToSchool, UserController.addUserToSchool)
+router.get("/removeFromSchool", hasAdminAccessToSchool, UserController.removeUserPermissionsForSchool)
+
 
 export default router;
