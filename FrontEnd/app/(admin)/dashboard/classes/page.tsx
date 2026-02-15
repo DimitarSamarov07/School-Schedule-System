@@ -1,18 +1,20 @@
 "use client";
 
-import React, {Suspense} from "react";
-import {Plus} from "lucide-react";
+import React from "react";
 import ClassListContainer from "@/components/containers/ClassListContainer";
 import {useGradesManager} from "@/hooks/use-grades-manager";
-import GradesLoading from "@/app/(admin)/dashboard/classes/loading";
+import EntityListContainer from "@/components/entity/EntityListContainer";
+import {CLASS_CONFIG} from "@/config/entityConfig";
+import {Grade} from "@/types/grade";
 
 export default function GradesPage() {
 
     const manager = useGradesManager();
 
     return (
-            <Suspense fallback={<GradesLoading></GradesLoading>}>
-                <ClassListContainer manager={manager}/>
-            </Suspense>
+        <EntityListContainer
+            manager={manager}
+            config={CLASS_CONFIG}
+        />
     );
 }

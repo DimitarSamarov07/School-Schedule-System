@@ -1,4 +1,4 @@
-"use client"; // <--- Add this line at the very top
+"use client";
 
 import {useEffect} from "react";
 
@@ -22,7 +22,7 @@ export default function Error({
                 Не успяхме да заредим разписанието.
             </p>
             <button
-                onClick={() => reset()} // Attempts to re-render the segment
+                onClick={() => reset()}
                 className="px-6 py-2 bg-[#8b5cf6] text-white rounded-lg font-medium hover:bg-[#7c3aed] transition-colors"
             >
                 Опитай пак

@@ -1,17 +1,17 @@
 "use client";
 
-import React, {Suspense} from "react";
-import {Plus} from "lucide-react";
+import React from "react";
 import {useSubjectsManager} from "@/hooks/use-subjects-manager";
-import SubjectListContainer from "@/components/containers/SubjectListContainer";
-import SubjectsLoading from "@/app/(admin)/dashboard/subjects/loading";
+import EntityListContainer from "@/components/entity/EntityListContainer";
+import {SUBJECT_CONFIG} from "@/config/entityConfig";
 
-export default function GradesPage() {
+export default function SubjectsPage() {
     const manager = useSubjectsManager();
 
     return (
-            <Suspense fallback={<SubjectsLoading></SubjectsLoading>}>
-                <SubjectListContainer manager={manager}/>
-            </Suspense>
+        <EntityListContainer
+            manager={manager}
+            config={SUBJECT_CONFIG}
+        />
     );
 }
