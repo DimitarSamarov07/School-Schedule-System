@@ -15,10 +15,14 @@ export class ScheduleService {
 
     public static async updateSchedule(id: number, schoolId: number, date: string | null,
                                        periodId: number | null, classId: number | null, teacherId: number | null,
-                                       subjectId: number | null, roomId: number | null): Promise<Boolean> {
-        return await connectionPoolFactory<Boolean>(async (conn) => {
+                                       subjectId: number | null, roomId: number | null): Promise<Schedule> {
+        return await connectionPoolFactory<Schedule>(async (conn) => {
             const result = await conn.query(ScheduleSql.UPDATE_SCHEDULE, [date, periodId, classId, teacherId, subjectId, roomId, id, schoolId])
-            return result.affectedRows > 0;
+            if (result.affectedRows > 0) {
+                let updatedEntry = await conn.query(ScheduleSql.SELECT_SCHEDULE_BY_ID, [schoolId, id])
+                return Schedule.convertFromDBModel(updatedEntry.rows[0])
+            }
+            throw new Error("No rows affected")
         });
     }
 

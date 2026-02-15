@@ -28,7 +28,11 @@ export class ClassService {
     public static async updateClass(id: number, schoolId: number, name: string | null, description: string | null, homeRoomId: number | null): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(ClassSql.UPDATE_CLASS, [name, description, homeRoomId, id, schoolId]);
-            return new ClassResponse(rows);
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(ClassSql.SELECT_CLASS_BY_ID, [id, schoolId]);
+                return new ClassResponse(updatedEntry.rows[0]);
+            }
+            throw new Error("No rows affected");
         });
     }
 

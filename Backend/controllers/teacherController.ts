@@ -47,7 +47,7 @@ export const updateTeacher = async (req, res) => {
     }
     try {
         const result = await teacherService.updateTeacher(id, schoolId, name, email);
-        return result ? res.send(result) : res.status(422).send(false);
+        return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err});
     }

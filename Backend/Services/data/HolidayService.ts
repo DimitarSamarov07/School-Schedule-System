@@ -1,6 +1,7 @@
 import {connectionPoolFactory} from "../db_service.ts";
 import HolidaySql from "./queries/holiday.sql.ts";
 import HolidayResponse from "../../response_models/HolidayResponse.ts";
+import ClassResponse from "../../response_models/ClassResponse.ts";
 
 
 export class HolidayService {
@@ -25,10 +26,14 @@ export class HolidayService {
         });
     }
 
-    public static async updateHolidayForSchool(id: number, schoolId: number, name: string | null, startDate: string | null, endDate: string | null): Promise<Boolean> {
+    public static async updateHolidayForSchool(id: number, schoolId: number, name: string | null, startDate: string | null, endDate: string | null): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(HolidaySql.UPDATE_HOLIDAY, [name, startDate, endDate, id, schoolId]);
-            return rows.affectedRows > 0;
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(HolidaySql.SELECT_HOLIDAY_BY_ID, [id, schoolId])
+                return new ClassResponse(updatedEntry.rows[0]);
+            }
+            throw new Error("No rows affected")
         });
     }
 

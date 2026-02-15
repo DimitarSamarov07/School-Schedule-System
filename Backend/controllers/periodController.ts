@@ -81,7 +81,7 @@ export const updatePeriod = async (req, res) => {
     }
     try {
         const result = await periodService.updatePeriod(id, schoolId, name, start, end);
-        return result ? res.status(422).send(false) :  res.send(result);
+        return res.send(result);
     } catch (err) {
         return res.status(500).send({error: err});
     }
