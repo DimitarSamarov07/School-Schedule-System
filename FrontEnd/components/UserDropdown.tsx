@@ -14,7 +14,6 @@ export default function UserDropdown() {
 
     const handleLogout = async () => {
         await logout();
-        console.log("logged out");
         router.push("/auth");
     };
 
