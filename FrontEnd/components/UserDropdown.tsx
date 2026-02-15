@@ -1,11 +1,22 @@
 "use client";
+
 import React, { useState } from 'react';
 import { User, ChevronDown, LogOut, Settings } from 'lucide-react';
 import {useCurrentSchool} from "@/providers/SchoolProvider";
+import {logout} from "@/lib/api/user";
+import {useRouter} from "next/navigation";
+
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const { username,email } = useCurrentSchool();
+    const router = useRouter();
+
+    const handleLogout = async () => {
+        await logout();
+        console.log("logged out");
+        router.push("/auth");
+    };
 
     return (
         <div className="relative">
@@ -38,7 +49,7 @@ export default function UserDropdown() {
                             <Settings size={16} className="text-slate-400" /> Настройки
                         </button>
                         <div className="h-px bg-slate-100 my-1" />
-                        <button className="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-sm text-red-600 font-medium transition-colors">
+                        <button className="w-full flex items-center gap-2 px-4 py-2 hover:bg-red-50 text-sm text-red-600 font-medium transition-colors" onClick={handleLogout}>
                             <LogOut size={16} /> Изход
                         </button>
                     </div>

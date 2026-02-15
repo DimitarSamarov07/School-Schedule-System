@@ -1,9 +1,8 @@
 "use client";
 
-import {DoorOpen, Loader2, Pencil, Plus, Search, Trash2} from "lucide-react";
+import {Loader2, Pencil, Plus, Search, Trash2} from "lucide-react";
 import React from "react";
 import {Room} from "@/types/room";
-import {Grade} from "@/types/grade";
 
 export default function RoomListContainer({ manager }: { manager: any }) {
     const {

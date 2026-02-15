@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Eye, EyeOff, GraduationCap, Shield, UserPlus, Loader2 } from 'lucide-react';
 import { apiRequest } from '@/lib/api/client';
+import {login} from "@/lib/api/user";
 
 export default function AuthPage() {
     const router = useRouter();
@@ -34,15 +35,7 @@ export default function AuthPage() {
         setErrorMsg(null);
 
         try {
-            const data = await apiRequest<any>('/user/login', {
-                method: 'POST',
-                body: JSON.stringify({
-                    username: email,
-                    password: password
-                }),
-            });
-
-            console.log("Login Success:", data);
+            await login(email, password)
             router.push('/dashboard');
         } catch (error: any) {
             console.error("Login Error:", error);
