@@ -108,7 +108,7 @@ export default function TeacherListContainer({ manager }: { manager: any }) {
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm">
                     <div className="bg-white rounded-[2.5rem] p-10 w-full max-w-md shadow-2xl">
                         <h3 className="text-2xl font-black text-gray-900 mb-8">
-                            {activeModal === "add" ? "Добави нов учител" : activeModal === "edit" ? `Редакция: ${teacherList?.Name}` : "Изтриване"}
+                            {activeModal === "add" ? "Добави нов учител" : activeModal === "edit" ? `Редакция: ${selectedTeacher?.Name}` : "Изтриване"}
                         </h3>
 
                         {activeModal === "delete" ? (

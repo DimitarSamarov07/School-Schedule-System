@@ -18,9 +18,6 @@ export function CsrfProvider({ children }: { children: React.ReactNode }) {
         };
         initCsrf();
     }, []);
-
-    // Optionally prevent rendering until the handshake is done
-    // to ensure the very first login attempt has the header.
     if (!isReady) return null;
 
     return <>{children}</>;
