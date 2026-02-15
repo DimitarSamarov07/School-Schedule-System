@@ -86,7 +86,8 @@ export class PeriodService {
     public static async updatePeriod(id: number, schoolId: number, name: string | null, startTime: string | null, endTime: string | null): Promise<Boolean> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.UPDATE_PERIOD, [name, startTime, endTime, id, schoolId]);
-            return rows.affectedRows > 0 ;
+            return rows.map((row: any) => new PeriodResponse(row));
+
         });
 
     }
