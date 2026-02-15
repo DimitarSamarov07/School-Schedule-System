@@ -5,36 +5,11 @@ import { EntityHeader } from "./EntityHeader";
 import { EntitySearch } from "./EntitySearch";
 import { EntityTable } from "./EntityTable";
 import { EntityModals } from "./EntityModals";
+import {ContainerProps} from "@/components/entity/Interfaces/ContainerInterfaces";
 
-interface ColumnConfig<T> {
-    key: string;
-    label: string;
-    align?: "left" | "center" | "right";
-    render?: (item: T) => React.ReactNode;
-}
 
-interface FormFieldConfig {
-    key: string;
-    label: string;
-    type: "text" | "textarea";
-    placeholder?: string;
-}
 
-interface EntityConfig {
-    title: string;
-    singular: string;
-    listKey: string;        // "gradeList" | "roomList"
-    itemNameKey: string;    // "Name" | "fullName"
-    columns: ColumnConfig[];
-    formFields: FormFieldConfig[];
-}
-
-interface Props {
-    manager: any;
-    config: EntityConfig;
-}
-
-export default function EntityListContainer({ manager, config }: Props) {
+export default function EntityListContainer({ manager, config }: ContainerProps) {
     const list = manager[config.listKey];
     const isLoading = manager.isLoading;
 
