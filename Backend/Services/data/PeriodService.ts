@@ -88,7 +88,7 @@ export class PeriodService {
             const rows = await conn.query(PeriodSql.UPDATE_PERIOD, [name, startTime, endTime, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(PeriodSql.SELECT_PERIOD_BY_ID, [id, schoolId]);
-                return new PeriodResponse(updatedEntry);
+                return new PeriodResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected");
         });

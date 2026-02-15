@@ -30,7 +30,7 @@ export class RoomService {
             const rows = await conn.query(RoomSql.UPDATE_ROOM, [name, floor, capacity, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(RoomSql.SELECT_ROOM_BY_ID, [id, schoolId]);
-                return new RoomResponse(updatedEntry.rows[0]);
+                return new RoomResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected");
         });

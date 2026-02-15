@@ -30,7 +30,7 @@ export class SubjectService {
             const rows = await conn.query(SubjectSql.UPDATE_SUBJECT, [name, description, id, schoolId]);
             if (rows.affectedRows > 0) {
                 let updatedEntry = await conn.query(SubjectSql.SELECT_SUBJECT_BY_ID, [id, schoolId]);
-                return new SubjectResponse(updatedEntry.rows[0]);
+                return new SubjectResponse(updatedEntry[0]);
             }
             throw new Error("No rows affected");
         });
