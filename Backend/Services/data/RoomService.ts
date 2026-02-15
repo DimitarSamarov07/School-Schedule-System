@@ -25,10 +25,10 @@ export class RoomService {
 
     }
 
-    public static async updateRoom(id: number, schoolId: number, name: string | null, floor: number | null, capacity: number | null): Promise<RoomResponse> {
+    public static async updateRoom(id: number, schoolId: number, name: string | null, floor: number | null, capacity: number | null): Promise<Boolean> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(RoomSql.UPDATE_ROOM, [name, floor, capacity, id, schoolId]);
-            return rows.map((row: any) => new RoomResponse(row));
+            return rows.affectedRows > 0;
         });
 
     }
