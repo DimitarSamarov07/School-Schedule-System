@@ -23,7 +23,6 @@ export default function Sidebar() {
         <aside className="w-64 bg-[#F8FAFC] border-r border-slate-200 py-6 overflow-y-auto shrink-0">
             <nav className="px-4 space-y-1.5">
                 {menuItems.map((item) => {
-                    // EXACT MATCH LOGIC
                     const isActive = pathname === item.href;
 
                     return (
