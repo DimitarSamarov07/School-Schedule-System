@@ -13,4 +13,7 @@ export const ENDPOINTS = {
     SCHEDULE: `/schedule`,
     COURSE: `/course`,
     HOLIDAY: `/holiday`,
+    REGISTER: `/user/register`,
+    LOGIN: `/user/login`,
+    LOGOUT: `/user/logout`,
 }
