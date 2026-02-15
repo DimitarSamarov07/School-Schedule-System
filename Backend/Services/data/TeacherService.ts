@@ -28,7 +28,8 @@ export class TeacherService {
     public static async updateTeacher(id: number, schoolId: number, name: string | null, email: string | null): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(TeacherSql.UPDATE_TEACHER, [name, email, id, schoolId]);
-            return rows.affectedRows > 0 ;
+            return rows.map((row: any) => new TeacherResponse(row));
+
         });
 
     }

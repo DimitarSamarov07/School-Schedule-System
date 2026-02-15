@@ -17,6 +17,7 @@ import holidayRoutes from "./routes/holidayRoutes.ts";
 import {doubleCsrf} from "csrf-csrf";
 
 const app = express();
+
 app.use(cors({
     origin: "http://localhost:3000",
     methods: ["GET", "POST", "PUT", "DELETE"],
