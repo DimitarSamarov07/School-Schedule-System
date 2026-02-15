@@ -28,7 +28,7 @@ export class ClassService {
     public static async updateClass(id: number, schoolId: number, name: string | null, description: string | null, homeRoomId: number | null): Promise<ClassResponse> {
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(ClassSql.UPDATE_CLASS, [name, description, homeRoomId, id, schoolId]);
-            return rows.map((row: any) => new ClassResponse(row));
+            return new ClassResponse(rows);
         });
     }
 
