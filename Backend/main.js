@@ -15,6 +15,7 @@ import holidayRoutes from "./routes/holidayRoutes.ts";
 
 // Initializing Express App
 import {doubleCsrf} from "csrf-csrf";
+import schoolRoutes from "./routes/schoolRoutes.ts";
 
 const app = express();
 
@@ -67,6 +68,7 @@ app.get("/csrf-token", (req, res) => {
 
 
 // Include user-defined routes
+app.use("/school", schoolRoutes);
 app.use("/class", classRoutes);
 app.use("/holiday", holidayRoutes);
 app.use("/period", periodRoutes);

@@ -9,4 +9,19 @@ export class SchoolService {
             return rows.map((row: any) => School.convertFromDBModel(row));
         });
     }
+
+    public static async getSchoolById(id: number): Promise<School> {
+        return await connectionPoolFactory<School>(async (conn) => {
+            const rows = await conn.query(SchoolSql.SELECT_SCHOOL_BY_ID, [id])
+            return School.convertFromDBModel(rows[0]);
+        });
+    }
+
+    public static async getSchoolWorkWeekConfigById(id: number): Promise<string> {
+        return await connectionPoolFactory<string>(async (conn) => {
+            const rows = await conn.query(SchoolSql.SELECT_SCHOOL_WORK_CONFIG_BY_ID, [id])
+            let {work_week_config} = rows[0];
+            return work_week_config;
+        });
+    }
 }
