@@ -1,23 +1,10 @@
-// components/EntityModals.tsx
+
 "use client";
 import React from "react";
+import {EntityModalsProps} from "@/components/entity/Interfaces/ModalInterfaces";
 
-interface EntityModalsProps<T> {
-    manager: any;
-    config: {
-        singular: string;
-        formFields: FormFieldConfig[];
-    };
-}
 
-interface FormFieldConfig {
-    key: string;
-    label: string;
-    type: "text" | "textarea";
-    placeholder?: string;
-}
-
-export function EntityModals<T>({ manager, config }: EntityModalsProps<T>) {
+export function EntityModals<T>({ manager, config }: EntityModalsProps) {
     const {
         activeModal,
         selectedGrade: selectedEntity,

@@ -5,7 +5,6 @@ import {useDatesManager} from "@/hooks/use-dates-manager";
 import {AlertTriangle, Calendar, ChevronLeft, ChevronRight, Plus, X} from 'lucide-react';
 
 
-
 export default function DatesPage() {
     const locale = "bg-BG";
     const manager = useDatesManager();
@@ -16,6 +15,7 @@ export default function DatesPage() {
         from: null,
         to: null
     });
+    const [selectedDate, setSelectedDate] = useState<Date | null>(null);
 
     const getCalendarDays = (date: Date) => {
         const year = date.getFullYear();
@@ -63,13 +63,11 @@ export default function DatesPage() {
 
         const start = new Date(selectedRange.from);
         const end = selectedRange.to ? new Date(selectedRange.to) : start;
-        const curr = new Date(start);
+        const formatedStart = Intl.DateTimeFormat('en-CA').format(start);
+        const formatedEnd = Intl.DateTimeFormat('en-CA').format(end);
+        console.log(formatedStart, formatedEnd);
         try {
-            while (curr <= end) {
-                const formatedDate = Intl.DateTimeFormat('en-CA').format(curr);
-                await manager.handleCreate(formatedDate, true);
-                curr.setDate(curr.getDate() + 1);
-            }
+            await manager.handleCreate(formatedStart, formatedEnd);
         } catch (error) {
             console.error("Batch creation failed", error);
         } finally {
@@ -127,14 +125,19 @@ export default function DatesPage() {
                                         const start = d.Start.split('T')[0];
                                         const end = d.End.split('T')[0];
 
-                                        return dStr >= start && dStr <= end ;
+                                        return dStr >= start && dStr <= end;
                                     });
                                     return (
                                         <button
                                             key={dStr}
-                                            onClick={() => holiday && manager.openDeleteModal(holiday)}
+                                            onClick={() => {
+                                                if (holiday) {
+                                                    setSelectedDate(date);
+                                                    manager.openDeleteModal(holiday);
+                                                }
+                                            }}
                                             className={`relative h-12 w-full flex flex-col items-center justify-center rounded-xl transition-all border text-sm
-                                                ${holiday
+                                            ${holiday
                                                 ? 'bg-red-50 border-red-200 text-red-600 font-bold hover:bg-red-100 cursor-pointer'
                                                 : 'bg-white border-transparent hover:border-indigo-100 hover:bg-indigo-50/50 text-gray-600'}`}
                                         >
@@ -142,6 +145,7 @@ export default function DatesPage() {
                                             {holiday &&
                                                 <div className="absolute bottom-1.5 w-1 h-1 bg-red-400 rounded-full"/>}
                                         </button>
+
                                     );
                                 })}
                             </div>
@@ -260,9 +264,11 @@ export default function DatesPage() {
                             почивка?</h2>
                         <p className="text-gray-500 text-sm mb-8">
                             Това действие ще изтрие почивката на дата <br/>
-                            <span
-                                className="font-bold text-gray-800">{manager.selectedDate ? new Date(manager.selectedDate).toLocaleDateString(locale) : ''}</span>.
+                            <span className="font-bold text-gray-800">
+                                {selectedDate?.toLocaleDateString(locale) || 'избрана дата'}.
+                            </span>
                         </p>
+
                         <div className="flex gap-3">
                             <button onClick={manager.closeModal}
                                     className="flex-1 px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-50 cursor-pointer">Отказ

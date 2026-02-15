@@ -34,7 +34,6 @@ export function usePeriodsManager() {
         try {
             const response = await getPeriodsForSchool(schoolId);
 
-            // Fixed logic: check for error property properly
             if (response && typeof response === 'object' && 'error' in response) {
                 clearTimes();
                 return;

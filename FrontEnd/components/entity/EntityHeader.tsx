@@ -1,11 +1,9 @@
 import { Plus } from "lucide-react";
+import {HeaderProps} from "@/components/entity/Interfaces/HeaderInterfaces";
 
-interface Props {
-    manager: any;
-    config: any;
-}
 
-export function EntityHeader({ manager, config }: Props) {
+
+export function EntityHeader({ manager, config }: HeaderProps) {
     const setActiveModal = manager.setActiveModal;
     return (
         <div className="flex justify-between items-end mb-8">

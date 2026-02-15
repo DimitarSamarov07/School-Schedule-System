@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import {getHoliday, createDate, deleteDate, updateDate} from "@/lib/api/dates";
-import {Date} from "@/types/date";
-import {Holiday} from "@/types/holiday";
+import { getHoliday, createDate, deleteDate, updateDate } from "@/lib/api/dates";
+import { Holiday} from "@/types/holiday"; // Fixed import naming
+import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useDatesManager() {
+    const { currentSchool } = useCurrentSchool();
+    const schoolId = currentSchool?.SchoolId;
+    const isAdmin = currentSchool?.IsAdmin === 1;
+
     const [dateList, setDateList] = useState<Holiday[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -13,50 +17,65 @@ export function useDatesManager() {
     const [formData, setFormData] = useState<Partial<Holiday>>({ Name: '', Start: '', End: '' });
     const [selectedDate, setSelectedDate] = useState<Holiday | null>(null);
 
-    const fetchDates = useCallback(async (silent = false) => {
-        if (!silent) setIsLoading(true);
+    const fetchDates = useCallback(async (skipLoadingState = false) => {
+        if (!schoolId) return;
+
+        const shouldToggleLoading = !skipLoadingState;
+
+        const clearDates = () => setDateList([]);
+
+        const normalizeDates = (value: unknown): Holiday[] => {
+            if (Array.isArray(value)) return value as Holiday[];
+            return value ? [value as Holiday] : [];
+        };
+
+        if (shouldToggleLoading) setIsLoading(true);
+
         try {
-            const response = await getHoliday(1);
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-expect-error
-            if (response && !response.error) {
-                const data = Array.isArray(response) ? response : [response];
-                setDateList(data);
-            } else {
-                setDateList([]);
+            const response = await getHoliday(schoolId);
+
+            if (response && typeof response === 'object' && 'error' in response) {
+                clearDates();
+                return;
             }
+
+            setDateList(normalizeDates(response));
         } catch (error) {
-            console.warn("Backend 404 - Endpoint not ready:", error);
-            setDateList([]);
+            console.warn("API Error:", error);
+            clearDates();
         } finally {
-            setIsLoading(false);
+            if (shouldToggleLoading) setIsLoading(false);
         }
-    }, []);
+    }, [schoolId]);
 
     useEffect(() => {
         fetchDates();
     }, [fetchDates]);
 
     useEffect(() => {
+        if (!schoolId) return;
+
         const interval = setInterval(() => {
             fetchDates(true);
-        }, 3000);
+        }, 5000); // Standardized to 5s
 
         return () => clearInterval(interval);
-    }, [fetchDates, dateList]);
+    }, [fetchDates, schoolId]); // Fixed dependency
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ Date: '', IsHoliday: undefined});
+        setFormData({ Name: '', Start: '', End: '' });
         setSelectedDate(null);
     };
 
-    const handleCreate = async (manualDate: string, manualIsHoliday: boolean) => {
-        const dateToUse = manualDate ?? formData.Date;
-        const holidayToUse = manualIsHoliday ?? formData.IsHoliday;
+    const handleCreate = async (start: string, end:string) => {
+        if (!isAdmin) return alert("Unauthorized: Admin access required.");
+
+        const Start = start ?? formData.Start;
+        const End = end ?? formData.End;
 
         try {
-            await createDate(dateToUse, holidayToUse);
+            await createDate(schoolId, "Holiday", Start!, End!);
             await fetchDates(true);
             closeModal();
         } catch (error) {
@@ -66,9 +85,10 @@ export function useDatesManager() {
     };
 
     const handleUpdate = async () => {
+        if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
             if (!formData.id) return;
-            await updateDate(formData.id,formData.Name, formData.Start, formData.End);
+            await updateDate(schoolId, Number(formData.id), formData.Name!, formData.Start!, formData.End!);
             await fetchDates(true);
             closeModal();
         } catch (error) {
@@ -78,34 +98,43 @@ export function useDatesManager() {
     };
 
     const handleDelete = async () => {
+        if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!selectedDate?.id) return;
         try {
-            await deleteDate(selectedDate.id);
+            await deleteDate(Number(selectedDate.id), schoolId);
             await fetchDates(true);
             closeModal();
         } catch (error) {
             console.error("Delete error:", error);
-            alert("Failed to delete subject");
+            alert("Failed to delete date");
         }
     };
 
-    const openEditModal = (date: Date) => {
-        setSelectedDate(date);
-        setFormData(date);
+    const openEditModal = (date: Holiday) => {
+        if (!isAdmin) return;
+        setSelectedDate(date as Holiday);
+        setFormData({
+            ...date,
+            Name: date.Name || '',
+            Start: date.Start || '',
+            End: date.End || ''
+        });
         setActiveModal('edit');
     };
 
     const openDeleteModal = (holiday: Holiday) => {
+        if (!isAdmin) return;
         setSelectedDate(holiday);
         setActiveModal('delete');
     };
 
     return {
-        dateList: dateList,
-        isLoading,
+        dateList,
+        isLoading: isLoading || !schoolId,
+        isAdmin,
         activeModal,
         formData,
-        selectedDate: selectedDate,
+        selectedDate,
         setFormData,
         setActiveModal,
         handleCreate,

@@ -1,14 +1,8 @@
-// components/EntityRow.tsx
 import { Pencil, Trash2 } from "lucide-react";
+import {RowProps} from "@/components/entity/Interfaces/RowInterfaces";
 
-interface Props<T = any> {
-    item: T;
-    columns: any[];
-    manager: any;
-    config: any;
-}
 
-export function EntityRow({ item, columns, manager, config }: Props) {
+export function EntityRow({ item, columns, manager, config }: RowProps) {
     const getNestedValue = (obj: any, path: string): any => {
         return path.split(".").reduce((o, p) => o?.[p], obj);
     };

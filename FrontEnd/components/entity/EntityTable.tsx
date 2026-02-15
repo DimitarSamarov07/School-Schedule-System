@@ -1,12 +1,8 @@
-// components/EntityTable.tsx
+
 import React from "react";
 import { EntityRow } from "./EntityRow";
 
-interface Props<T = any> {
-    list: T[];
-    manager: any;
-    config: any;
-}
+
 
 export function EntityTable({ list, manager, config }: Props) {
     if (!list || list.length === 0) {
@@ -22,7 +18,7 @@ export function EntityTable({ list, manager, config }: Props) {
             <table className="w-full text-left">
                 <TableHead columns={config.columns} />
                 <tbody className="divide-y divide-gray-50">
-                {list.map((item, index) => (
+                {list.map((item) => (
                     <EntityRow
                         key={item.id as string}
                         item={item}
