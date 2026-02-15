@@ -41,4 +41,64 @@ export default class UserController {
     public static async logout(req, res) {
         return res.clearCookie("AUTH_TOKEN").status(200).send();
     }
+
+    public static async promoteUserToAdmin(req, res) {
+        let {schoolId} = req.query;
+        let {username} = req.body;
+        if (!username || !schoolId) {
+            return res.status(406).send("Malformed parameters");
+        }
+
+        try {
+            let result = await Authenticator.promoteUserToAdmin(username, schoolId);
+            return result ? res.send(result) : res.status(404).send("User promotion failed.");
+        } catch (e) {
+            return res.status(500).send({"error": e});
+        }
+    }
+
+    public static async demoteUserFromAdmin(req, res) {
+        let {schoolId} = req.query;
+        let {username} = req.body;
+        if (!username || !schoolId) {
+            return res.status(406).send("Malformed parameters");
+        }
+
+        try {
+            let result = await Authenticator.demoteUserFromAdmin(username, schoolId);
+            return result ? res.send(result) : res.status(404).send("User demotion failed.");
+        } catch (e) {
+            return res.status(500).send({"error": e});
+        }
+    }
+
+    public static async removeUserPermissionsForSchool(req, res) {
+        let {schoolId} = req.query;
+        let {username} = req.body;
+        if (!username || !schoolId) {
+            return res.status(406).send("Malformed parameters");
+        }
+
+        try {
+            let result = await Authenticator.removeUserPermissionsForSchool(username, schoolId);
+            return result ? res.send(result) : res.status(404).send("User removal failed.");
+        } catch (e) {
+            return res.status(500).send({"error": e});
+        }
+    }
+
+    public static async addUserToSchool(req, res) {
+        let {schoolId} = req.query;
+        let {username} = req.body;
+        if (!username || !schoolId) {
+            return res.status(406).send("Malformed parameters");
+        }
+
+        try {
+            let result = await Authenticator.addUserToSchool(username, schoolId);
+            return result ? res.send(result) : res.status(404).send("User not found.");
+        } catch (e) {
+            return res.status(500).send({"error": e});
+        }
+    }
 }

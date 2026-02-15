@@ -9,6 +9,7 @@ import SchoolMember from "../data_models/SchoolMember.ts";
 import User from "../data_models/User.ts";
 import UserData from "../DTO/UserData.ts";
 import {SchoolService} from "./data/SchoolService.ts";
+import {SchoolUser} from "../DTO/SchoolUser.ts";
 
 
 class Authenticator {
@@ -96,6 +97,54 @@ class Authenticator {
                 }
             }
             return false;
+        })
+    }
+
+    static async getUsersOfSchool(schoolId: number): Promise<SchoolUser[]> {
+        return await connectionPoolFactory(async (conn) => {
+            const userArr = await conn.query(UserSql.GET_USERS_BY_SCHOOL_ID, [schoolId]);
+            return userArr.map((obj) => SchoolUser.convertFromDBModel(obj));
+        });
+    }
+
+    static async addUserToSchool(schoolId: number, username: number) {
+        return await connectionPoolFactory(async (conn) => {
+            let userId = (await conn.query(UserSql.GET_USER_BY_USERNAME, [username]))[0]?.id;
+            if (userId) {
+                let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.CREATE_USER_PERMISSION, [userId, schoolId, false])
+                if (userAccessAffectedRows > 0) {
+                    return true;
+                }
+                throw new Error("No rows affected");
+            }
+            return false;
+        })
+    }
+
+    static async promoteUserToAdmin(userId: number, schoolId: number): Promise<boolean> {
+        return await connectionPoolFactory(async (conn) => {
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [userId, schoolId, true])
+            if (userAccessAffectedRows > 0) {
+                return true;
+            }
+            throw new Error("No rows affected");
+        })
+    }
+
+    static async demoteUserFromAdmin(userId: number, schoolId: number) {
+        return await connectionPoolFactory(async (conn) => {
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [userId, schoolId, false])
+            if (userAccessAffectedRows > 0) {
+                return true;
+            }
+            throw new Error("No rows affected");
+        })
+    }
+
+    static async removeUserPermissionsForSchool(userId: number, schoolId: number): Promise<boolean> {
+        return await connectionPoolFactory(async (conn) => {
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.DELETE_USER_PERMISSIONS_FOR_SCHOOL, [userId, schoolId])
+            return userAccessAffectedRows > 0;
         })
     }
 
