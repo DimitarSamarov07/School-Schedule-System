@@ -3,10 +3,10 @@
 import React, { useState } from 'react';
 import {User, ChevronDown, LogOut, Settings, X, Sidebar} from 'lucide-react';
 import {useCurrentSchool} from "@/providers/SchoolProvider";
-import {logout} from "@/lib/api/user";
 import {useRouter} from "next/navigation";
 import SettingsSidebar from "@/components/settings/Sidebar";
 import Header from "@/components/settings/Header";
+import PromotionMenu from "@/components/settings/PromotionMenu";
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
@@ -16,14 +16,14 @@ export default function UserDropdown() {
 
 
     const handleLogout = async () => {
-        await logout();
         router.push("/auth");
     };
-
     const closeAll = () => {
         setIsOpen(false);
         setShowPromotion(false);
     };
+
+
 
 
     return (
@@ -33,7 +33,7 @@ export default function UserDropdown() {
                 className="flex items-center gap-3 pl-2 pr-3 py-1.5 border border-slate-700 rounded-lg hover:bg-slate-800 transition-all"
             >
                 <div className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
-                    {username.split(' ').map((n: any[]) => n[0]).join('').toUpperCase()}
+                    {username.split(' ').map((n: string[]) => n[0]).join('').toUpperCase()}
                 </div>
                 <div className="text-left hidden sm:block">
                     <p className="text-xs text-slate-400 leading-none mb-1">Добре дошли,</p>
@@ -75,9 +75,10 @@ export default function UserDropdown() {
                     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40" onClick={closeAll} />
                     <div className="fixed inset-0 z-50 flex justify-center items-center p-4">
                         <div className="w-full max-w-5xl h-[90vh] bg-linear-to-br from-slate-50/80 to-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
-                           <Header />
+                           <Header closeAll={closeAll} />
                             <div className="flex flex-1 overflow-hidden">
                                 <SettingsSidebar totalUsers={23} totalAdmin={4} />
+
                             </div>
                         </div>
                     </div>

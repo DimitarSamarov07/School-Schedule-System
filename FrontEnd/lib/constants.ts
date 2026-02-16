@@ -16,4 +16,7 @@ export const ENDPOINTS = {
     REGISTER: `/user/register`,
     LOGIN: `/user/login`,
     LOGOUT: `/user/logout`,
+    PROMOTE: `/user/promote`,
+    DEMOTE: `/user/demote`,
+    LIST_ALL_SCHOOL_USERS: `/school/allUsers`,
 }

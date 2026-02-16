@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import {Bell, Calendar, Clock, DoorOpen, GraduationCap, Palette, Shield, Sun, Users} from "lucide-react";
+import {GraduationCap, Palette, Shield,  Users} from "lucide-react";
 import PromotionMenu from "@/components/settings/PromotionMenu";
 import SecurityMenu from "@/components/settings/SecurityMenu";
 
@@ -14,13 +14,17 @@ const tabs = [
 
 const tabContent = {
     security: <SecurityMenu/>,
-    users: <PromotionMenu/>,
+    users: <PromotionMenu schoolId={1}/>,
     courses: <div className="p-6 "><h3>Курсове</h3><p>Списък с курсове...</p></div>,
     settings: <div className="p-6"><h3>Настройки</h3><p>Конфигурация...</p></div>,
 };
+interface SidebarProps {
+    totalUsers: number;
+    totalAdmin: number;
+}
 
-export default function SettingsSidebar({ totalUsers, totalAdmin }) {
-    const [activeTab, setActiveTab] = useState('program');
+export default function SettingsSidebar({ totalUsers, totalAdmin } :SidebarProps) {
+    const [activeTab, setActiveTab] = useState('users');
 
     return (
         <div className="flex h-auto">
