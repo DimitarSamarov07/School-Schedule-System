@@ -44,13 +44,13 @@ export default class UserController {
 
     public static async promoteUserToAdmin(req, res) {
         let {schoolId} = req.query;
-        let {username} = req.body;
-        if (!username || !schoolId) {
+        let {userId} = req.body;
+        if (!userId || !schoolId) {
             return res.status(406).send("Malformed parameters");
         }
 
         try {
-            let result = await Authenticator.promoteUserToAdmin(username, schoolId);
+            let result = await Authenticator.promoteUserToAdmin(userId, schoolId);
             return result ? res.send(result) : res.status(404).send("User promotion failed.");
         } catch (e) {
             return res.status(500).send({"error": e});
@@ -59,13 +59,13 @@ export default class UserController {
 
     public static async demoteUserFromAdmin(req, res) {
         let {schoolId} = req.query;
-        let {username} = req.body;
-        if (!username || !schoolId) {
+        let {userId} = req.body;
+        if (!userId || !schoolId) {
             return res.status(406).send("Malformed parameters");
         }
 
         try {
-            let result = await Authenticator.demoteUserFromAdmin(username, schoolId);
+            let result = await Authenticator.demoteUserFromAdmin(userId, schoolId);
             return result ? res.send(result) : res.status(404).send("User demotion failed.");
         } catch (e) {
             return res.status(500).send({"error": e});

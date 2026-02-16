@@ -100,12 +100,7 @@ class Authenticator {
         })
     }
 
-    static async getUsersOfSchool(schoolId: number): Promise<SchoolUser[]> {
-        return await connectionPoolFactory(async (conn) => {
-            const userArr = await conn.query(UserSql.GET_USERS_BY_SCHOOL_ID, [schoolId]);
-            return userArr.map((obj) => SchoolUser.convertFromDBModel(obj));
-        });
-    }
+
 
     static async addUserToSchool(schoolId: number, username: number) {
         return await connectionPoolFactory(async (conn) => {
@@ -123,7 +118,7 @@ class Authenticator {
 
     static async promoteUserToAdmin(userId: number, schoolId: number): Promise<boolean> {
         return await connectionPoolFactory(async (conn) => {
-            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [userId, schoolId, true])
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [true,userId, schoolId,])
             if (userAccessAffectedRows > 0) {
                 return true;
             }
@@ -133,7 +128,7 @@ class Authenticator {
 
     static async demoteUserFromAdmin(userId: number, schoolId: number) {
         return await connectionPoolFactory(async (conn) => {
-            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [userId, schoolId, false])
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [false,userId, schoolId])
             if (userAccessAffectedRows > 0) {
                 return true;
             }

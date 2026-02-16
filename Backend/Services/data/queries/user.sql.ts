@@ -47,7 +47,8 @@ export default class UserSql {
          VALUES ((?), (?), (?));`
 
     static readonly GET_USERS_BY_SCHOOL_ID =
-        `SELECT SchoolMembers.is_admin as 'isAdmin',
+        `SELECT u.id                   as 'userId',
+                SchoolMembers.is_admin as 'isAdmin',
                 u.username             as 'username',
                 u.email                as 'email'
          FROM SchoolMembers
