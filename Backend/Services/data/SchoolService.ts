@@ -1,6 +1,8 @@
 import {connectionPoolFactory} from "../db_service.ts";
 import SchoolSql from "./queries/school.sql.ts";
 import School from "../../data_models/School.ts";
+import {SchoolUser} from "../../DTO/SchoolUser.ts";
+import UserSql from "./queries/user.sql.ts";
 
 export class SchoolService {
     public static async getAllSchools(): Promise<School[]> {
@@ -22,6 +24,12 @@ export class SchoolService {
             const rows = await conn.query(SchoolSql.SELECT_SCHOOL_WORK_CONFIG_BY_ID, [id])
             let {work_week_config} = rows[0];
             return work_week_config;
+        });
+    }
+    static async getUsersOfSchool(schoolId: number): Promise<SchoolUser[]> {
+        return await connectionPoolFactory(async (conn) => {
+            const userArr = await conn.query(UserSql.GET_USERS_BY_SCHOOL_ID, [schoolId]);
+            return userArr.map((obj: SchoolUser) => SchoolUser.convertFromDBModel(obj));
         });
     }
 }
