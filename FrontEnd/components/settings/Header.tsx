@@ -1,11 +1,10 @@
 import {X} from "lucide-react";
 import React from "react";
 
-function closeAll() {
 
-}
 
-export default function Header() {
+export default function Header({ closeAll}) {
+
   return (
           <div className="p-6 border-b border-slate-200/50 bg-white/50">
               <div className="flex items-center justify-between">

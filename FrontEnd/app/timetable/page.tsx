@@ -13,8 +13,6 @@ export default function Timetable() {
         setMounted(true);
     }, []);
 
-    // API Hooks
-    // Using IDs and static strings as per your original snippet
     const { timeData, timeError } = useRunningPeriod(1);
     const { nextTimeData, nextTimeError } = useNextPeriod(1);
 
@@ -49,9 +47,7 @@ export default function Timetable() {
                         В момента няма планирани учебни занятия. <br />
                         Платформата ще се актуализира автоматично при следващ час.
                     </p>
-                    <Link href="/" className="mt-10 inline-block px-8 py-3 bg-purple-600 text-white rounded-full font-bold hover:bg-purple-700 transition-colors">
-                        Към началната страница
-                    </Link>
+
                 </div>
             </div>
         );
