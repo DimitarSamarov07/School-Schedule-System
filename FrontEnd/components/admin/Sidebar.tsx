@@ -1,20 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import {
-    Calendar, Users, Palette, GraduationCap,
-    DoorOpen, Clock, Sun
-} from 'lucide-react';
-
-const menuItems = [
-    { icon: Calendar, label: 'Програма', href: '/dashboard/' },
-    { icon: Users, label: 'Учители', href: '/dashboard/teachers' },
-    { icon: Palette, label: 'Предмети', href: '/dashboard/subjects' },
-    { icon: GraduationCap, label: 'Класове', href: '/dashboard/classes' },
-    { icon: DoorOpen, label: 'Стаи', href: '/dashboard/rooms' },
-    { icon: Clock, label: 'Часове', href: '/dashboard/periods' },
-    { icon: Sun, label: 'Почивки', href: '/dashboard/holidays' },
-];
+import {menuItems} from "@/config/adminConfig";
 
 export default function Sidebar() {
     const pathname = usePathname();

@@ -1,10 +1,9 @@
 "use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import {useState} from 'react';
+import {useRouter} from 'next/navigation';
 import Link from 'next/link';
-import { Eye, EyeOff, GraduationCap, Shield, UserPlus, Loader2 } from 'lucide-react';
-import { apiRequest } from '@/lib/api/client';
+import {Eye, EyeOff, GraduationCap, Loader2, Shield, UserPlus} from 'lucide-react';
 import {login} from "@/lib/api/user";
 
 export default function AuthPage() {
@@ -14,7 +13,7 @@ export default function AuthPage() {
     const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
     // Login State
-    const [email, setEmail] = useState('');
+    const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
@@ -35,7 +34,7 @@ export default function AuthPage() {
         setErrorMsg(null);
 
         try {
-            await login(email, password)
+            await login(username, password)
             router.push('/dashboard');
         } catch (error: any) {
             console.error("Login Error:", error);
@@ -52,12 +51,13 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+        <div
+            className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 flex items-center justify-center p-4">
             <div className="w-full max-w-md text-slate-900">
 
                 {/* Logo Section */}
                 <Link href="/" className="flex items-center justify-center gap-2 text-white mb-8 group">
-                    <GraduationCap className="w-10 h-10 transition-transform group-hover:scale-110" />
+                    <GraduationCap className="w-10 h-10 transition-transform group-hover:scale-110"/>
                     <span className="font-bold text-3xl tracking-tight">EduSchedule</span>
                 </Link>
 
@@ -70,7 +70,7 @@ export default function AuthPage() {
                                 activeTab === 'login' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            <Shield className="w-4 h-4" /> Login
+                            <Shield className="w-4 h-4"/> Вход
                         </button>
                         <button
                             onClick={() => setActiveTab('register')}
@@ -78,13 +78,14 @@ export default function AuthPage() {
                                 activeTab === 'register' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
                             }`}
                         >
-                            <UserPlus className="w-4 h-4" /> Register
+                            <UserPlus className="w-4 h-4"/> Регистрация
                         </button>
                     </div>
 
                     <div className="p-8">
                         {errorMsg && (
-                            <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg animate-pulse">
+                            <div
+                                className="mb-4 p-3 bg-red-50 border border-red-200 text-red-600 text-sm rounded-lg animate-pulse">
                                 {errorMsg}
                             </div>
                         )}
@@ -92,25 +93,26 @@ export default function AuthPage() {
                         {activeTab === 'login' ? (
                             <div className="space-y-6">
                                 <div className="text-center">
-                                    <h2 className="text-2xl font-bold text-gray-900">Admin Login</h2>
-                                    <p className="text-sm text-gray-500 mt-1">Sign in to access the dashboard</p>
+                                    <h2 className="text-2xl font-bold text-gray-900">Вход</h2>
+                                    <p className="text-sm text-gray-500 mt-1">Влезте във вашия профил за да достъпите
+                                        училища и графици.</p>
                                 </div>
 
                                 <form onSubmit={handleLogin} className="space-y-4">
                                     <div className="space-y-1">
-                                        <label className="text-sm font-semibold text-gray-700">Username / Email</label>
+                                        <label className="text-sm font-semibold text-gray-700">Потребителско име</label>
                                         <input
                                             type="text"
                                             required
                                             disabled={isLoading}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 outline-none transition-all disabled:bg-gray-50"
-                                            placeholder="admin_user"
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
+                                            placeholder="admin"
+                                            value={username}
+                                            onChange={(e) => setUsername(e.target.value)}
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <label className="text-sm font-semibold text-gray-700">Password</label>
+                                        <label className="text-sm font-semibold text-gray-700">Парола</label>
                                         <div className="relative">
                                             <input
                                                 type={showPassword ? "text" : "password"}
@@ -126,7 +128,8 @@ export default function AuthPage() {
                                                 onClick={() => setShowPassword(!showPassword)}
                                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-purple-600"
                                             >
-                                                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                                {showPassword ? <EyeOff className="w-5 h-5"/> :
+                                                    <Eye className="w-5 h-5"/>}
                                             </button>
                                         </div>
                                     </div>
@@ -135,16 +138,16 @@ export default function AuthPage() {
                                         disabled={isLoading}
                                         className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-2 rounded-lg transition-all shadow-md flex items-center justify-center gap-2"
                                     >
-                                        {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
-                                        {isLoading ? "Authenticating..." : "Sign in"}
+                                        {isLoading && <Loader2 className="w-4 h-4 animate-spin"/>}
+                                        {isLoading ? "Authenticating..." : "Вход"}
                                     </button>
                                 </form>
                                 <Link href="/forgot-password">
-                                    <p className="text-center text-xs text-gray-400 hover:text-purple-500 transition-colors">Forgot password?</p>
+                                    <p className="text-center text-xs text-gray-400 hover:text-purple-500 transition-colors">Forgot
+                                        password?</p>
                                 </Link>
                             </div>
                         ) : (
-                            /* Register Form Section */
                             <div className="space-y-6">
                                 <div className="text-center">
                                     <h2 className="text-2xl font-bold text-gray-900">Create Account</h2>
@@ -163,7 +166,8 @@ export default function AuthPage() {
                                         />
                                     </div>
                                     {/* (Registration fields truncated for brevity - implementation same as login) */}
-                                    <button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg">
+                                    <button type="submit"
+                                            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 rounded-lg">
                                         Create Account
                                     </button>
                                 </form>
@@ -173,7 +177,8 @@ export default function AuthPage() {
                 </div>
 
                 <p className="text-center mt-6">
-                    <Link href="/" className="text-white/80 hover:text-white text-sm transition-colors border-b border-transparent hover:border-white">
+                    <Link href="/"
+                          className="text-white/80 hover:text-white text-sm transition-colors border-b border-transparent hover:border-white">
                         ← Back to Home
                     </Link>
                 </p>

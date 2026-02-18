@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { GraduationCap, User, Coffee } from "lucide-react";
+import {useEffect, useState} from "react";
+import {Coffee, GraduationCap, User} from "lucide-react";
 import Link from "next/link";
-import { useRunningPeriod, useNextPeriod } from "@/hooks/use-running-time";
+import {useNextPeriod, useRunningPeriod} from "@/hooks/use-running-time";
 import useSchedulesByDateTimeAndSchool from "@/hooks/use-schedules-by-date";
+import moment from "moment";
 
 export default function Timetable() {
     const [mounted, setMounted] = useState(false);
@@ -13,14 +14,14 @@ export default function Timetable() {
         setMounted(true);
     }, []);
 
-    const { timeData, timeError } = useRunningPeriod(1);
-    const { nextTimeData, nextTimeError } = useNextPeriod(1);
+    const {timeData, timeError} = useRunningPeriod(1);
+    const {nextTimeData, nextTimeError} = useNextPeriod(1);
 
     const schoolId = 1;
     const date = "2023-10-16";
-    const time = "08:40:00";
-
-    const { scheduleData, isLoading } = useSchedulesByDateTimeAndSchool(
+    const time = moment().format("HH:mm:ss");
+    console.log(time);
+    const {scheduleData, isLoading} = useSchedulesByDateTimeAndSchool(
         schoolId,
         date,
         time
@@ -40,11 +41,11 @@ export default function Timetable() {
             <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-6 text-center">
                 <div className="bg-white p-12 rounded-[2rem] shadow-2xl max-w-lg border border-slate-100">
                     <div className="bg-purple-100 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-8">
-                        <Coffee className="w-12 h-12 text-purple-600" />
+                        <Coffee className="w-12 h-12 text-purple-600"/>
                     </div>
                     <h2 className="text-4xl font-black text-slate-900 mb-4">Неучебен ден</h2>
                     <p className="text-slate-500 text-xl leading-relaxed">
-                        В момента няма планирани учебни занятия. <br />
+                        В момента няма планирани учебни занятия. <br/>
                         Платформата ще се актуализира автоматично при следващ час.
                     </p>
 
@@ -55,13 +56,14 @@ export default function Timetable() {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans overflow-x-hidden flex flex-col">
-            <div className="w-full bg-linear-to-r from-[#8b5cf6] via-[#a855f7] to-[#ec4899] text-white p-12 relative text-center rounded-b-[3rem] shadow-xl">
+            <div
+                className="w-full bg-linear-to-r from-[#8b5cf6] via-[#a855f7] to-[#ec4899] text-white p-12 relative text-center rounded-b-[3rem] shadow-xl">
                 <div className="absolute top-6 left-0 px-8 w-full flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
-                        <GraduationCap className="w-8 h-8" />
+                        <GraduationCap className="w-8 h-8"/>
                         <h1 className="text-xl font-bold tracking-tight">EduSchedule</h1>
                     </Link>
-                    <User className="w-6 h-6" />
+                    <User className="w-6 h-6"/>
                 </div>
 
                 <div className="mt-8 p-1">
@@ -95,7 +97,7 @@ export default function Timetable() {
             <footer className="bg-white border-t border-slate-100 py-10 mt-auto text-slate-400">
                 <div className="container mx-auto px-4 text-center">
                     <div className="flex items-center justify-center gap-2 mb-3">
-                        <GraduationCap className="w-5 h-5 text-purple-500" />
+                        <GraduationCap className="w-5 h-5 text-purple-500"/>
                         <span className="font-bold text-slate-600">EduSchedule</span>
                     </div>
                     <p className="text-sm">

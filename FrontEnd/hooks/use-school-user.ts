@@ -1,51 +1,74 @@
-"use client"
+import { useState, useEffect, useCallback } from "react";
+import { getAllSchoolUsers, demoteUser, promoteUser } from "@/lib/api/schoolUser";
+import { User, ApiUser } from "@/types/schoolUser";
 
-import {useState, useEffect, useCallback, useRef} from "react";
+export const useSchoolUser = (schoolId: number) => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await getAllSchoolUsers(schoolId);
 
-import {useCurrentSchool} from "@/providers/SchoolProvider";
-import {SchoolUser} from "@/types/schoolUser";
-import {getAllSchoolUsers} from "@/lib/api/schoolUser";
+                const transformedUsers: User[] = data.map((user: ApiUser) => ({
+                    id: user.Id,
+                    name: user.Username,
+                    email: user.Email,
+                    isAdmin: user.IsAdmin === 1,
+                    status: user.IsAdmin === 1 ? 'Администратор' : 'Активна'
+                }));
 
-export function useSchoolUser() {
-    const { currentSchool } = useCurrentSchool();
-    const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
-    const [schoolUsersList, setSchoolUsersList] = useState<SchoolUser[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [selectedSchoolUser, setselectedSchoolUser] = useState<SchoolUser | null>(null);
-    const isFetchingRef = useRef(false);
-
-    const fetchSchoolUsers = useCallback(async (skipLoadingState = false) => {
-        if (!schoolId || isFetchingRef.current) return;
-
-        const shouldToggleLoading = !skipLoadingState;
-        isFetchingRef.current = true;
-
-        const clearRooms = () => setSchoolUsersList([]);
-
-        const normalizeSchoolUsers = (value: unknown): SchoolUser[] => {
-            if (Array.isArray(value)) return value as SchoolUser[];
-            return value ? [value as SchoolUser] : [];
+                setUsers(transformedUsers);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'Unknown error');
+                console.error('Error fetching users:', err);
+            } finally {
+                setLoading(false);
+            }
         };
 
-        if (shouldToggleLoading) setIsLoading(true);
-
-        try {
-            const response = await getAllSchoolUsers(schoolId);
-
-            if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearRooms();
-                return;
-            }
-
-            setSchoolUsersList(normalizeSchoolUsers(response));
-        } catch (error) {
-            console.warn("API Error:", error);
-            clearRooms();
-        } finally {
-            if (shouldToggleLoading) setIsLoading(false);
-            isFetchingRef.current = false;
+        if (schoolId) {
+            fetchUsers();
         }
     }, [schoolId]);
-}
+
+    const handlePromote = useCallback(async (userId: number) => {
+        try {
+            await promoteUser(schoolId, userId);
+            setUsers(users.map(user =>
+                user.id === userId
+                    ? { ...user, isAdmin: true, status: 'Администратор' }
+                    : user
+            ));
+        } catch (err) {
+            console.error('Failed to promote user:', err);
+            throw err;
+        }
+    }, [schoolId, users]);
+
+    const handleDemote = useCallback(async (userId: number) => {
+        try {
+            await demoteUser(schoolId, userId);
+            setUsers(users.map(user =>
+                user.id === userId
+                    ? { ...user, isAdmin: false, status: 'Активна' }
+                    : user
+            ));
+        } catch (err) {
+            console.error('Failed to demote user:', err);
+            throw err;
+        }
+    }, [schoolId, users]);
+
+    return {
+        users,
+        loading,
+        error,
+        handlePromote,
+        handleDemote
+    };
+};
