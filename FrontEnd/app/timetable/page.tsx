@@ -1,39 +1,48 @@
 "use client";
 
-import {useEffect, useState} from "react";
+import {useEffect, useState, useRef} from "react";
 import {Coffee, GraduationCap, User} from "lucide-react";
 import Link from "next/link";
 import {useNextPeriod, useRunningPeriod} from "@/hooks/use-running-time";
 import useSchedulesByDateTimeAndSchool from "@/hooks/use-schedules-by-date";
+import {useAutoScroll} from "@/hooks/use-auto-scroll"; // Add this import
 import moment from "moment";
+import ScheduleCard from "@/components/cards/ScheduleCard";
 
 export default function Timetable() {
     const [mounted, setMounted] = useState(false);
+    const scrollRef = useRef<HTMLDivElement>(null); // Add scroll ref
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
+    // @ts-ignore
     const {timeData, timeError} = useRunningPeriod(1);
     const {nextTimeData, nextTimeError} = useNextPeriod(1);
 
     const schoolId = 1;
-    const date = "2023-10-16";
+    const date = moment().format("YYYY-MM-DD");
     const time = moment().format("HH:mm:ss");
-    console.log(time);
     const {scheduleData, isLoading} = useSchedulesByDateTimeAndSchool(
         schoolId,
         date,
         time
     );
+    console.log(scheduleData);
 
-    // 1. Loading & Error States
+    // Auto-scroll hook - activates only when >4 cards
+    useAutoScroll({
+        scrollRef: scrollRef,
+        data: scheduleData,
+        mounted: mounted,
+        intervalMs: 6000 // Scroll every 6 seconds
+    });
+
     if (!mounted) return <div className="p-8 text-slate-400">Initializing...</div>;
     if (timeError || nextTimeError) return <div className="p-8 text-red-500 text-center">Грешка при зареждане.</div>;
     if (isLoading) return <div className="p-8 text-slate-500 text-center">Зареждане...</div>;
 
-    // 2. Non-Study Day Logic
-    // Triggers if no current period exists or the schedule array is empty/null
     const isNonStudyDay = !timeData || !scheduleData || scheduleData.length === 0;
 
     if (isNonStudyDay) {
@@ -48,7 +57,6 @@ export default function Timetable() {
                         В момента няма планирани учебни занятия. <br/>
                         Платформата ще се актуализира автоматично при следващ час.
                     </p>
-
                 </div>
             </div>
         );
@@ -89,9 +97,17 @@ export default function Timetable() {
                     </p>
                 </header>
 
-                {/* You can place your external ScheduleCard list component here
-            or any other content you wish to display when school is in session.
-        */}
+                {/* Horizontal scrollable container with auto-scroll */}
+                <div
+                    ref={scrollRef}
+                    className="flex overflow-x-auto gap-6 pb-6 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 w-full max-w-7xl"
+                >
+                    {scheduleData.map((schedule, index) => (
+                        <div key={index} className="flex-shrink-0">
+                            <ScheduleCard data={schedule} />
+                        </div>
+                    ))}
+                </div>
             </main>
 
             <footer className="bg-white border-t border-slate-100 py-10 mt-auto text-slate-400">

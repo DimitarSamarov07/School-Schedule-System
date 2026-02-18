@@ -10,6 +10,7 @@ export default function useSchedulesByDateTimeAndSchool(schoolId: number, date: 
     time: time
   }).toString();
 
+
   const URL = `${BASE_URL}${ENDPOINTS.SCHEDULES_BY_DATE_TIME_SCHOOL}?${queryParams}`;
   const { data, error, isLoading } = useSWR(
       URL,
