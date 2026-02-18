@@ -15,9 +15,7 @@ const csrfReadyPromise = new Promise<void>((resolve) => {
  * Updates the internal token and unlocks any pending requests.
  */
 export const setCsrfToken = (token: string) => {
-    console.log(`[CSRF] Token received and locked in.`);
     memoizedCsrfToken = token;
-    // This "opens the gate" for all awaiting requests
     resolveCsrfReady();
 };
 
