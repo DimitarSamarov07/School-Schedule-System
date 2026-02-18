@@ -16,7 +16,7 @@ export function EntityHeader({ manager, config }: HeaderProps) {
                 </p>
             </div>
             <button
-                onClick={() => setActiveModal("add")}
+                onClick={() => setActiveModal ? setActiveModal("add") : null}
                 className="bg-[#7C5CFC] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6b4de0] transition-all shadow-lg shadow-purple-200 active:scale-95 flex items-center gap-3"
                 disabled={!manager.isAdmin}
             >

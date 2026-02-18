@@ -1,10 +1,9 @@
-
 export default function ClassesLayout({
-                                            children,
-                                        }: {
+                                          children,
+                                      }: {
     children: React.ReactNode;
 }) {
     return (
-            <main>{children}</main>
+        <main>{children}</main>
     );
 }

@@ -1,14 +1,5 @@
 import {Calendar, Users, Book, DoorOpen, GraduationCap} from 'lucide-react';
-
-interface StatsSummaryProps {
-    counts: {
-        classes?: number;
-        grades?: number;
-        teachers?: number;
-        subjects?: number;
-        rooms?: number;
-    }
-}
+import {StatsSummaryProps} from "@/components/admin/interfaces/StatsSummaryInterfaces";
 
 export default function StatsSummary({ counts }: StatsSummaryProps) {
     const stats = [

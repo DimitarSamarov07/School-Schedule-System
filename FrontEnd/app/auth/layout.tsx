@@ -7,9 +7,9 @@ export default function AuthLayout({
 }) {
     return (
         <CsrfProvider>
-        <section className="timetable-wrapper">
-            <main>{children}</main>
-        </section>
-            </CsrfProvider>
+            <section className="timetable-wrapper">
+                <main>{children}</main>
+            </section>
+        </CsrfProvider>
     );
 }
