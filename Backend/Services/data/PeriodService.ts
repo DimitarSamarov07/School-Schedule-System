@@ -25,18 +25,16 @@ export class PeriodService {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
             let resArr = rows.map((row: any) => new PeriodResponse(row));
             const now = moment();
+            let currentTime: RunningTime | null = null;
             for (let i = 0; i < resArr.length; i++) {
                 const start = moment(resArr[i].Start, 'HH:mm:ss');
                 const end = moment(resArr[i].End, 'HH:mm:ss');
                 if (start.isSameOrBefore(now) && end.isSameOrAfter(now)) {
-                    return new RunningTime(resArr[i].Name, resArr[i].Start, resArr[i].End);
-                } else {
-                    return new RunningTime(
-                        "Неучебно време"
-                    );
+                    currentTime = new RunningTime(resArr[i].Name, resArr[i].Start, resArr[i].End);
+                    break;
                 }
             }
-            return null;
+            return currentTime || new RunningTime("Неучебно време");
         });
     }
 
