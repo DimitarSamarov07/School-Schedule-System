@@ -29,8 +29,6 @@ export default function Timetable() {
         date,
         time
     );
-    console.log(scheduleData);
-
     // Auto-scroll hook - activates only when >4 cards
     useAutoScroll({
         scrollRef: scrollRef,
