@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getHoliday, createDate, deleteDate, updateDate } from "@/lib/api/dates";
-import { Holiday} from "@/types/holiday"; // Fixed import naming
+import { Holiday} from "@/types/holiday";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useDatesManager() {
