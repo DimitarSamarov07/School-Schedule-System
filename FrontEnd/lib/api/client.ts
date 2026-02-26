@@ -5,7 +5,6 @@ import { BASE_URL } from '@/lib/constants';
  */
 let memoizedCsrfToken: string | null = null;
 
-// The "Lock" mechanism
 let resolveCsrfReady: () => void;
 const csrfReadyPromise = new Promise<void>((resolve) => {
     resolveCsrfReady = resolve;

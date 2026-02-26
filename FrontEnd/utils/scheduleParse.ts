@@ -23,11 +23,10 @@ const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
 const DAY_BY_INDEX = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 
 function toHHMM(time: string) {
-    return time.slice(0, 5); // "10:30:00" → "10:30"
+    return time.slice(0, 5);
 }
 
 function dateToDayName(dateStr: string): string {
-    // Append T00:00:00 to avoid UTC offset shifting the date
     return DAY_BY_INDEX[new Date(`${dateStr}T00:00:00`).getDay()];
 }
 

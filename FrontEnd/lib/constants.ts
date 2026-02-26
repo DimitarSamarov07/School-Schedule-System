@@ -18,5 +18,6 @@ export const ENDPOINTS = {
     LOGOUT: `/user/logout`,
     PROMOTE: `/user/promote`,
     DEMOTE: `/user/demote`,
+    SCHEDULE_BETWEEN_DATES: `/schedule/betweenDates`,
     LIST_ALL_SCHOOL_USERS: `/school/allUsers`,
 }

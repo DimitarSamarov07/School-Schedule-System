@@ -1,6 +1,7 @@
 import TimetableCard from '../cards/TimetableCard';
 
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const DAYSBG = ['Понеделник', 'Вторник', 'Сряда', 'Четвъртък', 'Петък'];
 
 type ClassInfo = {
     className: string;
@@ -31,8 +32,8 @@ export default function PeriodTable({ name, time, rows }: PeriodTableProps) {
             </div>
 
             <div className="grid bg-white border-b border-gray-200" style={{ gridTemplateColumns: '90px repeat(5, 1fr)' }}>
-                <div className="px-4 py-3 text-sm font-medium text-gray-500">Grade</div>
-                {DAYS.map((day) => (
+                <div className="px-4 py-3 text-sm font-medium text-gray-500">Клас</div>
+                {DAYSBG.map((day) => (
                     <div key={day} className="px-3 py-3 text-sm font-semibold text-gray-800 text-center border-l border-gray-200">
                         {day}
                     </div>
