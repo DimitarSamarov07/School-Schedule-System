@@ -1,12 +1,18 @@
-import { Search } from "lucide-react";
-import { useState } from "react";
+import {Search} from "lucide-react";
+import {useState} from "react";
 
-export function EntitySearch() {
+interface EntitySearchProps {
+    value?: string,
+    onChange?: (value: (((prevState: string) => string) | string)) => void
+}
+
+export function EntitySearch({value, onChange}: EntitySearchProps) {
     const [searchTerm, setSearchTerm] = useState("");
     return (
         <div className="mb-8 max-w-2xl">
             <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#7C5CFC] transition-colors" />
+                <Search
+                    className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-[#7C5CFC] transition-colors"/>
                 <input
                     type="text"
                     placeholder="Търсене..."

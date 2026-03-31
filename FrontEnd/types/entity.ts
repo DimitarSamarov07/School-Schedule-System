@@ -19,6 +19,7 @@ export interface EntityConfig {
     singular: string;
     listKey: string;
     itemNameKey: string;
+    searchKeys: string[];
     columns: ColumnConfig[];
     formFields: FormFieldConfig[];
 }

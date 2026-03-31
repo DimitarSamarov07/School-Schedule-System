@@ -1,17 +1,16 @@
 "use client";
 
 import React from "react";
-import {useSubjectsManager} from "@/hooks/use-subjects-manager";
 import EntityListContainer from "@/components/entity/EntityListContainer";
-import {SCHOOL_CONFIG, SUBJECT_CONFIG} from "@/config/entityConfig";
+import {SCHOOL_CONFIG} from "@/config/entityConfig";
+import {useSchoolsManager} from "@/hooks/use-school-manager";
 
 export default function SubjectsPage() {
-    const manager = useSubjectsManager();
-
+    const manager = useSchoolsManager();
     return (
         <EntityListContainer
             manager={manager}
-            config={SUBJECT_CONFIG}
+            config={SCHOOL_CONFIG}
         />
     );
 }

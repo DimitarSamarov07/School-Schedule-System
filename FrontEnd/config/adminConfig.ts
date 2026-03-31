@@ -1,8 +1,9 @@
-import {Calendar, Clock, DoorOpen, GraduationCap, Palette, Sun, Users} from "lucide-react";
+import {Building, Calendar, Clock, DoorOpen, GraduationCap, Palette, Sun, Users} from "lucide-react";
 
 export const menuItems = [
-    { icon: Calendar, label: 'Програма', href: '/dashboard/' },
+    { icon: Calendar, label: 'Програма', href: '/dashboard' },
     { icon: Users, label: 'Учители', href: '/dashboard/teachers' },
+    { icon: Building, label: 'Училища', href: '/dashboard/schools' },
     { icon: Palette, label: 'Предмети', href: '/dashboard/subjects' },
     { icon: GraduationCap, label: 'Класове', href: '/dashboard/classes' },
     { icon: DoorOpen, label: 'Стаи', href: '/dashboard/rooms' },
