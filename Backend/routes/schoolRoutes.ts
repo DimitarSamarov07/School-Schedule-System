@@ -15,7 +15,7 @@ router.get("/", hasAccessToSchool, getUsersBySchoolId)
 router.post("/", hasSudoAccess, createSchool)
 router.put("/", hasSudoAccess, updateSchool)
 
-router.get("/all", hasAccessToSchool, getAllSchools)
+router.get("/all", getAllSchools)
 router.get("/allUsers", hasAccessToSchool, getUsersBySchoolId)
 router.get("/workWeek", hasAccessToSchool, getSchoolWorkWeekConfig)
 
