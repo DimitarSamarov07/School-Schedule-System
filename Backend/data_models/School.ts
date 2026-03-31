@@ -12,9 +12,9 @@ class School {
     }
 
     public static convertFromDBModel(dbModel: any): School {
-        let {id, name, address, workweek_config} = dbModel;
+        let {id, name, address, work_week_config} = dbModel;
 
-        return new School(id, name, address, workweek_config);
+        return new School(id, name, address, work_week_config);
     }
 
 }
