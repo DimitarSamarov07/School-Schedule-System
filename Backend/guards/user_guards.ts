@@ -12,11 +12,23 @@ export const hasAdminAccessToSchool = (req, res, next) => {
     }
 
     if (!validateSchoolAccess(token, requestedSchoolId, true)) {
-        return res.status(403).send("Unauthorized");
+        return res.status(403).send("School admin access is required for this action.");
     }
 
     next();
 };
+
+export const hasSudoAccess = (req, res, next) => {
+    let token = getAuthTokenFromRequest(req, res);
+    if (!token) {
+        return res.status(401).send("Unauthorized.");
+    }
+    if (token.isSudo) {
+        next();
+    } else {
+        return res.status(403).send("Sudo access is required for this action.");
+    }
+}
 
 export const hasAccessToSchool = (req, res, next) => {
     let requestedSchoolId = getSchoolIdFromRequest(req, res);
@@ -26,7 +38,7 @@ export const hasAccessToSchool = (req, res, next) => {
 
     let token = getAuthTokenFromRequest(req, res);
     if (!token) {
-        return;
+        return res.status(401).send("Unauthorized.");
     }
 
     if (token.isSudo) {
@@ -34,7 +46,7 @@ export const hasAccessToSchool = (req, res, next) => {
     }
 
     if (!validateSchoolAccess(token, requestedSchoolId, false)) {
-        return res.status(403).send("Unauthorized");
+        return res.status(403).send("School member access is required for this action.");
     }
 
     next();

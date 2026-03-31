@@ -19,6 +19,24 @@ export class SchoolService {
         });
     }
 
+    public static async createSchool(name: string, address: string, workWeekConfig: number[]): Promise<School> {
+        return await connectionPoolFactory<School>(async (conn) => {
+            const rows = await conn.query(SchoolSql.INSERT_INTO_SCHOOLS, [name, address, workWeekConfig])
+            return rows[0];
+        });
+    }
+
+    public static async updateSchoolById(id: number, name: string | null, address: string | null, workWeekConfig: number[] | null): Promise<School> {
+        return await connectionPoolFactory<School>(async (conn) => {
+            const rows = await conn.query(SchoolSql.UPDATE_SCHOOL, [name, address, workWeekConfig])
+            if (rows.affectedRows > 0) {
+                let updatedEntry = await conn.query(SchoolSql.SELECT_SCHOOL_BY_ID, [id])
+                return School.convertFromDBModel(updatedEntry[0]);
+            }
+            throw new Error("No rows affected");
+        });
+    }
+
     public static async getSchoolWorkWeekConfigById(id: number): Promise<string> {
         return await connectionPoolFactory<string>(async (conn) => {
             const rows = await conn.query(SchoolSql.SELECT_SCHOOL_WORK_CONFIG_BY_ID, [id])
@@ -26,6 +44,7 @@ export class SchoolService {
             return work_week_config;
         });
     }
+
     static async getUsersOfSchool(schoolId: number): Promise<SchoolUser[]> {
         return await connectionPoolFactory(async (conn) => {
             const userArr = await conn.query(UserSql.GET_USERS_BY_SCHOOL_ID, [schoolId]);
