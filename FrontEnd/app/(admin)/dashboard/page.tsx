@@ -43,7 +43,7 @@ export default function TimetablePage() {
 
     return (
         <>
-            <h2 className="text-2xl font-bold mb-4">Timetable</h2>
+            <h2 className="text-2xl font-bold mb-4">Програма</h2>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <StatCard label="Учители" value={teacherList.length} color="#3B5BDB" icon={GraduationCap}/>
                 <StatCard label="Класове" value={gradeList.length} color="#0F9B8E" icon={Users}/>
