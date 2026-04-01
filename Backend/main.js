@@ -15,8 +15,16 @@ import holidayRoutes from "./routes/holidayRoutes.ts";
 
 // Initializing Express App
 import {doubleCsrf} from "csrf-csrf";
+import schoolRoutes from "./routes/schoolRoutes.ts";
 
 const app = express();
+
+app.use(cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ['Content-Type', 'x-csrf-token', 'Authorization'],
+    credentials: true
+}))
 const limiter = rateLimit({
     windowMs: 15 * 1000,
     max: 20,
@@ -26,19 +34,23 @@ const limiter = rateLimit({
     skipFailedRequests: false,
     skipSuccessfulRequests: false,
 });
+const csrfSecret = await authenticatorMaster.retrieveCSRFKey();
 
 const {
     doubleCsrfProtection,
-    generateToken
+    generateCsrfToken
 } = doubleCsrf({
-    getSecret: () => authenticatorMaster.retrieveCSRFKey(),
-    cookieName: "x-csrf-token",
+    getSecret: () => csrfSecret,
+    cookieName: "x-csrf-token", // This is the name of the cookie stored in the browser
     cookieOptions: {
         sameSite: "lax",
         path: "/",
-        secure: true
+        secure: false, // Set to true only in production (HTTPS)
     },
+    getSessionIdentifier: (req) => req.cookies.AUTH_TOKEN || "guest",
 });
+
+
 
 //app.use(limiter)
 app.use(cookieParser())
@@ -47,22 +59,16 @@ app.use(doubleCsrfProtection);
 app.use(helmet()) // Enhances security
 
 
-app.use(cors({
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true
-}))
-
 app.set('trust proxy', 1);
 
-
 app.get("/csrf-token", (req, res) => {
-    const token = generateToken(req, res);
-    return res.json({csrfToken: token});
+    const token = generateCsrfToken(req, res);
+    return res.json({ csrfToken: token });
 });
 
 
 // Include user-defined routes
+app.use("/school", schoolRoutes);
 app.use("/class", classRoutes);
 app.use("/holiday", holidayRoutes);
 app.use("/period", periodRoutes);

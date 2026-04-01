@@ -7,7 +7,8 @@ export const pool = mariadb.createPool({
     database: "school_system",
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASS,
-    connectionLimit: 25
+    connectionLimit: 25,
+    dateStrings: true
 });
 
 export async function connectionPoolFactory<T>(functionToExecute: (conn: PoolConnection) => Promise<T>): Promise<T> {

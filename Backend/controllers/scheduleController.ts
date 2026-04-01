@@ -96,7 +96,7 @@ export const updateSchedule = async (req, res) => {
         const result = await scheduleService.updateSchedule(
             id, schoolId, date, periodId, classId, teacherId, subjectId, roomId
         );
-        return result ? res.send(result) : res.status(422).send(false);
+        return res.send(result)
     } catch (err) {
         return res.status(500).send({"error": err});
     }

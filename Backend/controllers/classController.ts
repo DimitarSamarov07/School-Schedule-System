@@ -49,7 +49,7 @@ export const updateClass = async (req, res) => {
 
     try {
         const result = await classService.updateClass(id, schoolId, name, description, homeRoomId);
-        return result ? res.send(result) : res.status(422).send(false);
+        return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err.message || err});
     }

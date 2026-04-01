@@ -62,7 +62,7 @@ export const updateSubject = async (req, res) => {
 
     try {
         const result = await subjectService.updateSubject(id, schoolId, name, description);
-        return result ? res.send(result) : res.status(422).send(false);
+        return res.send(result);
     } catch (err) {
         return res.status(500).send({"error": err});
     }
