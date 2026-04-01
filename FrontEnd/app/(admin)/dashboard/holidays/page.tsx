@@ -65,7 +65,6 @@ export default function DatesPage() {
         const end = selectedRange.to ? new Date(selectedRange.to) : start;
         const formatedStart = Intl.DateTimeFormat('en-CA').format(start);
         const formatedEnd = Intl.DateTimeFormat('en-CA').format(end);
-        console.log(formatedStart, formatedEnd);
         try {
             await manager.handleCreate(formatedStart, formatedEnd);
         } catch (error) {

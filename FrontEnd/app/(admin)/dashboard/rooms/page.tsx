@@ -1,3 +1,5 @@
+
+
 "use client";
 
 import React from "react";
@@ -7,6 +9,7 @@ import {ROOM_CONFIG} from "@/config/entityConfig";
 
 export default function RoomsPage() {
     const manager = useRoomsManager();
+
 
     return (
         <EntityListContainer

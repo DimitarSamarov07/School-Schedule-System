@@ -24,4 +24,12 @@ export interface ClassInfo {
   startTime: string | null;
   endTime: string | null;
 }
+export type ScheduleEntry = {
+  Class:   { Id: number; Name: string; };
+  Date:    string; // "YYYY-MM-DD"
+  Subject: { Id: number; Name: string; };
+  Teacher: { Id: number; Name: string; };
+  Period:  { Id: number; Name: string; Start: string; End: string; };
+  Room:    { Id: number; Name: string; };
+};
 export default ScheduleProps;

@@ -1,12 +1,14 @@
 import { Grade } from "@/types/grade";
-import {Room} from "@/types/room";
-import {Time} from "@/types/time";
+import { Room } from "@/types/room";
+import { Time } from "@/types/time";
+import {formatWorkweek} from "@/lib/utils";
 
 export const CLASS_CONFIG = {
     title: "Класове и учебни зали",
     singular: "клас",
     listKey: "gradeList",
     itemNameKey: "Name",
+    searchKeys: ["Name", "Description"],
     columns: [
         { key: "Name", label: "Клас" },
         {
@@ -14,8 +16,8 @@ export const CLASS_CONFIG = {
             label: "Стая",
             render: (grade: Grade) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-          {grade.Room?.Name || "Без стая"}
-        </span>
+                    {grade.Room?.Name || "Без стая"}
+                </span>
             )
         },
         { key: "Description", label: "Специалност / Забележки" }
@@ -26,11 +28,13 @@ export const CLASS_CONFIG = {
         { key: "Description", label: "Специалност/забележки", type: "textarea", placeholder: "напр. Приложно програмиране" }
     ]
 };
+
 export const ROOM_CONFIG = {
     title: "Стаи и учебни зали",
     singular: "стая",
-    listKey: "roomsList",        // ← Your manager property
-    itemNameKey: "Name",         // ← For modal titles
+    listKey: "roomsList",
+    itemNameKey: "Name",
+    searchKeys: ["Name", "Floor"],
     columns: [
         { key: "Name", label: "Стая" },
         {
@@ -38,8 +42,8 @@ export const ROOM_CONFIG = {
             label: "Етаж",
             render: (room: Room) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-          {"Етаж " + (room.Floor || "Без етаж")}
-        </span>
+                    {"Етаж " + (room.Floor || "Без етаж")}
+                </span>
             )
         },
         {
@@ -55,11 +59,13 @@ export const ROOM_CONFIG = {
         { key: "Capacity", label: "Капацитет", type: "text", placeholder: "напр. 30" }
     ]
 };
+
 export const TEACHER_CONFIG = {
     title: "Учители",
     singular: "учител",
-    listKey: "teacherList",          // ← Your manager property
-    itemNameKey: "Name",             // ← For modal titles
+    listKey: "teacherList",
+    itemNameKey: "Name",
+    searchKeys: ["Name", "Email"],
     columns: [
         { key: "Name", label: "Учител" },
         { key: "Email", label: "Имейл" }
@@ -73,8 +79,9 @@ export const TEACHER_CONFIG = {
 export const SUBJECT_CONFIG = {
     title: "Предмети",
     singular: "предмет",
-    listKey: "subjectList",         // ← Your manager property
-    itemNameKey: "Name",            // ← For modal titles
+    listKey: "subjectList",
+    itemNameKey: "Name",
+    searchKeys: ["Name", "Description"],
     columns: [
         { key: "Name", label: "Предмет" },
         { key: "Description", label: "Забележки" }
@@ -85,11 +92,37 @@ export const SUBJECT_CONFIG = {
     ]
 };
 
+export const SCHOOL_CONFIG = {
+    title: "Училища",
+    singular: "училище",
+    listKey: "schoolsList",
+    itemNameKey: "Name",
+    searchKeys: ["Name", "Address"],
+    columns: [
+        { key: "Name", label: "Име" },
+        { key: "Address", label: "Адрес" },
+        {
+            key: "WorkweekConfig",
+            label: "Седмица",
+            render: (item: unknown) => {
+                const config = (item as Record<string, unknown>).WorkweekConfig;
+                return formatWorkweek((config as number[]) ?? []);
+            }
+        }
+    ],
+    formFields: [
+        { key: "Name", label: "Име на Училище", type: "text", placeholder: "напр. СУ Паисий Хилендарски" },
+        { key: "Address", label: "Адрес", type: "text", placeholder: "напр. ул. Иван Вазов 1" },
+        { key: "WorkweekConfig", label: "Работна седмица", type: "daypicker" }
+    ]
+};
+
 export const PERIOD_CONFIG = {
     title: "Часове",
     singular: "час",
-    listKey: "timeList",            // ← Your manager property
-    itemNameKey: "Name",            // ← For modal titles
+    listKey: "timeList",
+    itemNameKey: "Name",
+    searchKeys: ["Name", "Start", "End"],
     columns: [
         { key: "Name", label: "Час" },
         {
@@ -97,8 +130,8 @@ export const PERIOD_CONFIG = {
             label: "Начало",
             render: (period: Time) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-          {period.Start}
-        </span>
+                    {period.Start}
+                </span>
             )
         },
         {
@@ -106,15 +139,14 @@ export const PERIOD_CONFIG = {
             label: "Край",
             render: (period: Time) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-          {period.End}
-        </span>
+                    {period.End}
+                </span>
             )
         }
     ],
     formFields: [
-        { key: "Name", label: "Име на час", type: "text", placeholder: "напр. 1ви час" },
-        { key: "Start", label: "Начало", type: "text", placeholder: "напр. 08:00" },
-        { key: "End", label: "Край", type: "text", placeholder: "напр. 08:45" }
+        { key: "Name",  label: "Име на час", type: "text",       placeholder: "напр. 1ви час" },
+        { key: "Start", label: "Начало",     type: "timepicker" }, // ← changed
+        { key: "End",   label: "Край",       type: "timepicker" }, // ← changed
     ]
 };
-

@@ -33,7 +33,6 @@ export function useDatesManager() {
 
         try {
             const response = await getHoliday(schoolId);
-
             if (response && typeof response === 'object' && 'error' in response) {
                 clearDates();
                 return;
@@ -73,7 +72,6 @@ export function useDatesManager() {
 
         const Start = start ?? formData.Start;
         const End = end ?? formData.End;
-
         try {
             await createDate(schoolId, "Holiday", Start!, End!);
             await fetchDates(true);

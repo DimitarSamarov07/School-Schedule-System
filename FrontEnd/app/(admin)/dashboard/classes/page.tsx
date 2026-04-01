@@ -1,5 +1,3 @@
-// @ts-ignore
-// @ts-ignore
 
 "use client";
 

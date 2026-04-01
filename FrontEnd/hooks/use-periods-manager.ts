@@ -24,11 +24,6 @@ export function usePeriodsManager() {
 
         const clearTimes = () => setTimeList([]);
 
-        const normalizeTimes = (value: unknown): Time[] => {
-            if (Array.isArray(value)) return value as Time[];
-            return value ? [value as Time] : [];
-        };
-
         if (shouldToggleLoading) setIsLoading(true);
 
         try {
@@ -38,8 +33,18 @@ export function usePeriodsManager() {
                 clearTimes();
                 return;
             }
+            const trimSeconds = (t: string) => t?.slice(0, 5) ?? '';
 
+            const normalizeTimes = (value: unknown): Time[] => {
+                const raw = Array.isArray(value) ? value as Time[] : value ? [value as Time] : [];
+                return raw.map(time => ({
+                    ...time,
+                    Start: trimSeconds(time.Start),
+                    End:   trimSeconds(time.End),
+                }));
+            };
             setTimeList(normalizeTimes(response));
+
         } catch (error) {
             console.warn("API Error:", error);
             clearTimes();

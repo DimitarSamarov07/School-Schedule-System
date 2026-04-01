@@ -31,3 +31,34 @@ export function getFormattedScheduleStrings({ hour, startTime, endTime }: ClassI
     timeRange
   };
 }
+
+const DAY_NAMES = ['', 'Пон', 'Вт', 'Ср', 'Четв', 'Пет', 'Съб', 'Нед'];
+
+export function formatWorkweek(days: number[]): string {
+  if (!days || days.length === 0) return 'No schedule';
+
+  const sorted = [...days].sort((a, b) => a - b);
+
+  const ranges: [number, number][] = [];
+  let start = sorted[0];
+  let end = sorted[0];
+
+  for (let i = 1; i < sorted.length; i++) {
+    if (sorted[i] === end + 1) {
+      end = sorted[i];
+    } else {
+      ranges.push([start, end]);
+      start = sorted[i];
+      end = sorted[i];
+    }
+  }
+  ranges.push([start, end]);
+
+  return ranges
+      .map(([s, e]) =>
+          s === e
+              ? DAY_NAMES[s]                          // single day: "Mon"
+              : `${DAY_NAMES[s]}-${DAY_NAMES[e]}`    // range: "Mon-Fri"
+      )
+      .join(', ');
+}
