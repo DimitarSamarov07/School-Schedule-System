@@ -6,12 +6,16 @@ import {useCurrentSchool} from "@/providers/SchoolProvider";
 import {useRouter} from "next/navigation";
 import SettingsSidebar from "@/components/settings/Sidebar";
 import Header from "@/components/settings/Header";
+import {useSchoolUser} from "@/hooks/use-school-user";
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const [showPromotion, setShowPromotion] = useState(false);
-    const {username, email} = useCurrentSchool();
+    const {currentSchool,username, email} = useCurrentSchool();
+    const {users} = useSchoolUser(currentSchool.SchoolId)
     const router = useRouter();
+    const admins = users.filter(user => user.isAdmin);
+
 
 
     const handleLogout = async () => {
@@ -80,7 +84,7 @@ export default function UserDropdown() {
                             className="w-full max-w-5xl h-[90vh] bg-linear-to-br from-slate-50/80 to-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
                             <Header closeAll={closeAll}/>
                             <div className="flex flex-1 overflow-hidden">
-                                <SettingsSidebar totalUsers={23} totalAdmin={4}/>
+                                <SettingsSidebar totalUsers={users.length} totalAdmin={admins.length}/>
 
                             </div>
                         </div>
