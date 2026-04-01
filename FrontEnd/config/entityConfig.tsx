@@ -1,6 +1,7 @@
 import { Grade } from "@/types/grade";
 import { Room } from "@/types/room";
 import { Time } from "@/types/time";
+import {formatWorkweek} from "@/lib/utils";
 
 export const CLASS_CONFIG = {
     title: "Класове и учебни зали",
@@ -93,19 +94,26 @@ export const SUBJECT_CONFIG = {
 
 export const SCHOOL_CONFIG = {
     title: "Училища",
-    singular: "училища",
+    singular: "училище",
     listKey: "schoolsList",
     itemNameKey: "Name",
-    searchKeys: ["Name", "Address", "WorkWeekConfig"],
+    searchKeys: ["Name", "Address"],
     columns: [
         { key: "Name", label: "Име" },
         { key: "Address", label: "Адрес" },
-        { key: "WorkWeekConfig", label: "Седмица" }
+        {
+            key: "WorkweekConfig",
+            label: "Седмица",
+            render: (item: unknown) => {
+                const config = (item as Record<string, unknown>).WorkweekConfig;
+                return formatWorkweek((config as number[]) ?? []);
+            }
+        }
     ],
     formFields: [
-        { key: "Name", label: "Име на Училище", type: "text", placeholder: "напр. Математика" },
-        { key: "Address", label: "Адрес", type: "text", placeholder: "напр. Математика" },
-        { key: "WorkWeekConfig", label: "Работна седмица", type: "number", placeholder: "напр. Основен предмет" }
+        { key: "Name", label: "Име на Училище", type: "text", placeholder: "напр. СУ Паисий Хилендарски" },
+        { key: "Address", label: "Адрес", type: "text", placeholder: "напр. ул. Иван Вазов 1" },
+        { key: "WorkweekConfig", label: "Работна седмица", type: "daypicker" }
     ]
 };
 

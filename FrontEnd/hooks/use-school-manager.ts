@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 import {School} from "@/types/school";
 import {createSchool, deleteSchool, getSchools, updateSchool} from "@/lib/api/school";
+import {formatWorkweek} from "@/lib/utils";
 
 //Name address, work week config
 export function useSchoolsManager() {
@@ -15,7 +16,7 @@ export function useSchoolsManager() {
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<School>>({ Name: '', Address: '', WorkWeekConfig: [] });
+    const [formData, setFormData] = useState<Partial<School>>({ Name: '', Address: '', WorkweekConfig: [] });
     const [selectedSchool, setSelectedSchool] = useState<School | null>(null);
 
     const isFetchingRef = useRef(false);
@@ -68,14 +69,14 @@ export function useSchoolsManager() {
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ Name: '', Address: '', WorkWeekConfig: [] });
+        setFormData({ Name: '', Address: '', WorkweekConfig: [] });
         setSelectedSchool(null);
     };
 
     const handleCreate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
-            await createSchool(formData.Name!, formData.Address!, formData.WorkWeekConfig!);
+            await createSchool(formData.Name!, formData.Address!, formData.WorkweekConfig!);
             await fetchSchools(true);
             closeModal();
         } catch (error) {
@@ -88,7 +89,7 @@ export function useSchoolsManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
             if (!formData.Id) return;
-            await updateSchool(schoolId, Number(formData.Id), formData.Name!, formData.Address!, formData.WorkWeekConfig!);
+            await updateSchool(schoolId, Number(formData.Id), formData.Name!, formData.Address!, formData.WorkweekConfig!);
             await fetchSchools(true);
             closeModal();
         } catch (error) {
@@ -113,12 +114,11 @@ export function useSchoolsManager() {
     const openEditModal = (school: School) => {
         if (!isAdmin) return;
         setSelectedSchool(school);
-        // Fix ESLint input null warning
         setFormData({
             ...school,
             Name: school.Name || '',
             Address: school.Address || '',
-            WorkWeekConfig: school.WorkWeekConfig || []
+            WorkweekConfig: school.WorkweekConfig || []
         });
         setActiveModal('edit');
     };
