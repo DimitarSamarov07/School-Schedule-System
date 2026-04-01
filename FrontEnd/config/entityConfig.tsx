@@ -145,8 +145,8 @@ export const PERIOD_CONFIG = {
         }
     ],
     formFields: [
-        { key: "Name", label: "Име на час", type: "text", placeholder: "напр. 1ви час" },
-        { key: "Start", label: "Начало", type: "text", placeholder: "напр. 08:00" },
-        { key: "End", label: "Край", type: "text", placeholder: "напр. 08:45" }
+        { key: "Name",  label: "Име на час", type: "text",       placeholder: "напр. 1ви час" },
+        { key: "Start", label: "Начало",     type: "timepicker" }, // ← changed
+        { key: "End",   label: "Край",       type: "timepicker" }, // ← changed
     ]
 };
