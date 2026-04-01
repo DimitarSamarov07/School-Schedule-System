@@ -2,12 +2,18 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {menuItems} from "@/config/adminConfig";
+import StatCard from "@/components/cards/StatCard";
+import {Users} from "lucide-react";
+import {useSchoolUser} from "@/hooks/use-school-user";
+import {useCurrentSchool} from "@/providers/SchoolProvider";
 
 export default function Sidebar() {
     const pathname = usePathname();
+    const {currentSchool} = useCurrentSchool();
+    const {users} = useSchoolUser(currentSchool.SchoolId);
 
     return (
-        <aside className="w-64 bg-[#F8FAFC] border-r border-slate-200 py-6 overflow-y-auto shrink-0">
+        <aside className="w-64 bg-[#F8FAFC] border-r border-slate-200 py-4 overflow-y-auto shrink-0 flex flex-col">
             <nav className="px-4 space-y-1.5">
                 {menuItems.map((item) => {
                     const isActive = pathname === item.href;
@@ -32,6 +38,9 @@ export default function Sidebar() {
                     );
                 })}
             </nav>
+            <div className="mt-auto px-3 border-t border-slate-200">
+                <StatCard label="Активни потребители" value={users.length} color="#4A6FA5" icon={Users}></StatCard>
+            </div>
         </aside>
     );
 }
