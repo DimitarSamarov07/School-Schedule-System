@@ -84,6 +84,23 @@ export const createSchedule = async (req, res) => {
     }
 };
 
+export const bulkCreateSchedulesForRange = async (req, res) => {
+    const {schoolId} = req.query;
+    const {payload, startDate, endDate} = req.body;
+
+    if (!schoolId || !payload || !Array.isArray(payload) || !startDate || !endDate) {
+        return res.status(406).send("Malformed parameters");
+
+    }
+
+    try {
+        await scheduleService.bulkCreateSchedules(schoolId, startDate, endDate, payload);
+    } catch (err) {
+        return res.status(500).send({"error": err});
+    }
+
+}
+
 export const updateSchedule = async (req, res) => {
     const {schoolId} = req.query;
     const {id, date, periodId, classId, teacherId, subjectId, roomId} = req.body;

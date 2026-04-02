@@ -51,6 +51,9 @@ export default class ScheduleSql {
     static readonly INSERT_INTO_SCHEDULE = `INSERT INTO Schedule(school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
                                             VALUES ((?), (?), (?), (?), (?), (?), (?));`
 
+    static readonly INSERT_BULK_INTO_SCHEDULE = `INSERT INTO Schedule (school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
+                                                 VALUES ?`
+
     static readonly UPDATE_SCHEDULE = `UPDATE Schedule
                                        SET date       = COALESCE((?), date),
                                            period_id  = COALESCE((?), period_id),
@@ -67,4 +70,11 @@ export default class ScheduleSql {
                                                AND school_id = (?);`
 
 
+    static readonly CHECK_RELATIONS_GUARD = `
+        SELECT (SELECT id FROM Teachers WHERE id = ? AND school_id = ?) AS teacher_ok,
+               (SELECT id FROM Rooms WHERE id = ? AND school_id = ?)    AS room_ok,
+               (SELECT id FROM Subjects WHERE id = ? AND school_id = ?) AS subject_ok,
+               (SELECT id FROM Classes WHERE id = ? AND school_id = ?)  AS class_ok,
+               (SELECT id FROM Periods WHERE id = ? AND school_id = ?)  AS period_ok
+    `;
 }
