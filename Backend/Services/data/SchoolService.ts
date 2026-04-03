@@ -37,8 +37,8 @@ export class SchoolService {
         });
     }
 
-    public static async getSchoolWorkWeekConfigById(id: number): Promise<string> {
-        return await connectionPoolFactory<string>(async (conn) => {
+    public static async getSchoolWorkWeekConfigById(id: number): Promise<number[]> {
+        return await connectionPoolFactory<number[]>(async (conn) => {
             const rows = await conn.query(SchoolSql.SELECT_SCHOOL_WORK_CONFIG_BY_ID, [id])
             let {work_week_config} = rows[0];
             return work_week_config;
