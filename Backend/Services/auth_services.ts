@@ -9,7 +9,6 @@ import SchoolMember from "../data_models/SchoolMember.ts";
 import User from "../data_models/User.ts";
 import UserData from "../DTO/UserData.ts";
 import {SchoolService} from "./data/SchoolService.ts";
-import {SchoolUser} from "../DTO/SchoolUser.ts";
 
 
 class Authenticator {
@@ -89,14 +88,8 @@ class Authenticator {
         return await connectionPoolFactory(async (conn) => {
             let hashedPassword = await this.hashPassword(plainPassword);
 
-            let [userObj] = await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
-            if (userObj) {
-                let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.CREATE_USER_PERMISSION, [userObj.id, schoolId, isAdmin])
-                if (userAccessAffectedRows > 0) {
-                    return true;
-                }
-            }
-            return false;
+            await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
+            return true;
         })
     }
 
