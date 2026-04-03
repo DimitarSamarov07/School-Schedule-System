@@ -32,23 +32,21 @@ export class ScheduleService {
                         classId, schoolId,
                         periodId, schoolId,]);
 
-                let status = check[0];
 
-                if (!status.teacher_ok || !status.room_ok || !status.subject_ok || !status.class_ok || !status.period_ok) {
+                if (!check.teacher_ok || !check.room_ok || !check.subject_ok || !check.class_ok || !check.period_ok) {
                     throw new Error("Security Violation: One or more resources are unauthorized for this school.");
                 }
             }
         })
 
-        let workweekConfigJson = await SchoolService.getSchoolWorkWeekConfigById(schoolId);
-        let workweekConfig = JSON.parse(workweekConfigJson);
+        let workweekConfig = await SchoolService.getSchoolWorkWeekConfigById(schoolId);
 
         let holidaysList = await HolidayService.getAllHolidaysForSchool(schoolId);
         let holidayDates: string[] = [];
 
         holidaysList.forEach(h => {
-            let start = moment(h.Start);
-            let end = moment(h.End);
+            let start = moment(h.Start, "YYYY-MM-DD");
+            let end = moment(h.End, "YYYY-MM-DD");
             while (start.isSameOrBefore(end)) {
                 holidayDates.push(start.format('YYYY-MM-DD'));
                 start.add(1, 'day');
@@ -68,7 +66,7 @@ export class ScheduleService {
         }
 
         await connectionPoolFactory(async (conn) => {
-            await conn.query(ScheduleSql.INSERT_BULK_INTO_SCHEDULE, [valuesToInsert])
+            await conn.batch(ScheduleSql.INSERT_BULK_INTO_SCHEDULE, valuesToInsert)
         })
     }
 
@@ -151,8 +149,8 @@ export class ScheduleService {
 
     private static async getValidSchoolDates(startDate: string, endDate: string, workWeek = [1, 2, 3, 4, 5], holidays: string[] = []) {
         const dates: string[] = [];
-        let current = moment(startDate).startOf('day');
-        const end = moment(endDate).startOf('day');
+        let current = moment(startDate, "YYYY-MM-DD").startOf('day');
+        const end = moment(endDate, "YYYY-MM-DD").startOf('day');
 
         // Convert holiday strings to a Set for fast lookup
         const holidaySet = new Set(holidays.map(d => moment(d).format('YYYY-MM-DD')));

@@ -52,7 +52,7 @@ export default class ScheduleSql {
                                             VALUES ((?), (?), (?), (?), (?), (?), (?));`
 
     static readonly INSERT_BULK_INTO_SCHEDULE = `INSERT INTO Schedule (school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
-                                                 VALUES ?`
+                                                 VALUES (?, ?, ?, ?, ?, ?, ?)`
 
     static readonly UPDATE_SCHEDULE = `UPDATE Schedule
                                        SET date       = COALESCE((?), date),
