@@ -1,64 +1,38 @@
 import {TeacherService as teacherService} from "../Services/data/TeacherService.ts";
+import {SchoolIdSchema} from "../Validators/SchoolValidators.ts";
+import {CreateTeacherSchema, TeacherIdPayloadSchema, UpdateTeacherSchema} from "../Validators/TeacherValidators.ts";
 
 export const getAllTeachers = async (req, res) => {
-    const {schoolId} = req.query;
-    try {
-        const result = await teacherService.getAllTeachersForSchool(schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await teacherService.getAllTeachersForSchool(payload);
+
+    return res.send(result);
 };
 
 export const getTeacherById = async (req, res) => {
-    const {id, schoolId} = req.query;
+    const payload = TeacherIdPayloadSchema.parse(req.query);
+    const result = await teacherService.getTeacherByIdForSchool(payload);
 
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    try {
-        const result = await teacherService.getTeacherByIdForSchool(id, schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return res.send(result);
 };
 
 export const createTeacher = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, email} = req.body;
-    if (!name || !email ) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await teacherService.createTeacher(schoolId, name, email);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = CreateTeacherSchema.parse({...req.body, ...req.query});
+    const result = await teacherService.createTeacher(payload);
+
+    return res.send(result);
 };
 
 export const updateTeacher = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, email, id} = req.body;
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await teacherService.updateTeacher(id, schoolId, name, email);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = UpdateTeacherSchema.parse({...req.body, ...req.query});
+    const result = await teacherService.updateTeacher(payload);
+
+    return res.send(result);
 };
 
 export const deleteTeacher = async (req, res) => {
-    const {id, schoolId} = req.query;
-    try {
-        const result = await teacherService.deleteTeacher(id, schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = TeacherIdPayloadSchema.parse(req.query);
+    const result = await teacherService.deleteTeacher(payload);
+
+    return res.send(result);
 };
