@@ -17,6 +17,7 @@ export const BulkScheduleQuerySchema = z.object({
     schoolId: z.coerce.number().int().positive(),
     startDate: z.iso.date("The date format required is YYYY-MM-DD"),
     endDate: z.iso.date("The date format required is YYYY-MM-DD"),
+    dayOfWeek: z.number().int().min(1).max(7),
     schedules: z.array(BaseScheduleSchema).min(1).max(500)
 });
 
