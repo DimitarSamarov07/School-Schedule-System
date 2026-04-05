@@ -28,7 +28,7 @@ export class ScheduleService {
     }
 
     public static async bulkCreateSchedules(data: BulkSchedulePayload) {
-        let {schoolId, startDate, endDate, schedules} = data;
+        let {schoolId, startDate, endDate, schedules, dayOfWeek} = data;
         await connectionPoolFactory(async (conn) => {
             for (const schedule of schedules) {
                 let {periodId, classId, teacherId, subjectId, roomId} = schedule;
@@ -48,7 +48,7 @@ export class ScheduleService {
 
         let workweekConfig = await SchoolService.getSchoolWorkWeekConfigById({schoolId});
 
-        let holidaysList = await HolidayService.getAllHolidaysForSchool(schoolId);
+        let holidaysList = await HolidayService.getAllHolidaysForSchool({schoolId});
         let holidayDates: string[] = [];
 
         holidaysList.forEach(h => {
@@ -60,7 +60,9 @@ export class ScheduleService {
             }
         });
 
-        let schoolDates = await this.getValidSchoolDates(startDate, endDate, workweekConfig, holidayDates)
+        let schoolDates = await this.getValidSchoolDates(startDate, endDate, dayOfWeek, workweekConfig, holidayDates)
+
+        if (schoolDates.length === 0) return;
 
         let valuesToInsert: any[] = [];
 
@@ -130,7 +132,7 @@ export class ScheduleService {
 
     public static async getSchoolSchedulesForCurrentPeriod(data: SchoolIdPayload): Promise<Schedule[]> {
         const {schoolId} = data;
-        let nextPeriod = await PeriodService.getRunningPeriodForSchool(schoolId);
+        let nextPeriod = await PeriodService.getRunningPeriodForSchool({schoolId});
         if (nextPeriod === null) return [];
 
         let currentDate = moment().format("YYYY-MM-DD");
@@ -142,7 +144,7 @@ export class ScheduleService {
 
     public static async getSchoolSchedulesForNextPeriod(data: SchoolIdPayload): Promise<Schedule[]> {
         const {schoolId} = data;
-        let nextPeriod = await PeriodService.getNextRunningPeriodForSchool(schoolId);
+        let nextPeriod = await PeriodService.getNextRunningPeriodForSchool({schoolId});
         if (nextPeriod === null) return [];
 
         let currentDate = moment().format("YYYY-MM-DD");
@@ -160,25 +162,22 @@ export class ScheduleService {
         })
     }
 
-    private static async getValidSchoolDates(startDate: string, endDate: string, workWeek = [1, 2, 3, 4, 5], holidays: string[] = []) {
+    private static async getValidSchoolDates(startDate: string, endDate: string, targetDayOfWeek: number, workWeek = [1, 2, 3, 4, 5], holidays: string[] = []) {
         const dates: string[] = [];
         let current = moment(startDate, "YYYY-MM-DD").startOf('day');
         const end = moment(endDate, "YYYY-MM-DD").startOf('day');
 
-        // Convert holiday strings to a Set for fast lookup
-        const holidaySet = new Set(holidays.map(d => moment(d).format('YYYY-MM-DD')));
+        const holidaySet = new Set(holidays.map(d => moment(d, "YYYY-MM-DD").format('YYYY-MM-DD')));
 
         while (current.isSameOrBefore(end)) {
             const dateStr = current.format('YYYY-MM-DD');
             const dayOfWeek = current.isoWeekday(); // 1 (Mon) to 7 (Sun)
 
-            // 1. Check if the day is in the school's work week
+            const isTargetDay = dayOfWeek === targetDayOfWeek;
             const isWorkDay = workWeek.includes(dayOfWeek);
-
-            // 2. Check if the date is NOT in the holiday list
             const isNotHoliday = !holidaySet.has(dateStr);
 
-            if (isWorkDay && isNotHoliday) {
+            if (isTargetDay && isWorkDay && isNotHoliday) {
                 dates.push(dateStr);
             }
 
