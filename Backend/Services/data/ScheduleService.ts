@@ -3,28 +3,34 @@ import ScheduleSql from "./queries/schedule.sql.ts";
 import {connectionPoolFactory} from "../db_service.ts";
 import {PeriodService} from "./PeriodService.ts";
 import moment from "moment";
-import type {ScheduleCreation} from "../../DTO/ScheduleCreation.ts";
 import {HolidayService} from "./HolidayService.ts";
 import {SchoolService} from "./SchoolService.ts";
 
+import type {
+    BulkSchedulePayload,
+    ClassDateScheduleQueryPayload,
+    CreateSchedulePayload,
+    DateAndTimeScheduleQueryPayload,
+    DateQuerySchedulePayload,
+    DateRangeScheduleQueryPayload,
+    UpdateSchedulePayload
+} from "../../Validators/ScheduleValidators.ts";
+
 
 export class ScheduleService {
-    public static async createSchedule(schoolId: number, date: string, periodId: number, classId: number, teacherId: number, subjectId: number, roomId: number): Promise<Boolean> {
+    public static async createSchedule(data: CreateSchedulePayload): Promise<Boolean> {
+        let {schoolId, date, periodId, classId, teacherId, subjectId, roomId} = data;
         return await connectionPoolFactory<Boolean>(async (conn) => {
             const result = await conn.query(ScheduleSql.INSERT_INTO_SCHEDULE, [schoolId, date, periodId, classId, teacherId, subjectId, roomId])
             return result.affectedRows > 0;
         });
     }
 
-    public static async bulkCreateSchedules(schoolId: number, startDate: string, endDate: string, schedules: ScheduleCreation[]) {
-
+    public static async bulkCreateSchedules(data: BulkSchedulePayload) {
+        let {schoolId, startDate, endDate, schedules} = data;
         await connectionPoolFactory(async (conn) => {
             for (const schedule of schedules) {
-                let periodId = schedule.periodId;
-                let classId = schedule.classId;
-                let teacherId = schedule.teacherId;
-                let subjectId = schedule.subjectId;
-                let roomId = schedule.roomId;
+                let {periodId, classId, teacherId, subjectId, roomId} = schedule;
                 const [check] = await conn.execute(ScheduleSql.CHECK_RELATIONS_GUARD,
                     [teacherId, schoolId,
                         roomId, schoolId,
@@ -70,11 +76,11 @@ export class ScheduleService {
         })
     }
 
-    public static async updateSchedule(id: number, schoolId: number, date: string | null,
-                                       periodId: number | null, classId: number | null, teacherId: number | null,
-                                       subjectId: number | null, roomId: number | null): Promise<Schedule> {
+    public static async updateSchedule(data: UpdateSchedulePayload): Promise<Schedule> {
+        let {date, periodId, classId, teacherId, subjectId, roomId, id, schoolId} = data;
         return await connectionPoolFactory<Schedule>(async (conn) => {
-            const result = await conn.query(ScheduleSql.UPDATE_SCHEDULE, [date, periodId, classId, teacherId, subjectId, roomId, id, schoolId])
+            const result = await conn.query(ScheduleSql.UPDATE_SCHEDULE,
+                [date, periodId, classId, teacherId, subjectId, roomId, id, schoolId])
             if (result.affectedRows > 0) {
                 let updatedEntry = await conn.query(ScheduleSql.SELECT_SCHEDULE_BY_ID, [schoolId, id])
                 return Schedule.convertFromDBModel(updatedEntry[0])
@@ -97,21 +103,24 @@ export class ScheduleService {
         });
     }
 
-    public static async getSchoolSchedulesByDateAndTime(schoolId: number, date: string, time: string): Promise<Schedule[]> {
+    public static async getSchoolSchedulesByDateAndTime(data: DateAndTimeScheduleQueryPayload): Promise<Schedule[]> {
+        let {schoolId, date, time} = data;
         return await connectionPoolFactory<Schedule[]>(async (conn) => {
             const rows = await conn.query(ScheduleSql.SELECT_SCHEDULES_BY_DATE_AND_TIME_FOR_SCHOOL, [schoolId, date, time]);
             return rows.map((row: any) => Schedule.convertFromDBModel(row));
         });
     }
 
-    public static async getAllSchedulesForDateForSchool(schoolId: number, date: string): Promise<Schedule[]> {
+    public static async getAllSchedulesForDateForSchool(data: DateQuerySchedulePayload): Promise<Schedule[]> {
+        let {schoolId, date} = data;
         return await connectionPoolFactory<Schedule[]>(async (conn) => {
             const rows = await conn.query(ScheduleSql.SELECT_SCHEDULES_FOR_DATE, [schoolId, date]);
             return rows.map((row: any) => Schedule.convertFromDBModel(row));
         });
     }
 
-    public static async getSchoolSchedulesForDateByClass(schoolId: number, classId: number, date: string) {
+    public static async getSchoolSchedulesForDateByClass(data: ClassDateScheduleQueryPayload) {
+        let {schoolId, date, classId} = data;
         return await connectionPoolFactory<Schedule[]>(async (conn) => {
             const rows = await conn.query(ScheduleSql.SELECT_SCHEDULES_FOR_DATE_FOR_CLASS, [schoolId, date, classId]);
             return rows.map((row: any) => Schedule.convertFromDBModel(row));
@@ -140,7 +149,8 @@ export class ScheduleService {
         })
     }
 
-    public static async getAllSchedulesForSchoolBetweenDates(schoolId: number, startDate: string, endDate: string) {
+    public static async getAllSchedulesForSchoolBetweenDates(data: DateRangeScheduleQueryPayload) {
+        let {schoolId, startDate, endDate} = data;
         return await connectionPoolFactory<Schedule[]>(async (conn) => {
             const rows = await conn.query(ScheduleSql.SELECT_SCHOOL_SCHEDULES_FOR_DATE_INTERVAL, [schoolId, startDate, endDate])
             return rows.map((row: any) => Schedule.convertFromDBModel(row));

@@ -1,133 +1,88 @@
-import {ScheduleService as scheduleService} from "../Services/data/ScheduleService.ts";
-import moment from 'moment';
-
+import {ScheduleService} from "../Services/data/ScheduleService.ts";
+import {
+    BulkScheduleQuerySchema,
+    ClassDateScheduleQuerySchema,
+    CreateScheduleQuerySchema,
+    DateAndTimeScheduleQuerySchema,
+    DateQueryScheduleSchema,
+    DateRangeScheduleQuerySchema,
+    UpdateScheduleQuerySchema
+} from "../Validators/ScheduleValidators.ts";
 
 export const getScheduleById = async (req, res) => {
-    const {id, schoolId} = req.query;
-    if (!id || !schoolId)
-        return res.status(406).send("Malformed parameters");
+    const id = Number(req.query.id);
+    const schoolId = Number(req.query.schoolId);
 
-    try {
-        const result = scheduleService.getSchoolScheduleById(id, schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
-}
+    if (!id || !schoolId) return res.status(400).send("Malformed parameters");
+
+    const result = await ScheduleService.getSchoolScheduleById(id, schoolId);
+    return result ? res.send(result) : res.status(404).send("Schedule not found");
+};
 
 export const getSchoolSchedulesByDate = async (req, res) => {
-    let {schoolId, date} = req.query;
-    if (!date) return res.status(406).send("Malformed parameter");
-
-    try {
-        const formattedDate = moment(date, 'YYYY-MM-DD').format('YYYY-MM-DD');
-        const result = await scheduleService.getAllSchedulesForDateForSchool(schoolId, formattedDate);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err.message || err});
-    }
+    const payload = DateQueryScheduleSchema.parse(req.query);
+    const result = await ScheduleService.getAllSchedulesForDateForSchool(payload);
+    res.send(result);
 };
 
 export const getSchoolScheduleBetweenDates = async (req, res) => {
-    let {schoolId, startDate, endDate} = req.query;
-    if (!startDate || !endDate) return res.status(406).send("Malformed parameters");
-
-    try {
-        const formattedStartDate = moment(startDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
-        const formattedEndDate = moment(endDate, 'YYYY-MM-DD').format('YYYY-MM-DD')
-
-        const result = await scheduleService.getAllSchedulesForSchoolBetweenDates(schoolId, formattedStartDate, formattedEndDate);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err.message || err});
-    }
-}
+    const payload = DateRangeScheduleQuerySchema.parse(req.query);
+    const result = await ScheduleService.getAllSchedulesForSchoolBetweenDates(payload);
+    res.send(result);
+};
 
 export const getSchedulesByClassForDate = async (req, res) => {
-    let {schoolId, classId, date} = req.query;
-    if (!schoolId || !date || !classId) return res.status(406).send("Malformed parameters");
-
-    try {
-        const formattedDate = moment(date).format("YYYY-MM-DD");
-        const result = await scheduleService.getSchoolSchedulesForDateByClass(schoolId, classId, formattedDate);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = ClassDateScheduleQuerySchema.parse(req.query);
+    const result = await ScheduleService.getSchoolSchedulesForDateByClass(payload);
+    res.send(result);
 };
 
 export const getSchedulesByDateTimeAndSchool = async (req, res) => {
-    const {schoolId, date, time} = req.query;
-    try {
-        const result = await scheduleService.getSchoolSchedulesByDateAndTime(schoolId, date, time);
-        return res.send(result);
-    } catch (err) {
-        const status = err === "No schedules found" ? 404 : 500;
-        return res.status(status).send({"error": err});
-    }
+    const payload = DateAndTimeScheduleQuerySchema.parse(req.query);
+    const result = await ScheduleService.getSchoolSchedulesByDateAndTime(payload);
+
+    if (result.length === 0) return res.status(404).send({error: "No schedules found"});
+    res.send(result);
 };
 
 export const createSchedule = async (req, res) => {
-    const {schoolId} = req.query;
-    const {date, periodId, classId, teacherId, subjectId, roomId} = req.body;
-    if (!schoolId || !date || !periodId || !classId || !teacherId || !subjectId || !roomId) {
-        return res.status(406).send("Malformed parameters");
-    }
+    const payload = CreateScheduleQuerySchema.parse({
+        schoolId: req.query.schoolId,
+        ...req.body
+    });
 
-    try {
-        const result = await scheduleService
-            .createSchedule(schoolId, date, periodId, classId, teacherId, subjectId, roomId);
-
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const result = await ScheduleService.createSchedule(payload);
+    res.status(201).send(result);
 };
 
 export const bulkCreateSchedulesForRange = async (req, res) => {
-    const {schoolId} = req.query;
-    const {payload, startDate, endDate} = req.body;
+    const payload = BulkScheduleQuerySchema.parse({
+        schoolId: req.query.schoolId,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        schedules: req.body.payload
+    });
 
-    if (!schoolId || !payload || !Array.isArray(payload) || !startDate || !endDate) {
-        return res.status(406).send("Malformed parameters");
-
-    }
-
-    try {
-        await scheduleService.bulkCreateSchedules(schoolId, startDate, endDate, payload);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
-
-}
+    await ScheduleService.bulkCreateSchedules(payload);
+    res.status(201).send(true);
+};
 
 export const updateSchedule = async (req, res) => {
-    const {schoolId} = req.query;
-    const {id, date, periodId, classId, teacherId, subjectId, roomId} = req.body;
+    const payload = UpdateScheduleQuerySchema.parse({
+        schoolId: req.query.schoolId,
+        ...req.body
+    });
 
-    if (id) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    try {
-        const result = await scheduleService.updateSchedule(
-            id, schoolId, date, periodId, classId, teacherId, subjectId, roomId
-        );
-        return res.send(result)
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const result = await ScheduleService.updateSchedule(payload);
+    res.send(result);
 };
 
 export const deleteSchedule = async (req, res) => {
-    const {id, schoolId} = req.query;
-    if (!id || !schoolId)
-        return res.status(406).send("Malformed parameters");
+    const id = Number(req.query.id);
+    const schoolId = Number(req.query.schoolId);
 
-    try {
-        const result = await scheduleService.deleteSchedule(id, schoolId);
-        return result ? res.send(result) : res.status(422).send(false);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    if (!id || !schoolId) return res.status(400).send("Malformed parameters");
+
+    const result = await ScheduleService.deleteSchedule(id, schoolId);
+    return result ? res.send(result) : res.status(422).send(false);
 };

@@ -16,6 +16,7 @@ import holidayRoutes from "./routes/holidayRoutes.ts";
 // Initializing Express App
 import {doubleCsrf} from "csrf-csrf";
 import schoolRoutes from "./routes/schoolRoutes.ts";
+import {ZodError} from "zod";
 
 const app = express();
 
@@ -50,6 +51,36 @@ const {
     getSessionIdentifier: (req) => req.cookies.AUTH_TOKEN || "guest",
 });
 
+export const globalErrorHandler = (
+    err,
+    req,
+    res,
+) => {
+    // Catch Zod Validation Errors
+    if (err instanceof ZodError) {
+        return res.status(400).json({
+            error: "Validation Error",
+            details: err.errors.map(e => ({
+                path: e.path.join('.'),
+                message: e.message
+            }))
+        });
+    }
+
+    // Custom Application Errors
+    if (err.message && err.message.includes("Security Violation")) {
+        return res.status(403).json({error: err.message});
+    }
+
+    // Catch All Other Server Errors
+    console.error("[Unhandled Error]:", err);
+    return res.status(500).json({
+        error: "Internal Server Error",
+        // Raw error messages will only be sent in development, not in production.
+        message: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+};
+
 
 
 //app.use(limiter)
@@ -77,6 +108,8 @@ app.use("/subject", subjectRoutes);
 app.use("/schedule", scheduleRoutes);
 app.use("/teacher", teacherRoutes);
 app.use("/user", userRoutes);
+
+app.use(globalErrorHandler);
 
 let port = 1343;
 
