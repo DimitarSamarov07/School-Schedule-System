@@ -57,10 +57,8 @@ export const createSchedule = async (req, res) => {
 
 export const bulkCreateSchedulesForRange = async (req, res) => {
     const payload = BulkScheduleQuerySchema.parse({
-        schoolId: req.query.schoolId,
-        startDate: req.body.startDate,
-        endDate: req.body.endDate,
-        schedules: req.body.payload
+        ...req.query,
+        ...req.body
     });
 
     await ScheduleService.bulkCreateSchedules(payload);
@@ -69,7 +67,7 @@ export const bulkCreateSchedulesForRange = async (req, res) => {
 
 export const updateSchedule = async (req, res) => {
     const payload = UpdateScheduleQuerySchema.parse({
-        schoolId: req.query.schoolId,
+        ...req.query,
         ...req.body
     });
 
