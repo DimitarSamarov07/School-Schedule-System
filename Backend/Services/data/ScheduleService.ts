@@ -15,6 +15,7 @@ import type {
     DateRangeScheduleQueryPayload,
     UpdateSchedulePayload
 } from "../../Validators/ScheduleValidators.ts";
+import type {SchoolIdPayload} from "../../Validators/SchoolValidators.ts";
 
 
 export class ScheduleService {
@@ -45,7 +46,7 @@ export class ScheduleService {
             }
         })
 
-        let workweekConfig = await SchoolService.getSchoolWorkWeekConfigById(schoolId);
+        let workweekConfig = await SchoolService.getSchoolWorkWeekConfigById({schoolId});
 
         let holidaysList = await HolidayService.getAllHolidaysForSchool(schoolId);
         let holidayDates: string[] = [];
@@ -127,7 +128,8 @@ export class ScheduleService {
         });
     }
 
-    public static async getSchoolSchedulesForCurrentPeriod(schoolId: number): Promise<Schedule[]> {
+    public static async getSchoolSchedulesForCurrentPeriod(data: SchoolIdPayload): Promise<Schedule[]> {
+        const {schoolId} = data;
         let nextPeriod = await PeriodService.getRunningPeriodForSchool(schoolId);
         if (nextPeriod === null) return [];
 
@@ -138,7 +140,8 @@ export class ScheduleService {
         })
     }
 
-    public static async getSchoolSchedulesForNextPeriod(schoolId: number): Promise<Schedule[]> {
+    public static async getSchoolSchedulesForNextPeriod(data: SchoolIdPayload): Promise<Schedule[]> {
+        const {schoolId} = data;
         let nextPeriod = await PeriodService.getNextRunningPeriodForSchool(schoolId);
         if (nextPeriod === null) return [];
 
