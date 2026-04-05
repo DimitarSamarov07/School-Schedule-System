@@ -1,79 +1,44 @@
 import {SchoolService as schoolService} from "../Services/data/SchoolService.ts";
+import {CreateSchoolSchema, SchoolIdSchema, UpdateSchoolSchema} from "../Validators/SchoolValidators.ts";
 
 export const getAllSchools = async (req, res) => {
-    try {
-        const result = await schoolService.getAllSchools();
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const result = await schoolService.getAllSchools();
+
+    return res.send(result);
 }
 
 export const getSchoolById = async (req, res) => {
-    const {schoolId} = req.query;
-    if (!schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await schoolService.getSchoolById(schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await schoolService.getSchoolById(payload);
+
+    return res.send(result);
 }
 
 export const createSchool = async (req, res) => {
-    const {name, address, workWeekConfig} = req.body;
+    const payload = CreateSchoolSchema.parse(req.body);
+    const result = await schoolService.createSchool(payload);
 
-    if (!name || !address || !workWeekConfig) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    try {
-        const result = await schoolService.createSchool(name, address, workWeekConfig);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return res.send(result);
 }
 
 export const updateSchool = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, address, workWeekConfig} = req.body;
+    const payload = UpdateSchoolSchema.parse({...req.body, ...req.query});
+    const result = await schoolService.updateSchoolById(payload);
 
-    if (!schoolId || (!name && !address && !workWeekConfig)) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await schoolService.updateSchoolById(schoolId, name, address, workWeekConfig);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return res.send(result);
+
 }
 
 export const getUsersBySchoolId = async (req, res) => {
-    const {schoolId} = req.query;
-    if (!schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await schoolService.getUsersOfSchool(schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await schoolService.getUsersOfSchool(payload);
+
+    return res.send(result);
 }
 
 export const getSchoolWorkWeekConfig = async (req, res) => {
-    const {schoolId} = req.query;
-    if (!schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await schoolService.getSchoolWorkWeekConfigById(schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await schoolService.getSchoolWorkWeekConfigById(payload);
+
+    return res.send(result);
 }
