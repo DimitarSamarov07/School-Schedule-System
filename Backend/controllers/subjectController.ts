@@ -1,69 +1,40 @@
 import {SubjectService as subjectService} from "../Services/data/SubjectService.ts";
+import {SchoolIdSchema} from "../Validators/SchoolValidators.ts";
+import {CreateSubjectSchema, SubjectIdPayloadSchema, UpdateSubjectSchema} from "../Validators/SubjectValidators.ts";
 
 export const getAllSubjects = async (req, res) => {
-    const {schoolId} = req.query;
-    try {
-        const result = await subjectService.getAllSubjectsForSchool(schoolId);
-        return res.send(result);
-    } catch (err) {
-        const status = err === "No subjects found" ? 404 : 500;
-        return res.status(status).send({"error": err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await subjectService.getAllSubjectsForSchool(payload);
+
+    return res.send(result);
 }
 
 export const getSubjectById = async (req, res) => {
-    const {id, schoolId} = req.query;
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
+    const payload = SubjectIdPayloadSchema.parse(req.query);
+    const result = await subjectService.getSubjectByIdForSchool(payload);
 
-    try {
-        const result = await subjectService.getSubjectByIdForSchool(id, schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return res.send(result);
+
 }
 
 export const createSubject = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, description} = req.body;
+    const payload = CreateSubjectSchema.parse({...req.query, ...req.body});
+    const result = await subjectService.createSubject(payload);
 
-    if (!name || !description || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
+    return res.send(result);
 
-    try {
-        const result = await subjectService.createSubject(schoolId, name, description);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
 };
 
 export const deleteSubject = async (req, res) => {
-    const {id, schoolId} = req.query;
+    const payload = SubjectIdPayloadSchema.parse(req.query)
+    const result = await subjectService.deleteSubject(payload);
 
-    try {
-        const result = await subjectService.deleteSubject(id, schoolId);
-        return result ? res.send(result) : res.status(422).send(false);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return result ? res.send(result) : res.status(422).send(false);
 };
 
 export const updateSubject = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, description, id} = req.body;
+    const payload = UpdateSubjectSchema.parse({...req.query, ...req.body});
+    const result = await subjectService.updateSubject(payload);
 
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    try {
-        const result = await subjectService.updateSubject(id, schoolId, name, description);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({"error": err});
-    }
+    return res.send(result);
 };

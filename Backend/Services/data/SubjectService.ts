@@ -1,23 +1,28 @@
 import SubjectResponse from "../../response_models/SubjectResponse.ts";
 import SubjectSql from "./queries/subject.sql.ts";
 import {connectionPoolFactory} from "../db_service.ts";
+import type {SchoolIdPayload} from "../../Validators/SchoolValidators.ts";
+import type {CreateSubjectPayload, SubjectIdPayload, UpdateSubjectPayload} from "../../Validators/SubjectValidators.ts";
 
 export class SubjectService {
-    public static async getAllSubjectsForSchool(schoolId: number): Promise<SubjectResponse[]> {
+    public static async getAllSubjectsForSchool(data: SchoolIdPayload): Promise<SubjectResponse[]> {
+        let {schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.SELECT_SUBJECTS_BY_SCHOOL, [schoolId]);
             return rows.map((row: any) => new SubjectResponse(row));
         });
     }
 
-    public static async getSubjectByIdForSchool(id: number, schoolId: number) {
+    public static async getSubjectByIdForSchool(data: SubjectIdPayload): Promise<SubjectResponse> {
+        let {id, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.SELECT_SUBJECT_BY_ID, [id, schoolId]);
             return rows.map((row: any) => new SubjectResponse(row))[0];
         });
     }
 
-    public static async createSubject(schoolId: number, name: string, description: string): Promise<SubjectResponse> {
+    public static async createSubject(data: CreateSubjectPayload): Promise<SubjectResponse> {
+        const {schoolId, name, description} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.INSERT_SUBJECT, [schoolId, name, description]);
             return rows.map((row: any) => new SubjectResponse(row));
@@ -25,7 +30,8 @@ export class SubjectService {
 
     }
 
-    public static async updateSubject(id: number, schoolId: number, name: string | null, description: string | null): Promise<SubjectResponse> {
+    public static async updateSubject(data: UpdateSubjectPayload): Promise<SubjectResponse> {
+        const {name, description, id, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.UPDATE_SUBJECT, [name, description, id, schoolId]);
             if (rows.affectedRows > 0) {
@@ -37,7 +43,8 @@ export class SubjectService {
 
     }
 
-    public static async deleteSubject(id: number, schoolId: number): Promise<boolean> {
+    public static async deleteSubject(data: SubjectIdPayload): Promise<boolean> {
+        const {id, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(SubjectSql.DELETE_SUBJECT, [id, schoolId]);
             return rows.affectedRows > 0;
