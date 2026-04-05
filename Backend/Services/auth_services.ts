@@ -9,6 +9,12 @@ import SchoolMember from "../data_models/SchoolMember.ts";
 import User from "../data_models/User.ts";
 import UserData from "../DTO/UserData.ts";
 import {SchoolService} from "./data/SchoolService.ts";
+import type {
+    AddUserToSchoolPayload,
+    CreateUserPayload,
+    LoginPayload,
+    UserPermissionPayload
+} from "../Validators/AuthValidators.ts";
 
 
 class Authenticator {
@@ -58,13 +64,14 @@ class Authenticator {
         }
     }
 
-    static async getUserData(username: string, plainPassword: string): Promise<UserData | null> {
+    static async getUserData(data: LoginPayload): Promise<UserData | null> {
+        const {username, password} = data;
         return await connectionPoolFactory(async (conn): Promise<UserData | null> => {
             const userEntries = await conn.query(UserSql.GET_USER_BY_USERNAME, [username]);
 
             if (userEntries.length > 0) {
                 const user = User.convertFromDbModel(userEntries[0]);
-                let passwordMatch = await this.hashPasswordCompare(plainPassword, user.Password);
+                let passwordMatch = await this.hashPasswordCompare(password, user.Password);
                 if (passwordMatch) {
                     if (user.IsSudo) {
                         let sudoList: SchoolMember[] = []
@@ -84,9 +91,10 @@ class Authenticator {
         });
     }
 
-    static async createNewUser(username: string, plainPassword: string, email: string, schoolId: number, isAdmin: boolean = false) {
+    static async createNewUser(data: CreateUserPayload) {
+        let {username, password, email} = data;
         return await connectionPoolFactory(async (conn) => {
-            let hashedPassword = await this.hashPassword(plainPassword);
+            let hashedPassword = await this.hashPassword(password);
 
             await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
             return true;
@@ -94,8 +102,8 @@ class Authenticator {
     }
 
 
-
-    static async addUserToSchool(schoolId: number, username: number) {
+    static async addUserToSchool(data: AddUserToSchoolPayload) {
+        let {username, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             let userId = (await conn.query(UserSql.GET_USER_BY_USERNAME, [username]))[0]?.id;
             if (userId) {
@@ -109,9 +117,10 @@ class Authenticator {
         })
     }
 
-    static async promoteUserToAdmin(userId: number, schoolId: number): Promise<boolean> {
+    static async promoteUserToAdmin(data: UserPermissionPayload): Promise<boolean> {
+        const {userId, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
-            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [true,userId, schoolId,])
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [true, userId, schoolId])
             if (userAccessAffectedRows > 0) {
                 return true;
             }
@@ -119,9 +128,10 @@ class Authenticator {
         })
     }
 
-    static async demoteUserFromAdmin(userId: number, schoolId: number) {
+    static async demoteUserFromAdmin(data: UserPermissionPayload) {
+        const {userId, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
-            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [false,userId, schoolId])
+            let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.UPDATE_USER_PERMISSION, [false, userId, schoolId])
             if (userAccessAffectedRows > 0) {
                 return true;
             }
@@ -129,14 +139,15 @@ class Authenticator {
         })
     }
 
-    static async removeUserPermissionsForSchool(userId: number, schoolId: number): Promise<boolean> {
+    static async removeUserPermissionsForSchool(data: UserPermissionPayload): Promise<boolean> {
+        const {userId, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             let {affectedRows: userAccessAffectedRows} = await conn.query(UserSql.DELETE_USER_PERMISSIONS_FOR_SCHOOL, [userId, schoolId])
             return userAccessAffectedRows > 0;
         })
     }
 
-    public static async hashPasswordCompare(password: string, hashedPassword: string): Promise<boolean> {
+    private static async hashPasswordCompare(password: string, hashedPassword: string): Promise<boolean> {
         return await bcrypt.compare(password, hashedPassword);
     }
 
