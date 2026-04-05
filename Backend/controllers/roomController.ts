@@ -1,70 +1,39 @@
 import {RoomService as roomService} from "../Services/data/RoomService.ts";
+import {CreateRoomSchema, RoomIdPayloadSchema, UpdateRoomSchema} from "../Validators/RoomValidators.ts";
+import {SchoolIdSchema} from "../Validators/SchoolValidators.ts";
 
 export const createRoom = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, floor, capacity} = req.body;
-    if (!name || !floor) {
-        return res.status(406).send("Malformed parameters");
-    }
+    const payload = CreateRoomSchema.parse({...req.body, ...req.query});
+    const result = await roomService.createRoom(payload);
 
-    try {
-        const result = await roomService.createRoom(schoolId, name, floor, capacity);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({error: err});
-    }
+    return res.send(result);
 };
 
 export const updateRoom = async (req, res) => {
-    const {schoolId} = req.query;
-    const {name, floor, id, capacity} = req.body;
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
+    const payload = UpdateRoomSchema.parse({...req.body, ...req.query});
+    const result = await roomService.updateRoom(payload);
 
-    try {
-        const result = await roomService.updateRoom(id, schoolId, name, floor, capacity);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({error: err});
-    }
+    return res.send(result);
+
 };
 
 export const deleteRoom = async (req, res) => {
-    const {id, schoolId} = req.query;
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-    try {
-        const result = await roomService.deleteRoom(id, schoolId);
-        return result ? res.send(result) : res.status(422).send(false);
-    } catch (err) {
-        return res.status(500).send({error: err});
-    }
+    const payload = RoomIdPayloadSchema.parse(req.query);
+    const result = await roomService.deleteRoom(payload);
+
+    return result ? res.send(result) : res.status(422).send(false);
 };
 
 export const getAllRooms = async (req, res) => {
-    const {schoolId} = req.query;
-    try {
-        const result = await roomService.getAllRoomsForSchool(schoolId);
-        return res.send(result);
-    } catch (err) {
-        const status = err === "No rooms found" ? 404 : 500;
-        return res.status(status).send({error: err});
-    }
+    const payload = SchoolIdSchema.parse(req.query);
+    const result = await roomService.getAllRoomsForSchool(payload);
+
+    return res.send(result);
 };
 
 export const getRoomById = async (req, res) => {
-    const {id, schoolId} = req.query;
+    const payload = RoomIdPayloadSchema.parse(req.query);
+    const result = await roomService.getRoomByIdForSchool(payload);
 
-    if (!id || !schoolId) {
-        return res.status(406).send("Malformed parameters");
-    }
-
-    try {
-        const result = await roomService.getRoomByIdForSchool(id, schoolId);
-        return res.send(result);
-    } catch (err) {
-        return res.status(500).send({error: err});
-    }
+    return res.send(result);
 };
