@@ -3,24 +3,29 @@ import PeriodSql from "./queries/period.sql.ts";
 import {connectionPoolFactory} from "../db_service.ts";
 import moment from "moment";
 import RunningTime from "../../response_models/RunningTime.ts";
+import type {SchoolIdPayload} from "../../Validators/SchoolValidators.ts";
+import type {CreatePeriodPayload, PeriodIdPayload, UpdatePeriodPayload} from "../../Validators/PeriodValidators.ts";
 
 
 export class PeriodService {
-    public static async getAllPeriodsForSchool(schoolId: number): Promise<PeriodResponse[]> {
+    public static async getAllPeriodsForSchool(data: SchoolIdPayload): Promise<PeriodResponse[]> {
+        const {schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
             return rows.map((row: any) => new PeriodResponse(row));
         });
     }
 
-    public static async getPeriodByIdForSchool(id: number, schoolId: number) {
+    public static async getPeriodByIdForSchool(data: PeriodIdPayload): Promise<PeriodResponse> {
+        const {id, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIOD_BY_ID, [id, schoolId]);
             return rows.map((row: any) => new PeriodResponse(row));
         });
     }
 
-    public static async getRunningPeriodForSchool(schoolId: number): Promise<RunningTime | null> {
+    public static async getRunningPeriodForSchool(data: SchoolIdPayload): Promise<RunningTime | null> {
+        const {schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
             let resArr = rows.map((row: any) => new PeriodResponse(row));
@@ -38,7 +43,8 @@ export class PeriodService {
         });
     }
 
-    public static async getNextRunningPeriodForSchool(schoolId: number): Promise<RunningTime | null> {
+    public static async getNextRunningPeriodForSchool(data: SchoolIdPayload): Promise<RunningTime | null> {
+        const {schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.SELECT_PERIODS_BY_SCHOOL, [schoolId]);
 
@@ -73,7 +79,8 @@ export class PeriodService {
     }
 
 
-    public static async createPeriod(schoolId: number, name: string, startTime: string, endTime: string): Promise<PeriodResponse> {
+    public static async createPeriod(data: CreatePeriodPayload): Promise<PeriodResponse> {
+        const {schoolId, name, startTime, endTime} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.INSERT_INTO_PERIODS, [schoolId, name, startTime, endTime]);
             return rows.map((row: any) => new PeriodResponse(row));
@@ -81,7 +88,8 @@ export class PeriodService {
 
     }
 
-    public static async updatePeriod(id: number, schoolId: number, name: string | null, startTime: string | null, endTime: string | null): Promise<PeriodResponse> {
+    public static async updatePeriod(data: UpdatePeriodPayload): Promise<PeriodResponse> {
+        const {schoolId, name, startTime, endTime, id} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.UPDATE_PERIOD, [name, startTime, endTime, id, schoolId]);
             if (rows.affectedRows > 0) {
@@ -93,7 +101,8 @@ export class PeriodService {
 
     }
 
-    public static async deletePeriod(id: number, schoolId: number): Promise<boolean> {
+    public static async deletePeriod(data: PeriodIdPayload): Promise<boolean> {
+        const {id, schoolId} = data;
         return await connectionPoolFactory(async (conn) => {
             const rows = await conn.query(PeriodSql.DELETE_PERIOD, [id, schoolId]);
             return rows.affectedRows > 0;
