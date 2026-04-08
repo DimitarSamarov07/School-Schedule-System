@@ -4,6 +4,18 @@ import { useState, useEffect, useCallback } from 'react';
 import { createPeriod, deletePeriod, getPeriodsForSchool, updateTime } from "@/lib/api/periods";
 import { Time } from "@/types/time";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
+// ── Helper ────────────────────────────────────────────────────────────────────
+/** Ensures a time string is always HH:MM:SS.
+ *  "08:30"       → "08:30:00"
+ *  "08:30:00"    → "08:30:00"  (already correct, unchanged)
+ *  "08:30:45"    → "08:30:45"  (seconds preserved if user typed them)
+ */
+const toHHMMSS = (t: string) => {
+    if (!t) return t;
+    const parts = t.split(':');
+    if (parts.length === 2) return `${t}:00`;
+    return t;
+};
 
 export function usePeriodsManager() {
     const { currentSchool, isSudo } = useCurrentSchool();
@@ -58,7 +70,14 @@ export function usePeriodsManager() {
     const handleCreate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
-            await createPeriod(schoolId, formData.Name!, formData.Start!, formData.End!);
+            console.log("Creating time:", formData);
+            await createPeriod(
+                schoolId,
+                formData.Name!,
+                toHHMMSS(formData.Start!),  // ← was formData.Start!
+                toHHMMSS(formData.End!),    // ← was formData.End!
+
+            );
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -70,7 +89,13 @@ export function usePeriodsManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!formData.id) return;
         try {
-            await updateTime(schoolId, Number(formData.id), formData.Name!, formData.Start!, formData.End!);
+            await updateTime(
+                schoolId,
+                Number(formData.id),
+                formData.Name!,
+                toHHMMSS(formData.Start!),  // ← was formData.Start!
+                toHHMMSS(formData.End!),    // ← was formData.End!
+            );
             await fetchTimes(true);
             closeModal();
         } catch (error) {

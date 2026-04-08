@@ -8,13 +8,13 @@ import { useGradesManager } from '@/hooks/use-grades-manager';
 import { useTeacherManager } from '@/hooks/use-teachers-manager';
 import { useSubjectsManager } from '@/hooks/use-subjects-manager';
 import { usePeriodsManager } from '@/hooks/use-periods-manager';
-import { apiRequest } from '@/lib/api/client';
+import { bulkCreateSchedules } from '@/lib/api/schedule';
 import { DAYS, DAY_OPTIONS } from '@/constants/schedule';
 import { ModalField, inputStyle } from './ModalField';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface ScheduleEntry {
-    _key:      number;   // local React key only, never sent to API
+    _key:      number;
     periodId:  number;
     classId:   number;
     subjectId: number;
@@ -51,7 +51,7 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
         ? moment().startOf('isoWeek').add(dayIndex, 'days').format('YYYY-MM-DD')
         : moment().startOf('isoWeek').format('YYYY-MM-DD');
 
-    // ── Global fields (shared across all entries) ──────────────────────────
+    // ── Global fields ──────────────────────────────────────────────────────
     const [startDate, setStartDate] = useState(clickedDate);
     const [endDate,   setEndDate]   = useState(clickedDate);
     const [dayOfWeek, setDayOfWeek] = useState<number>(
@@ -66,23 +66,37 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
     const [saving, setSaving] = useState(false);
     const [error,  setError]  = useState<string | null>(null);
 
-    // Pre-fill first entry once lists load
+    // ── Pre-fill first entry once lists load ───────────────────────────────
     useEffect(() => {
-        if (timeList.length)    setEntries(prev => prev.map((e, i) => i === 0 && !e.periodId  ? { ...e, periodId:  periodId  ?? timeList[0].id    } : e));
-    }, [timeList]);
-    useEffect(() => {
-        if (gradeList.length)   setEntries(prev => prev.map((e, i) => i === 0 && !e.classId   ? { ...e, classId:   classId   ?? gradeList[0].id   } : e));
-    }, [gradeList]);
-    useEffect(() => {
-        if (subjectList.length) setEntries(prev => prev.map((e, i) => i === 0 && !e.subjectId ? { ...e, subjectId: subjectList[0].id              } : e));
-    }, [subjectList]);
-    useEffect(() => {
-        if (teacherList.length) setEntries(prev => prev.map((e, i) => i === 0 && !e.teacherId ? { ...e, teacherId: teacherList[0].id              } : e));
-    }, [teacherList]);
-    useEffect(() => {
-        if (roomsList.length)   setEntries(prev => prev.map((e, i) => i === 0 && !e.roomId    ? { ...e, roomId:    roomsList[0].id                } : e));
-    }, [roomsList]);
+        setEntries(prev => {
+            const first = prev[0];
+            if (!first) return prev;
 
+            const nextFirst = {
+                ...first,
+                periodId:  first.periodId  || periodId           || timeList[0]?.id    || 0,
+                classId:   first.classId   || classId            || gradeList[0]?.id   || 0,
+                subjectId: first.subjectId || subjectList[0]?.id || 0,
+                teacherId: first.teacherId || teacherList[0]?.id || 0,
+                roomId:    first.roomId    || roomsList[0]?.id   || 0,
+            };
+
+            const changed =
+                nextFirst.periodId  !== first.periodId  ||
+                nextFirst.classId   !== first.classId   ||
+                nextFirst.subjectId !== first.subjectId ||
+                nextFirst.teacherId !== first.teacherId ||
+                nextFirst.roomId    !== first.roomId;
+
+            if (!changed) return prev;
+
+            const next = [...prev];
+            next[0] = nextFirst;
+            return next;
+        });
+    }, [periodId, classId, timeList, gradeList, subjectList, teacherList, roomsList]);
+
+    // ── Escape key ─────────────────────────────────────────────────────────
     useEffect(() => {
         const h = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
         document.addEventListener('keydown', h);
@@ -97,7 +111,6 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
     function addEntry() {
         setEntries(prev => {
             const last = prev[prev.length - 1];
-            // Clone last row so the user only needs to change what differs
             return [...prev, makeEntry({
                 periodId:  last.periodId,
                 classId:   last.classId,
@@ -126,8 +139,9 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
     })();
 
     // ── Submit ─────────────────────────────────────────────────────────────
-    async function handleSubmit(e: FormEvent) {
+    async function handleSubmit(e: FormEvent | React.MouseEvent) {
         e.preventDefault();
+
         if (!startDate || !endDate)
         { setError('Изберете начална и крайна дата.'); return; }
         if (moment(endDate).isBefore(startDate))
@@ -139,18 +153,17 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
 
         setSaving(true);
         setError(null);
+
         try {
-            await apiRequest(`/schedule/bulk?schoolId=${currentSchool!.SchoolId}`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    startDate,
-                    endDate,
-                    dayOfWeek,
-                    schedules: entries.map(({ periodId, classId, subjectId, teacherId, roomId }) => ({
-                        periodId, classId, subjectId, teacherId, roomId,
-                    })),
-                }),
-            });
+            await bulkCreateSchedules(
+                currentSchool!.SchoolId,
+                startDate,
+                endDate,
+                dayOfWeek,
+                entries.map(({ periodId, classId, subjectId, teacherId, roomId }) => ({
+                    periodId, classId, subjectId, teacherId, roomId,
+                })),
+            );
             onSave();
         } catch (err) {
             setError(String(err));
@@ -158,7 +171,7 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
         }
     }
 
-    const dayLabel = dayIndex !== undefined ? DAYS[dayIndex] : null;
+    const dayLabel     = dayIndex !== undefined ? DAYS[dayIndex] : null;
     const totalRecords = dayCount * entries.length;
 
     return (
@@ -178,15 +191,19 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
                             Добавете няколко реда наведнъж — всички ще бъдат записани за избрания период
                         </p>
                     </div>
-                    <button onClick={onClose} style={{ width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        style={{ width: 32, height: 32, borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'transparent', cursor: 'pointer', color: '#6b7280' }}
+                    >
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
                     </button>
                 </div>
 
                 {/* Scrollable body */}
-                <form onSubmit={handleSubmit} style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <div style={{ flex: 1, overflowY: 'auto', padding: '1.25rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
 
-                    {/* ── Global date/day section ── */}
+                    {/* Global date/day section */}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
                         <ModalField label="От дата">
                             <input type="date" value={startDate} onChange={e => setStartDate(e.target.value)} style={inputStyle} />
@@ -213,7 +230,7 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
 
                     <div style={{ height: 1, background: '#e4e6ea' }} />
 
-                    {/* ── Per-entry rows ── */}
+                    {/* Per-entry rows */}
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                         {entries.map((entry, idx) => (
                             <EntryRow
@@ -232,7 +249,6 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
                         ))}
                     </div>
 
-                    {/* Add row button */}
                     <button
                         type="button"
                         onClick={addEntry}
@@ -249,18 +265,21 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
                             {error}
                         </p>
                     )}
-                </form>
+                </div>
 
-                {/* Footer — outside the scrollable form so it's always visible */}
+                {/* Footer */}
                 <div style={{ borderTop: '1px solid #e4e6ea', padding: '1rem 1.5rem', display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', flexShrink: 0 }}>
-                    <button type="button" onClick={onClose} style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', border: '1px solid #dde0e5', background: 'transparent', color: '#6b7280', fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer' }}>
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', border: '1px solid #dde0e5', background: 'transparent', color: '#6b7280', fontWeight: 500, fontSize: '0.875rem', cursor: 'pointer' }}
+                    >
                         Отказ
                     </button>
                     <button
-                        type="submit"
-                        form="schedule-form"
+                        type="button"
+                        onClick={handleSubmit}
                         disabled={saving || totalRecords === 0}
-                        onClick={handleSubmit as any}
                         style={{ padding: '0.5rem 1.25rem', borderRadius: '0.5rem', border: 'none', background: saving || totalRecords === 0 ? '#a78bfa' : '#6c3de6', color: '#fff', fontWeight: 500, fontSize: '0.875rem', cursor: saving ? 'not-allowed' : 'pointer', transition: 'background 160ms ease' }}
                     >
                         {saving ? 'Запазване…' : `Създай ${totalRecords > 0 ? totalRecords : ''} ${totalRecords === 1 ? 'запис' : 'записа'}`}
@@ -326,9 +345,7 @@ function EntryRow({ index, entry, timeList, gradeList, subjectList, teacherList,
                     <label style={{ fontSize: '0.7rem', fontWeight: 500, color: '#9ca3af' }}>Час</label>
                     <select value={entry.periodId} onChange={e => onChange({ periodId: +e.target.value })} style={compactInput}>
                         <option value={0}>—</option>
-                        {timeList.map(p => (
-                            <option key={p.id} value={p.id}>{p.Name}</option>
-                        ))}
+                        {timeList.map(p => <option key={p.id} value={p.id}>{p.Name}</option>)}
                     </select>
                 </div>
 

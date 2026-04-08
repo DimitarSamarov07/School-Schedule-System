@@ -23,11 +23,9 @@ export default function Timetable() {
 
     const schoolId = 1;
     const date = moment().format("YYYY-MM-DD");
-    const time = moment().format("HH:mm:ss");
     const {scheduleData, isLoading} = useSchedulesByDateTimeAndSchool(
         schoolId,
-        date,
-        time
+        date
     );
     // Auto-scroll hook - activates only when >4 cards
     useAutoScroll({

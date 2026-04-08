@@ -1,57 +1,75 @@
-import {ENDPOINTS} from "@/lib/constants";
-import {apiRequest} from "@/lib/api/client";
-import {Room} from "@/types/room";
-import Schedule from "@/types/schedule";
-import type { ScheduleEntry, ScheduleCreation } from '@/types/schedule';
-//ROOM POST - body - name, floor
-//ROOM PUT - body - id(required) name(optional), floor(optional)
-//ROOM DELETE - query - id
+import { ENDPOINTS } from '@/lib/constants';
+import { apiRequest, invalidateCacheByPrefix } from '@/lib/api/client';
+import Schedule from '@/types/schedule';
+import type { ScheduleCreation } from '@/types/schedule';
 
-export const getScheduleBetweenDates: (schoolId: number, startDate: string, endDate: string) => Promise<Schedule[]> = (schoolId: number, startDate: string, endDate:string) =>
-    apiRequest(ENDPOINTS.SCHEDULE_BETWEEN_DATES+`?schoolId=${schoolId}&startDate=${startDate}&endDate=${endDate}`, {
-        method: 'GET'
-    });
+// ─── SCHEDULE ──────────────────────────────────────────────────────────────────
 
-
-export async function bulkCreateSchedules(
-    schoolId: number,
+export const getScheduleBetweenDates = (
+    schoolId:  number,
     startDate: string,
-    endDate: string,
-    payload: ScheduleCreation[]
-): Promise<void> {
-    const res = await apiRequest(`/schedule/bulk?schoolId=${schoolId}`, {
-        method: 'POST',
-        body: JSON.stringify({
-            startDate,
-            endDate,
-            schedules: [{
-                periodId:  payload.per,
-                classId:   selClassId,
-                subjectId: selSubjectId,
-                teacherId: selTeacherId,
-                roomId:    selRoomId,
-            }],
-        }),;
-    if (!res.ok) throw new Error(await res.text());
-}
+    endDate:   string,
+): Promise<Schedule[]> =>
+    apiRequest(
+        `${ENDPOINTS.SCHEDULE_BETWEEN_DATES}?schoolId=${schoolId}&startDate=${startDate}&endDate=${endDate}`,
+        { method: 'GET' },
+    );
 
-export async function deleteSchedule(id: number): Promise<void> {
-    const res = await fetch(`/api/schedules/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error(await res.text());
-}
-export const updateRoom = (schoolId: number,id: number, name?: string, floor?: number, capacity?: number) =>
-    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
+const invalidateSchedule = (schoolId: number) =>
+    invalidateCacheByPrefix(`${ENDPOINTS.SCHEDULE_BETWEEN_DATES}?schoolId=${schoolId}`);
+
+export const bulkCreateSchedules = async (
+    schoolId:  number,
+    startDate: string,
+    endDate:   string,
+    dayOfWeek: number,
+    schedules: ScheduleCreation[],
+) => {
+    const result = await apiRequest(`/schedule/bulk?schoolId=${schoolId}`, {
+        method: 'POST',
+        body: JSON.stringify({ startDate, endDate, dayOfWeek, schedules }),
+    });
+    invalidateSchedule(schoolId);
+    return result;
+};
+
+export const deleteSchedule = async (id: number, schoolId: number) => {
+    const result = await apiRequest(`/schedule?id=${id}&schoolId=${schoolId}`, {
+        method: 'DELETE',
+    });
+    invalidateSchedule(schoolId);
+    return result;
+};
+
+// ─── ROOM ──────────────────────────────────────────────────────────────────────
+
+const invalidateRoom = (schoolId: number) =>
+    invalidateCacheByPrefix(`${ENDPOINTS.ROOM}?schoolId=${schoolId}`);
+
+export const updateRoom = async (
+    schoolId:  number,
+    id:        number,
+    name?:     string,
+    floor?:    number,
+    capacity?: number,
+) => {
+    const result = await apiRequest(`${ENDPOINTS.ROOM}?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({
             id,
-            ...(name && { name }),
-            ...(floor && { floor }),
-            ...(capacity && { capacity }),
+            ...(name     !== undefined && { name }),
+            ...(floor    !== undefined && { floor }),
+            ...(capacity !== undefined && { capacity }),
         }),
     });
-export const deleteRoom = (id: number, schoolId: number) =>
-    apiRequest(`${ENDPOINTS.ROOM}?id=${id}&&schoolId=${schoolId}`, {
+    invalidateRoom(schoolId);
+    return result;
+};
+
+export const deleteRoom = async (id: number, schoolId: number) => {
+    const result = await apiRequest(`${ENDPOINTS.ROOM}?id=${id}&schoolId=${schoolId}`, {
         method: 'DELETE',
     });
-
-
+    invalidateRoom(schoolId);
+    return result;
+};

@@ -32,6 +32,13 @@ export type ScheduleEntry = {
   Period:  { Id: number; Name: string; Start: string; End: string; };
   Room:    { Id: number; Name: string; };
 };
+export interface ScheduleCreation {
+  periodId:  number;
+  classId:   number;
+  subjectId: number;
+  teacherId: number;
+  roomId:    number;
+}
 export interface ApiEntry {
   Date:    string;
   Class:   { Id: number; Name: string };
