@@ -291,7 +291,6 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
     );
 }
 
-// ── EntryRow ──────────────────────────────────────────────────────────────────
 interface EntryRowProps {
     index:       number;
     entry:       ScheduleEntry;

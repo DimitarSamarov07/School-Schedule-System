@@ -45,7 +45,6 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
     const [activeTimeKey, setActiveTimeKey] = React.useState<string | null>(null);
     const currentTimeKey = activeTimeKey ?? firstTimePickerKey;
 
-    // Reset active tab whenever the modal opens/changes
     React.useEffect(() => {
         setActiveTimeKey(firstTimePickerKey);
     }, [activeModal, firstTimePickerKey]);
@@ -56,10 +55,8 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
     };
 
     const renderFormField = (field: FormFieldConfig, index: number) => {
-        // ─── Clock time picker (grouped) ────
+        // ─── Clock time picker (grouped) ────────────────────────────────────
         if (field.type === "timepicker") {
-            // Only the FIRST timepicker field renders the combined UI;
-            // all subsequent timepicker fields are suppressed.
             if (field.key !== firstTimePickerKey) return null;
 
             const raw = safeFormData[currentTimeKey!];
@@ -67,7 +64,6 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
 
             return (
                 <div key={index} className="space-y-2">
-                    {/* Start / End toggle */}
                     <div className="flex gap-1 p-1 bg-gray-100 rounded-2xl">
                         {timePickerFields.map((tf) => (
                             <button
@@ -84,8 +80,6 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
                             </button>
                         ))}
                     </div>
-
-                    {/* Single shared picker */}
                     <div className="flex justify-center bg-purple-50 rounded-2xl p-4 border border-purple-100">
                         <ClockTimePicker
                             value={timeValue}
@@ -109,6 +103,46 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
                         value={days}
                         onChange={(newDays) => updateField(field.key, newDays)}
                     />
+                </div>
+            );
+        }
+
+        // ─── Dropdown ───────────────────────────────────────────────────────
+        if (field.type === "dropdown") {
+            const options = ((manager as EntityLike)[field.optionsKey!] as EntityLike[]) ?? [];
+            const labelKey = field.labelKey ?? "Name";
+            const valueKey = field.valueKey ?? "id";
+
+            // formData[field.key] is the full object (e.g. the Room object)
+            const currentValue = (safeFormData[field.key] as EntityLike)?.[valueKey] ?? "";
+
+            return (
+                <div key={index} className="space-y-2">
+                    <label className="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">
+                        {field.label}
+                    </label>
+                    <select
+                        className="w-full border-2 border-gray-100 bg-[#F9FBFF] rounded-2xl px-5 py-4 outline-none focus:border-[#7C5CFC] focus:bg-white transition-all text-lg font-semibold appearance-none cursor-pointer"
+                        value={currentValue as string | number}
+                        onChange={(e) => {
+                            const selected = options.find(
+                                (o) => String(o[valueKey]) === e.target.value
+                            );
+                            updateField(field.key, selected ?? null);
+                        }}
+                    >
+                        <option value="" disabled>
+                            {field.placeholder ?? `Избери ${field.label.toLowerCase()}`}
+                        </option>
+                        {options.map((option) => (
+                            <option
+                                key={String(option[valueKey])}
+                                value={String(option[valueKey])}
+                            >
+                                {String(option[labelKey] ?? "")}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             );
         }
@@ -149,8 +183,8 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
             : activeModal === "edit"
                 ? `Редакция: ${name ?? ""}`
                 : "Изтриване";
-    if (!activeModal) return null;
 
+    if (!activeModal) return null;
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm">
@@ -176,8 +210,6 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
         </div>
     );
 }
-
-// ── DeleteModalContent & AddEditModalContent unchanged ───────────────────────
 
 function DeleteModalContent({
                                 entityName,

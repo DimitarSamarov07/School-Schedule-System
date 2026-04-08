@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getGrades, createGrade, updateGrade, deleteGrade } from "@/lib/api/grades";
+import { getRooms } from "@/lib/api/rooms"; // ← import your rooms API
 import { Grade } from "@/types/grade";
+import { Room } from "@/types/room";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useGradesManager() {
@@ -11,6 +13,7 @@ export function useGradesManager() {
     const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [gradeList, setGradeList] = useState<Grade[]>([]);
+    const [roomList, setRoomList] = useState<Room[]>([]); // ← add this
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
@@ -35,7 +38,26 @@ export function useGradesManager() {
         }
     }, [schoolId]);
 
-    useEffect(() => { fetchGrades(); }, [fetchGrades]);
+    // ← add this
+    const fetchRooms = useCallback(async () => {
+        if (!schoolId) return;
+        try {
+            const response = await getRooms(schoolId);
+            if (response && typeof response === 'object' && 'error' in (response as object)) {
+                setRoomList([]);
+                return;
+            }
+            setRoomList(Array.isArray(response) ? response : response ? [response as Room] : []);
+        } catch (error) {
+            console.warn("Rooms API Error:", error);
+            setRoomList([]);
+        }
+    }, [schoolId]);
+
+    useEffect(() => {
+        fetchGrades();
+        fetchRooms(); // ← fetch rooms on mount
+    }, [fetchGrades, fetchRooms]);
 
     useEffect(() => {
         if (!schoolId) return;
@@ -64,7 +86,7 @@ export function useGradesManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!formData.id) return;
         try {
-            await updateGrade(schoolId, Number(formData.id), formData.Name, formData.Description, 1);
+            await updateGrade(schoolId, Number(formData.id), formData.Name, formData.Description, Number(formData.Room?.id));
             await fetchGrades(true);
             closeModal();
         } catch (error) {
@@ -84,10 +106,15 @@ export function useGradesManager() {
         }
     };
 
-    const setSelectedEntity = (entity: unknown) => setSelectedGrade(entity as Grade | null);
+    const setSelectedEntity = (entity: unknown) => {
+        const grade = entity as Grade | null;
+        setSelectedGrade(grade);
+        if (grade) setFormData({ ...grade, Name: grade.Name || '', Description: grade.Description || '' });
+    };
 
     return {
         gradeList,
+        roomList, // ← expose it
         isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,

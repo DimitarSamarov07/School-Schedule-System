@@ -7,12 +7,17 @@ export interface ColumnConfig {
     render?: (item: unknown) => React.ReactNode;
 }
 
-export interface FormFieldConfig {
+// @/types/entity.ts
+export type FormFieldConfig = {
     key: string;
     label: string;
-    type: "text" | "textarea" | string;  
+    type: "text" | "textarea" | "timepicker" | "daypicker" | "dropdown";
     placeholder?: string;
-}
+    // dropdown-specific
+    optionsKey?: string;   // key on the manager object, e.g. "roomList"
+    labelKey?: string;     // field to display, e.g. "Name"
+    valueKey?: string;     // field used as value, e.g. "id"
+};
 
 export interface EntityConfig {
     title: string;
