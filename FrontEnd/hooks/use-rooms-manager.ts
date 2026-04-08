@@ -6,9 +6,9 @@ import { Room } from "@/types/room";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useRoomsManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [roomsList, setRoomsList] = useState<Room[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -21,48 +21,29 @@ export function useRoomsManager() {
 
     const fetchRooms = useCallback(async (skipLoadingState = false) => {
         if (!schoolId || isFetchingRef.current) return;
-
-        const shouldToggleLoading = !skipLoadingState;
         isFetchingRef.current = true;
-
-        const clearRooms = () => setRoomsList([]);
-
-        const normalizeRooms = (value: unknown): Room[] => {
-            if (Array.isArray(value)) return value as Room[];
-            return value ? [value as Room] : [];
-        };
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getRooms(schoolId);
-
             if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearRooms();
+                setRoomsList([]);
                 return;
             }
-
-            setRoomsList(normalizeRooms(response));
+            setRoomsList(Array.isArray(response) ? response : response ? [response as Room] : []);
         } catch (error) {
             console.warn("API Error:", error);
-            clearRooms();
+            setRoomsList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
             isFetchingRef.current = false;
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchRooms();
-    }, [fetchRooms]);
+    useEffect(() => { fetchRooms(); }, [fetchRooms]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchRooms(true);
-        }, 30000);
-
+        const interval = setInterval(() => fetchRooms(true), 30000);
         return () => clearInterval(interval);
     }, [fetchRooms, schoolId]);
 
@@ -86,8 +67,8 @@ export function useRoomsManager() {
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.id) return;
         try {
-            if (!formData.id) return;
             await updateRoom(schoolId, Number(formData.id), formData.Name!, Number(formData.Floor!), formData.Capacity!);
             await fetchRooms(true);
             closeModal();
@@ -110,40 +91,32 @@ export function useRoomsManager() {
         }
     };
 
-    const openEditModal = (room: Room) => {
-        if (!isAdmin) return;
+    const setSelectedEntity = (entity: unknown) => {
+        const room = entity as Room | null;
         setSelectedRoom(room);
-        // Fix ESLint input null warning
-        setFormData({
+        if (room) setFormData({
             ...room,
             Name: room.Name || '',
             Capacity: room.Capacity || 0,
-            Floor: room.Floor || 0
+            Floor: room.Floor || 0,
         });
-        setActiveModal('edit');
-    };
-
-    const openDeleteModal = (room: Room) => {
-        if (!isAdmin) return;
-        setSelectedRoom(room);
-        setActiveModal('delete');
     };
 
     return {
         roomsList,
-        isLoading: isLoading || !schoolId, // Loading if API working OR school context missing
+        isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedRoom,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedRoom,
+        selectedEntity: selectedRoom,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchRooms(true)
+        refresh: () => fetchRooms(true),
     };
 }

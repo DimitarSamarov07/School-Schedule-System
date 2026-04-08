@@ -19,7 +19,8 @@ export const useSchoolUser = (schoolId: number) => {
                     name: user.Username,
                     email: user.Email,
                     isAdmin: user.IsAdmin === 1,
-                    status: user.IsAdmin === 1 ? 'Администратор' : 'Активна'
+                    //TODO: Add a IsSudo flag to the user object
+                    status: user.IsAdmin === 1  ? 'Администратор' : 'Активна'
                 }));
 
                 setUsers(transformedUsers);

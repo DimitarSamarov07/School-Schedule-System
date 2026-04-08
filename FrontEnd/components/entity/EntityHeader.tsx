@@ -1,10 +1,7 @@
 import { Plus } from "lucide-react";
-import {HeaderProps} from "@/components/entity/Interfaces/HeaderInterfaces";
-
-
+import { HeaderProps } from "@/components/entity/Interfaces/HeaderInterfaces";
 
 export function EntityHeader({ manager, config }: HeaderProps) {
-    const setActiveModal = manager.setActiveModal;
     return (
         <div className="flex justify-between items-end mb-8">
             <div>
@@ -16,7 +13,7 @@ export function EntityHeader({ manager, config }: HeaderProps) {
                 </p>
             </div>
             <button
-                onClick={() => setActiveModal ? setActiveModal("add") : null}
+                onClick={() => manager.setActiveModal?.("add")}
                 className="bg-[#7C5CFC] text-white px-8 py-4 rounded-2xl font-bold hover:bg-[#6b4de0] transition-all shadow-lg shadow-purple-200 active:scale-95 flex items-center gap-3"
                 disabled={!manager.isAdmin}
             >

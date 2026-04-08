@@ -6,9 +6,9 @@ import { Subject } from "@/types/subject";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useSubjectsManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [subjectList, setSubjectList] = useState<Subject[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,46 +19,27 @@ export function useSubjectsManager() {
 
     const fetchSubjects = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
-
-        const shouldToggleLoading = !skipLoadingState;
-
-        const clearSubjects = () => setSubjectList([]);
-
-        const normalizeSubjects = (value: unknown): Subject[] => {
-            if (Array.isArray(value)) return value as Subject[];
-            return value ? [value as Subject] : [];
-        };
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getSubjects(schoolId);
-
             if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearSubjects();
+                setSubjectList([]);
                 return;
             }
-
-            setSubjectList(normalizeSubjects(response));
+            setSubjectList(Array.isArray(response) ? response : response ? [response as Subject] : []);
         } catch (error) {
             console.warn("API Error:", error);
-            clearSubjects();
+            setSubjectList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchSubjects();
-    }, [fetchSubjects]);
+    useEffect(() => { fetchSubjects(); }, [fetchSubjects]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchSubjects(true);
-        }, 5000);
-
+        const interval = setInterval(() => fetchSubjects(true), 5000);
         return () => clearInterval(interval);
     }, [fetchSubjects, schoolId]);
 
@@ -81,8 +62,8 @@ export function useSubjectsManager() {
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.id) return;
         try {
-            if (!formData.id) return;
             await updateSubject(schoolId, Number(formData.id), formData.Name!, formData.Description!);
             await fetchSubjects(true);
             closeModal();
@@ -103,37 +84,31 @@ export function useSubjectsManager() {
         }
     };
 
-    const openEditModal = (subject: Subject) => {
-        if (!isAdmin) return;
+    const setSelectedEntity = (entity: unknown) => {
+        const subject = entity as Subject | null;
         setSelectedSubject(subject);
-        setFormData({
+        if (subject) setFormData({
             ...subject,
             Name: subject.Name || '',
-            Description: subject.Description || ''
+            Description: subject.Description || '',
         });
-        setActiveModal('edit');
-    };
-    const openDeleteModal = (subject: Subject) => {
-        if (!isAdmin) return;
-        setSelectedSubject(subject);
-        setActiveModal('delete');
     };
 
     return {
         subjectList,
-        isLoading: isLoading || !schoolId, // Loading if API is working OR school context isn't ready
+        isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedSubject,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedSubject,
+        selectedEntity: selectedSubject,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchSubjects(true)
+        refresh: () => fetchSubjects(true),
     };
 }

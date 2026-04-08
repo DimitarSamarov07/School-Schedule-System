@@ -6,9 +6,9 @@ import { Grade } from "@/types/grade";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useGradesManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [gradeList, setGradeList] = useState<Grade[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,59 +19,40 @@ export function useGradesManager() {
 
     const fetchGrades = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
-
-        const shouldToggleLoading = !skipLoadingState;
-
-        const clearGrades = () => setGradeList([]);
-
-        const normalizeGrades = (value: unknown): Grade[] => {
-            if (Array.isArray(value)) return value as Grade[];
-            return value ? [value as Grade] : [];
-        };
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getGrades(schoolId);
-
             if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearGrades();
+                setGradeList([]);
                 return;
             }
-
-            setGradeList(normalizeGrades(response));
+            setGradeList(Array.isArray(response) ? response : response ? [response as Grade] : []);
         } catch (error) {
             console.warn("API Error:", error);
-            clearGrades();
+            setGradeList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchGrades();
-    }, [fetchGrades]);
+    useEffect(() => { fetchGrades(); }, [fetchGrades]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchGrades(true);
-        }, 5000);
-
+        const interval = setInterval(() => fetchGrades(true), 5000);
         return () => clearInterval(interval);
     }, [fetchGrades, schoolId]);
 
     const closeModal = () => {
         setActiveModal(null);
-        setFormData({ Name: '', Description: '', Room: undefined});
+        setFormData({ Name: '', Description: '', Room: undefined });
         setSelectedGrade(null);
     };
 
     const handleCreate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         try {
-            await createGrade(schoolId,formData.Name!, formData.Description!,Number(formData.Room!.id));
+            await createGrade(schoolId, formData.Name!, formData.Description!, Number(formData.Room!.id));
             await fetchGrades(true);
             closeModal();
         } catch (error) {
@@ -81,9 +62,9 @@ export function useGradesManager() {
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.id) return;
         try {
-            if (!formData.id) return;
-            await updateGrade(schoolId,Number(formData.id), formData.Name, formData.Description,1);
+            await updateGrade(schoolId, Number(formData.id), formData.Name, formData.Description, 1);
             await fetchGrades(true);
             closeModal();
         } catch (error) {
@@ -95,7 +76,7 @@ export function useGradesManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!selectedGrade?.id) return;
         try {
-            await deleteGrade(Number(selectedGrade.id),schoolId);
+            await deleteGrade(Number(selectedGrade.id), schoolId);
             await fetchGrades(true);
             closeModal();
         } catch (error) {
@@ -103,34 +84,23 @@ export function useGradesManager() {
         }
     };
 
-    const openEditModal = (grade: Grade) => {
-        if (!isAdmin) return;
-        setSelectedGrade(grade);
-        setFormData(grade);
-        setActiveModal('edit');
-    };
-
-    const openDeleteModal = (grade: Grade) => {
-        if (!isAdmin) return;
-        setSelectedGrade(grade);
-        setActiveModal('delete');
-    };
+    const setSelectedEntity = (entity: unknown) => setSelectedGrade(entity as Grade | null);
 
     return {
         gradeList,
-        isLoading: isLoading || !schoolId, // Loading if API is working OR school context isn't ready
+        isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedGrade,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedGrade,
+        selectedEntity: selectedGrade,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchGrades(true)
+        refresh: () => fetchGrades(true),
     };
 }

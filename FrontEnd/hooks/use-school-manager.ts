@@ -2,15 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useCurrentSchool } from "@/providers/SchoolProvider";
-import {School} from "@/types/school";
-import {createSchool, deleteSchool, getSchools, updateSchool} from "@/lib/api/school";
-import {formatWorkweek} from "@/lib/utils";
+import { School } from "@/types/school";
+import { createSchool, deleteSchool, getSchools, updateSchool } from "@/lib/api/school";
 
-//Name address, work week config
 export function useSchoolsManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [schoolsList, setSchoolList] = useState<School[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,47 +21,29 @@ export function useSchoolsManager() {
 
     const fetchSchools = useCallback(async (skipLoadingState = false) => {
         if (!schoolId || isFetchingRef.current) return;
-
-        const shouldToggleLoading = !skipLoadingState;
         isFetchingRef.current = true;
-
-        const clearSchools = () => setSchoolList([]);
-
-        const normalizeSchools = (value: unknown): School[] => {
-            if (Array.isArray(value)) return value as School[];
-            return value ? [value as School] : [];
-        };
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getSchools();
-
             if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearSchools();
+                setSchoolList([]);
                 return;
             }
-            setSchoolList(normalizeSchools(response));
+            setSchoolList(Array.isArray(response) ? response : response ? [response as School] : []);
         } catch (error) {
             console.warn("API Error:", error);
-            clearSchools();
+            setSchoolList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
             isFetchingRef.current = false;
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchSchools();
-    }, [fetchSchools]);
+    useEffect(() => { fetchSchools(); }, [fetchSchools]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchSchools(true);
-        }, 30000);
-
+        const interval = setInterval(() => fetchSchools(true), 30000);
         return () => clearInterval(interval);
     }, [fetchSchools, schoolId]);
 
@@ -81,20 +61,20 @@ export function useSchoolsManager() {
             closeModal();
         } catch (error) {
             console.error("Create error:", error);
-            alert("Failed to create room");
+            alert("Failed to create school");
         }
     };
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.Id) return;
         try {
-            if (!formData.Id) return;
             await updateSchool(schoolId, Number(formData.Id), formData.Name!, formData.Address!, formData.WorkweekConfig!);
             await fetchSchools(true);
             closeModal();
         } catch (error) {
             console.error("Update error:", error);
-            alert("Failed to update room");
+            alert("Failed to update school");
         }
     };
 
@@ -107,43 +87,36 @@ export function useSchoolsManager() {
             closeModal();
         } catch (error) {
             console.error("Delete error:", error);
-            alert("Failed to delete room");
+            alert("Failed to delete school");
         }
     };
 
-    const openEditModal = (school: School) => {
-        if (!isAdmin) return;
+    const setSelectedEntity = (entity: unknown) => {
+        const school = entity as School | null;
         setSelectedSchool(school);
-        setFormData({
+        if (school) setFormData({
             ...school,
             Name: school.Name || '',
             Address: school.Address || '',
-            WorkweekConfig: school.WorkweekConfig || []
+            WorkweekConfig: school.WorkweekConfig || [],
         });
-        setActiveModal('edit');
-    };
-
-    const openDeleteModal = (school: School) => {
-        if (!isAdmin) return;
-        setSelectedSchool(school);
-        setActiveModal('delete');
     };
 
     return {
         schoolsList,
-        isLoading: isLoading || !schoolId, // Loading if API working OR school context missing
+        isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedSchool,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedSchool,
+        selectedEntity: selectedSchool,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchSchools(true)
+        refresh: () => fetchSchools(true),
     };
 }
