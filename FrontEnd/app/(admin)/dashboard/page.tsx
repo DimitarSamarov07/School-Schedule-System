@@ -74,9 +74,9 @@ export default function TimetablePage() {
                 <h2 className="text-2xl font-bold">Програма</h2>
                 <button
                     onClick={() => openModal()}
-                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: '#6c3de6', color: '#fff', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: '#6c3de6', color: '#fff', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
                 >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <svg width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                         <path d="M12 5v14M5 12h14"/>
                     </svg>
                     Добави часове
