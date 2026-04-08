@@ -4,4 +4,5 @@ export interface UserCardProps {
     user: User;
     onPromote: (userId: number) => void;
     onDemote: (userId: number) => void;
+    onRemove: (userId: number) => void;
 }

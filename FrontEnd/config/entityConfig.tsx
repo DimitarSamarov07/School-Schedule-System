@@ -24,7 +24,15 @@ export const CLASS_CONFIG = {
     ],
     formFields: [
         { key: "Name", label: "Име на Клас", type: "text", placeholder: "напр. 10А" },
-        { key: "Room.Name", label: "Име на стая", type: "text", placeholder: "напр. Стая 204" },
+        {
+            key: "Room",
+            label: "Стая",
+            type: "dropdown",
+            optionsKey: "roomList",   // ← which list from the hook to use
+            labelKey: "Name",         // ← which field to show in the dropdown
+            valueKey: "id",           // ← which field is the value
+            placeholder: "Избери стая"
+        },
         { key: "Description", label: "Специалност/забележки", type: "textarea", placeholder: "напр. Приложно програмиране" }
     ]
 };

@@ -1,17 +1,11 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Lock, Key, UserCheck, Eye, EyeOff, Copy } from 'lucide-react';
+import { Lock, Key, UserCheck, Eye, EyeOff } from 'lucide-react';
 
 const SecurityMenu = () => {
     const [showPassword, setShowPassword] = useState(false);
-    const [copied, setCopied] = useState(false);
 
-    const copyToClipboard = async (text: string) => {
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
 
     return (
         <div className="flex flex-col w-3xl "> {/* Fixed height container */}
@@ -42,9 +36,8 @@ const SecurityMenu = () => {
                     </div>
                 </div>
 
-                {/* New Password */}
                 <div className="mb-8">
-                    <label className="block text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <label className="block text-sm font-semibold text-slate-900 mb-3 items-center gap-2">
                         <Key className="w-4 h-4 text-emerald-600" />
                         Нова парола
                     </label>
@@ -60,9 +53,8 @@ const SecurityMenu = () => {
                     </div>
                 </div>
 
-                {/* Confirm Password */}
                 <div className="mb-12">
-                    <label className="block text-sm font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                    <label className="block text-sm font-semibold text-slate-900 mb-3 items-center gap-2">
                         <UserCheck className="w-4 h-4 text-blue-600" />
                         Потвърдете паролата
                     </label>
@@ -81,10 +73,10 @@ const SecurityMenu = () => {
 
                 <div className="p-10 pt-16 gap-10 border-t shrink-0 ">
                     <div className="flex gap-3">
-                        <button className="flex-1 bg-gradient-to-r from-slate-500 to-slate-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-700 transition-all">
+                        <button className="flex-1 bg-linear-to-r from-slate-500 to-slate-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-slate-600 hover:to-slate-700 transition-all">
                             Откажи
                         </button>
-                        <button className="flex-1 bg-gradient-to-r from-purple-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-purple-700 transition-all">
+                        <button className="flex-1 bg-linear-to-r from-purple-500 to-purple-600 text-white py-4 px-6 rounded-2xl font-semibold shadow-lg hover:shadow-xl hover:from-purple-600 hover:to-purple-700 transition-all">
                             Запази промени
                         </button>
                     </div>
@@ -92,7 +84,6 @@ const SecurityMenu = () => {
 
             </div>
 
-            {/* Fixed footer - always visible */}
 
         </div>
     );
