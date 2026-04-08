@@ -2,7 +2,7 @@ import {ENDPOINTS} from "@/lib/constants";
 import {apiRequest} from "@/lib/api/client";
 import {Room} from "@/types/room";
 import Schedule from "@/types/schedule";
-
+import type { ScheduleEntry, ScheduleCreation } from '@/types/schedule';
 //ROOM POST - body - name, floor
 //ROOM PUT - body - id(required) name(optional), floor(optional)
 //ROOM DELETE - query - id
@@ -12,11 +12,33 @@ export const getScheduleBetweenDates: (schoolId: number, startDate: string, endD
         method: 'GET'
     });
 
-export const createRoom = (schoolId: number,name: string, floor: number, capacity: number)=>
-    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
+
+export async function bulkCreateSchedules(
+    schoolId: number,
+    startDate: string,
+    endDate: string,
+    payload: ScheduleCreation[]
+): Promise<void> {
+    const res = await apiRequest(`/schedule/bulk?schoolId=${schoolId}`, {
         method: 'POST',
-        body: JSON.stringify({name, floor,capacity})
-    });
+        body: JSON.stringify({
+            startDate,
+            endDate,
+            schedules: [{
+                periodId:  payload.per,
+                classId:   selClassId,
+                subjectId: selSubjectId,
+                teacherId: selTeacherId,
+                roomId:    selRoomId,
+            }],
+        }),;
+    if (!res.ok) throw new Error(await res.text());
+}
+
+export async function deleteSchedule(id: number): Promise<void> {
+    const res = await fetch(`/api/schedules/${id}`, { method: 'DELETE' });
+    if (!res.ok) throw new Error(await res.text());
+}
 export const updateRoom = (schoolId: number,id: number, name?: string, floor?: number, capacity?: number) =>
     apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
         method: 'PUT',
