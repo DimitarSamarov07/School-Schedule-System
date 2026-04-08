@@ -1,61 +1,119 @@
 'use client';
 
-import {useEffect, useState} from 'react';
-import PeriodTable from '@/components/containers/ScheduleTable';
-import {PeriodSection, transformSchedule} from '@/utils/scheduleParse';
-import {ScheduleEntry} from '@/types/schedule';
-import StatCard from "@/components/cards/StatCard";
-import {Building, Clock, GraduationCap, Palette, Users} from "lucide-react";
-import {getScheduleBetweenDates} from "@/lib/api/schedule";
-import {useCurrentSchool} from "@/providers/SchoolProvider";
-import moment from "moment";
-import {useRoomsManager} from "@/hooks/use-rooms-manager";
-import {useGradesManager} from "@/hooks/use-grades-manager";
-import {useTeacherManager} from "@/hooks/use-teachers-manager";
-import {useSubjectsManager} from "@/hooks/use-subjects-manager";
-import {usePeriodsManager} from "@/hooks/use-periods-manager";
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCurrentSchool } from '@/providers/SchoolProvider';
+import { useRoomsManager } from '@/hooks/use-rooms-manager';
+import { useGradesManager } from '@/hooks/use-grades-manager';
+import { useTeacherManager } from '@/hooks/use-teachers-manager';
+import { useSubjectsManager } from '@/hooks/use-subjects-manager';
+import { usePeriodsManager } from '@/hooks/use-periods-manager';
+import { Building, Clock, GraduationCap, Palette, Users } from 'lucide-react';
+import StatCard from '@/components/cards/StatCard';
+import moment from 'moment';
+import { apiRequest } from '@/lib/api/client';
+import { ApiEntry, ModalConfig, PeriodSection } from '@/types/schedule';
+import { transformSchedule } from '@/utils/scheduleParse';
+import { PeriodTable } from '@/components/schedule/PeriodTable';
+import { AddScheduleModal } from '@/components/schedule/AddScheduleModal';
 
 export default function TimetablePage() {
-
     const { currentSchool } = useCurrentSchool();
-    const {roomsList} = useRoomsManager();
-    const {gradeList} = useGradesManager();
-    const {teacherList} = useTeacherManager();
-    const {subjectList} = useSubjectsManager();
-    const {timeList} = usePeriodsManager();
-    const schoolId = currentSchool?.SchoolId;
-    const startDate = moment().startOf('week').format('YYYY-MM-DD');
-    const endDate = moment().endOf('week').format('YYYY-MM-DD');
-    const isAdmin = currentSchool?.IsAdmin === 1;
-    const [sections, setSections] = useState<PeriodSection[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { roomsList }     = useRoomsManager();
+    const { gradeList }     = useGradesManager();
+    const { teacherList }   = useTeacherManager();
+    const { subjectList }   = useSubjectsManager();
+    const { timeList }      = usePeriodsManager();
 
+    const schoolId = currentSchool?.SchoolId;
+
+    const [startDate] = useState(() => moment().startOf('isoWeek').format('YYYY-MM-DD'));
+    const [endDate]   = useState(() => moment().endOf('isoWeek').format('YYYY-MM-DD'));
+
+    const [sections,    setSections]    = useState<PeriodSection[]>([]);
+    const [loading,     setLoading]     = useState(true);
+    const [modalOpen,   setModalOpen]   = useState(false);
+    const [modalConfig, setModalConfig] = useState<ModalConfig>({});
+
+    const timeListRef    = useRef(timeList);
+    const gradeListRef   = useRef(gradeList);
+    const didInitialLoad = useRef(false);
+
+    useEffect(() => { timeListRef.current  = timeList;  }, [timeList]);
+    useEffect(() => { gradeListRef.current = gradeList; }, [gradeList]);
+
+    const loadSchedule = useCallback((silent = false) => {
+        const tl = timeListRef.current;
+        const gl = gradeListRef.current;
+        if (!schoolId || !tl.length || !gl.length) return;
+        if (!silent) setLoading(true);
+        apiRequest<ApiEntry[]>(
+            `/schedule/betweenDates?schoolId=${schoolId}&startDate=${startDate}&endDate=${endDate}`
+        )
+            .then(data => setSections(transformSchedule(data, tl, gl)))
+            .catch(err => console.error('Failed to load schedule:', err))
+            .finally(() => { if (!silent) setLoading(false); });
+    }, [schoolId, startDate, endDate]);
 
     useEffect(() => {
-        getScheduleBetweenDates(schoolId, startDate, endDate)
-            .then((data: ScheduleEntry[]) => setSections(transformSchedule(data)))
-            .catch(err => console.error('Failed to load schedule:', err))
-            .finally(() => setLoading(false));
-    }, [endDate, schoolId, startDate]);
+        if (timeList.length && gradeList.length && !didInitialLoad.current) {
+            didInitialLoad.current = true;
+            loadSchedule();
+        }
+    }, [timeList.length, gradeList.length, loadSchedule]);
 
+    function openModal(config: ModalConfig = {}) {
+        setModalConfig(config);
+        setModalOpen(true);
+    }
 
-    if (loading) return <p className="p-6 text-gray-400">Loading timetable…</p>;
+    if (loading) return <p className="p-6 text-gray-400">Зареждане...</p>;
 
     return (
         <>
-            <h2 className="text-2xl font-bold mb-4">Програма</h2>
+            <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold">Програма</h2>
+                <button
+                    onClick={() => openModal()}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: '#6c3de6', color: '#fff', border: 'none', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer' }}
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path d="M12 5v14M5 12h14"/>
+                    </svg>
+                    Добави програма
+                </button>
+            </div>
+
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <StatCard label="Учители" value={teacherList.length} color="#3B5BDB" icon={GraduationCap}/>
-                <StatCard label="Класове" value={gradeList.length} color="#0F9B8E" icon={Users}/>
-                <StatCard label="Стаи" value={roomsList.length} color="#7C5CFC" icon={Building}/>
-                <StatCard label="Предмети" value={subjectList.length} color="#E05C8A" icon={Palette}/>
-                <StatCard label="Часове" value={timeList.length} color="#E8703A" icon={Clock}/>
+                <StatCard label="Учители"  value={teacherList.length} color="#3B5BDB" icon={GraduationCap} />
+                <StatCard label="Класове"  value={gradeList.length}   color="#0F9B8E" icon={Users}         />
+                <StatCard label="Стаи"     value={roomsList.length}   color="#7C5CFC" icon={Building}      />
+                <StatCard label="Предмети" value={subjectList.length} color="#E05C8A" icon={Palette}       />
+                <StatCard label="Часове"   value={timeList.length}    color="#E8703A" icon={Clock}         />
             </div>
-            <div className="pt-10 space-y-6 max-w-9xl ">
-                {sections.map(s => (
-                    <PeriodTable key={s.id} name={s.name} time={s.time} rows={s.rows}/>
-                ))}
+
+            <div className="pt-10 space-y-6">
+                {sections.length === 0
+                    ? <p className="text-gray-400 text-sm">Няма записи за тази седмица.</p>
+                    : sections.map((s, idx) => (
+                        <PeriodTable
+                            key={s.id}
+                            section={s}
+                            defaultOpen={idx < 2}
+                            onAddCell={(periodId, classId, dayIndex) =>
+                                openModal({ periodId, classId, dayIndex })
+                            }
+                        />
+                    ))
+                }
             </div>
+
+            {modalOpen && (
+                <AddScheduleModal
+                    {...modalConfig}
+                    onSave={() => { setModalOpen(false); loadSchedule(true); }}
+                    onClose={() => setModalOpen(false)}
+                />
+            )}
         </>
     );
 }

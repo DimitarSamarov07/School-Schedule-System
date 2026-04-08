@@ -32,4 +32,31 @@ export type ScheduleEntry = {
   Period:  { Id: number; Name: string; Start: string; End: string; };
   Room:    { Id: number; Name: string; };
 };
+export interface ApiEntry {
+  Date:    string;
+  Class:   { Id: number; Name: string };
+  Subject: { Id: number; Name: string };
+  Teacher: { Id: number; Name: string };
+  Period:  { Id: number; Name: string; Start: string; End: string };
+  Room:    { Id: number; Name: string };
+}
+
+export interface GradeRow {
+  gradeId:   number;
+  gradeName: string;
+  cells: (ApiEntry | null)[];
+}
+
+export interface PeriodSection {
+  id:   number;
+  name: string;
+  time: string;
+  rows: GradeRow[];
+}
+
+export interface ModalConfig {
+  periodId?: number;
+  classId?:  number;
+  dayIndex?: number;
+}
 export default ScheduleProps;

@@ -3,7 +3,7 @@ import {Building, Calendar, Clock, DoorOpen, GraduationCap, Palette, Sun, Users}
 export const menuItems = [
     { icon: Calendar, label: 'Програма', href: '/dashboard' },
     { icon: Users, label: 'Учители', href: '/dashboard/teachers' },
-    { icon: Building, label: 'Училища', href: '/dashboard/schools' },
+    { icon: Building, label: 'Училища', href: '/dashboard/schools', sudoOnly: true  },
     { icon: Palette, label: 'Предмети', href: '/dashboard/subjects' },
     { icon: GraduationCap, label: 'Класове', href: '/dashboard/classes' },
     { icon: DoorOpen, label: 'Стаи', href: '/dashboard/rooms' },
