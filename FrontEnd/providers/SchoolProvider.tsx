@@ -10,6 +10,7 @@ export const SchoolProvider = ({ children }: { children: React.ReactNode }) => {
     const [accessList, setAccessList] = useState([]);
     const [username, setUsername] = useState([]);
     const [email, setEmail] = useState([]);
+    const [isSudo, setIsSudo] = useState(false);
 
     useEffect(() => {
         const token = Cookies.get('AUTH_TOKEN');
@@ -18,6 +19,7 @@ export const SchoolProvider = ({ children }: { children: React.ReactNode }) => {
             setAccessList(decoded.accessList);
             setUsername(decoded.username);
             setEmail(decoded.email);
+            setIsSudo(decoded.isSudo);
 
             if (decoded.accessList?.length > 0) {
                 setCurrentSchool(decoded.accessList[0]);
@@ -31,10 +33,10 @@ export const SchoolProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <SchoolContext.Provider value={{ currentSchool,username, email, accessList, switchSchool }}>
-    {children}
-    </SchoolContext.Provider>
-);
+        <SchoolContext.Provider value={{ currentSchool, username, email, accessList, switchSchool, isSudo }}>
+            {children}
+        </SchoolContext.Provider>
+    );
 };
 
 export const useCurrentSchool = () => useContext(SchoolContext);

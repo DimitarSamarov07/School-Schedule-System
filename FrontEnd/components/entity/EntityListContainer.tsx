@@ -45,7 +45,7 @@ export default function EntityListContainer({ manager, config }: ContainerProps)
             <EntityHeader manager={manager} config={config} />
             <EntitySearch value={searchTerm} onChange={setSearchTerm} />
             <EntityTable list={filteredList} manager={manager} config={config} />
-            {manager.activeModal && <EntityModals manager={manager} config={config} />}
+            <EntityModals manager={manager} config={config} />  {/* ✅ Always mounted */}
         </div>
     );
 }

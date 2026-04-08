@@ -9,13 +9,15 @@ import {useCurrentSchool} from "@/providers/SchoolProvider";
 
 export default function Sidebar() {
     const pathname = usePathname();
-    const {currentSchool} = useCurrentSchool();
+    const {currentSchool, isSudo} = useCurrentSchool();
     const {users} = useSchoolUser(currentSchool.SchoolId);
+    const visibleItems = menuItems.filter(item => !item.sudoOnly || isSudo);
+
 
     return (
         <aside className="w-64 bg-[#F8FAFC] border-r border-slate-200 py-4 overflow-y-auto shrink-0 flex flex-col">
             <nav className="px-4 space-y-1.5">
-                {menuItems.map((item) => {
+                {visibleItems.map((item) => {
                     const isActive = pathname === item.href;
 
                     return (

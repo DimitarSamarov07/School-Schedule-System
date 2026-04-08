@@ -6,9 +6,9 @@ import { Time } from "@/types/time";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function usePeriodsManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [timeList, setTimeList] = useState<Time[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,51 +19,33 @@ export function usePeriodsManager() {
 
     const fetchTimes = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
-
-        const shouldToggleLoading = !skipLoadingState;
-
-        const clearTimes = () => setTimeList([]);
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getPeriodsForSchool(schoolId);
-
             if (response && typeof response === 'object' && 'error' in response) {
-                clearTimes();
+                setTimeList([]);
                 return;
             }
             const trimSeconds = (t: string) => t?.slice(0, 5) ?? '';
-
-            const normalizeTimes = (value: unknown): Time[] => {
-                const raw = Array.isArray(value) ? value as Time[] : value ? [value as Time] : [];
-                return raw.map(time => ({
-                    ...time,
-                    Start: trimSeconds(time.Start),
-                    End:   trimSeconds(time.End),
-                }));
-            };
-            setTimeList(normalizeTimes(response));
-
+            const raw = Array.isArray(response) ? response as Time[] : response ? [response as Time] : [];
+            setTimeList(raw.map(time => ({
+                ...time,
+                Start: trimSeconds(time.Start),
+                End: trimSeconds(time.End),
+            })));
         } catch (error) {
             console.warn("API Error:", error);
-            clearTimes();
+            setTimeList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchTimes();
-    }, [fetchTimes]);
+    useEffect(() => { fetchTimes(); }, [fetchTimes]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchTimes(true);
-        }, 5000);
-
+        const interval = setInterval(() => fetchTimes(true), 5000);
         return () => clearInterval(interval);
     }, [fetchTimes, schoolId]);
 
@@ -86,9 +68,9 @@ export function usePeriodsManager() {
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.id) return;
         try {
-            if (!formData.id) return;
-            await updateTime(schoolId,Number(formData.id), formData.Name!, formData.Start!, formData.End!);
+            await updateTime(schoolId, Number(formData.id), formData.Name!, formData.Start!, formData.End!);
             await fetchTimes(true);
             closeModal();
         } catch (error) {
@@ -108,22 +90,10 @@ export function usePeriodsManager() {
         }
     };
 
-    const openEditModal = (time: Time) => {
-        if (!isAdmin) return;
+    const setSelectedEntity = (entity: unknown) => {
+        const time = entity as Time | null;
         setSelectedTime(time);
-        setFormData({
-            ...time,
-            Name: time.Name || '',
-            Start: time.Start || '',
-            End: time.End || ''
-        });
-        setActiveModal('edit');
-    };
-
-    const openDeleteModal = (time: Time) => {
-        if (!isAdmin) return;
-        setSelectedTime(time);
-        setActiveModal('delete');
+        if (time) setFormData({ ...time, Name: time.Name || '', Start: time.Start || '', End: time.End || '' });
     };
 
     return {
@@ -131,16 +101,16 @@ export function usePeriodsManager() {
         isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedTime,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedTime,
+        selectedEntity: selectedTime,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchTimes(true)
+        refresh: () => fetchTimes(true),
     };
 }

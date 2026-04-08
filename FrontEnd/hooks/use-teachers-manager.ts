@@ -6,9 +6,9 @@ import { Teacher } from "@/types/teacher";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export function useTeacherManager() {
-    const { currentSchool } = useCurrentSchool();
+    const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
-    const isAdmin = currentSchool?.IsAdmin === 1;
+    const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
     const [teacherList, setTeacherList] = useState<Teacher[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -19,46 +19,27 @@ export function useTeacherManager() {
 
     const fetchTeachers = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
-
-        const shouldToggleLoading = !skipLoadingState;
-
-        const clearTeachers = () => setTeacherList([]);
-
-        const normalizeTeachers = (value: unknown): Teacher[] => {
-            if (Array.isArray(value)) return value as Teacher[];
-            return value ? [value as Teacher] : [];
-        };
-
-        if (shouldToggleLoading) setIsLoading(true);
-
+        if (!skipLoadingState) setIsLoading(true);
         try {
             const response = await getTeachers(schoolId);
-
             if (response && typeof response === 'object' && 'error' in (response as object)) {
-                clearTeachers();
+                setTeacherList([]);
                 return;
             }
-
-            setTeacherList(normalizeTeachers(response));
+            setTeacherList(Array.isArray(response) ? response : response ? [response as Teacher] : []);
         } catch (error) {
             console.warn("API Error:", error);
-            clearTeachers();
+            setTeacherList([]);
         } finally {
-            if (shouldToggleLoading) setIsLoading(false);
+            if (!skipLoadingState) setIsLoading(false);
         }
     }, [schoolId]);
 
-    useEffect(() => {
-        fetchTeachers();
-    }, [fetchTeachers]);
+    useEffect(() => { fetchTeachers(); }, [fetchTeachers]);
 
     useEffect(() => {
         if (!schoolId) return;
-
-        const interval = setInterval(() => {
-            fetchTeachers(true);
-        }, 5000);
-
+        const interval = setInterval(() => fetchTeachers(true), 5000);
         return () => clearInterval(interval);
     }, [fetchTeachers, schoolId]);
 
@@ -82,8 +63,8 @@ export function useTeacherManager() {
 
     const handleUpdate = async () => {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
+        if (!formData.id) return;
         try {
-            if (!formData.id) return;
             await updateTeacher(schoolId, Number(formData.id), formData.Name!, formData.Email!);
             await fetchTeachers(true);
             closeModal();
@@ -106,34 +87,31 @@ export function useTeacherManager() {
         }
     };
 
-    const openEditModal = (teacher: Teacher) => {
-        if (!isAdmin) return;
+    const setSelectedEntity = (entity: unknown) => {
+        const teacher = entity as Teacher | null;
         setSelectedTeacher(teacher);
-        setFormData(teacher);
-        setActiveModal('edit');
-    };
-
-    const openDeleteModal = (teacher: Teacher) => {
-        if (!isAdmin) return;
-        setSelectedTeacher(teacher);
-        setActiveModal('delete');
+        if (teacher) setFormData({
+            ...teacher,
+            Name: teacher.Name || '',
+            Email: teacher.Email || '',
+        });
     };
 
     return {
         teacherList,
-        isLoading: isLoading || !schoolId, // Loading if API is working OR school context isn't ready
+        isLoading: isLoading || !schoolId,
         isAdmin,
         activeModal,
-        formData,
-        selectedTeacher,
-        setFormData,
         setActiveModal,
+        formData,
+        setFormData,
+        selectedTeacher,
+        selectedEntity: selectedTeacher,
+        setSelectedEntity,
         handleCreate,
         handleUpdate,
         handleDelete,
         closeModal,
-        openEditModal,
-        openDeleteModal,
-        refresh: () => fetchTeachers(true)
+        refresh: () => fetchTeachers(true),
     };
 }

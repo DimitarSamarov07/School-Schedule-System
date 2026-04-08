@@ -56,7 +56,7 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
     };
 
     const renderFormField = (field: FormFieldConfig, index: number) => {
-        // ─── Clock time picker (grouped) ────────────────────────────────────
+        // ─── Clock time picker (grouped) ────
         if (field.type === "timepicker") {
             // Only the FIRST timepicker field renders the combined UI;
             // all subsequent timepicker fields are suppressed.
@@ -149,8 +149,8 @@ export function EntityModals<T>({ manager, config }: EntityModalsProps) {
             : activeModal === "edit"
                 ? `Редакция: ${name ?? ""}`
                 : "Изтриване";
-
     if (!activeModal) return null;
+
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1A1A1A]/40 backdrop-blur-sm">
