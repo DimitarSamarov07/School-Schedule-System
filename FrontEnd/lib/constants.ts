@@ -21,4 +21,7 @@ export const ENDPOINTS = {
     DEMOTE: `/user/demote`,
     SCHEDULE_BETWEEN_DATES: `/schedule/betweenDates`,
     LIST_ALL_SCHOOL_USERS: `/school/allUsers`,
+    INVITE_USER: `/user/addToSchool`,
+    REMOVE_USER: `/user/removeFromSchool`,
+    SCHEDULE_BY_DATE: `/schedule/byDate`,
 }

@@ -1,34 +1,55 @@
-import {ENDPOINTS} from "@/lib/constants";
-import {apiRequest} from "@/lib/api/client";
-import {Room} from "@/types/room";
+import { ENDPOINTS } from "@/lib/constants";
+import { apiRequest, invalidateCache } from "@/lib/api/client";
+import { Room } from "@/types/room";
 
-//ROOM POST - body - name, floor
-//ROOM PUT - body - id(required) name(optional), floor(optional)
-//ROOM DELETE - query - id
+const roomsEndpoint = (schoolId: number) =>
+    `${ENDPOINTS.ROOM}/all?schoolId=${schoolId}`;
 
-export const getRooms: (schoolId: number) => Promise<Room[]> = (schoolId: number) =>
-    apiRequest(ENDPOINTS.ROOM+`/all?schoolId=${schoolId}`, {
-        method: 'GET'
-    });
+export const getRooms = (schoolId: number): Promise<Room[]> =>
+    apiRequest(roomsEndpoint(schoolId), { method: 'GET' });
 
-export const createRoom = (schoolId: number,name: string, floor: number, capacity: number)=>
-    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
-        method: 'POST',
-        body: JSON.stringify({name, floor,capacity})
-    });
-export const updateRoom = (schoolId: number,id: number, name?: string, floor?: number, capacity?: number) =>
-    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-            id,
-            ...(name && { name }),
-            ...(floor && { floor }),
-            ...(capacity && { capacity }),
-        }),
-    });
-export const deleteRoom = (id: number, schoolId: number) =>
-    apiRequest(`${ENDPOINTS.ROOM}?id=${id}&&schoolId=${schoolId}`, {
-        method: 'DELETE',
-    });
+export const createRoom = async (
+    schoolId: number,
+    name: string,
+    floor: number,
+    capacity: number,
+) => {
+    const result = await apiRequest(
+        `${ENDPOINTS.ROOM}?schoolId=${schoolId}`,
+        { method: 'POST', body: JSON.stringify({ name, floor, capacity }) },
+    );
+    invalidateCache(roomsEndpoint(schoolId));
+    return result;
+};
 
+export const updateRoom = async (
+    schoolId: number,
+    id: number,
+    name?: string,
+    floor?: number,
+    capacity?: number,
+) => {
+    const result = await apiRequest(
+        `${ENDPOINTS.ROOM}?schoolId=${schoolId}`,
+        {
+            method: 'PUT',
+            body: JSON.stringify({
+                id,
+                ...(name     !== undefined && { name }),
+                ...(floor    !== undefined && { floor }),
+                ...(capacity !== undefined && { capacity }),
+            }),
+        },
+    );
+    invalidateCache(roomsEndpoint(schoolId));
+    return result;
+};
 
+export const deleteRoom = async (id: number, schoolId: number) => {
+    const result = await apiRequest(
+        `${ENDPOINTS.ROOM}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
+        { method: 'DELETE' },
+    );
+    invalidateCache(roomsEndpoint(schoolId));
+    return result;
+};
