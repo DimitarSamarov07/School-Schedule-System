@@ -7,20 +7,18 @@ export default class UserSql {
     static readonly UPDATE_USER_PASS =
         `UPDATE Users
          SET password_hash = COALESCE((?), password_hash)
-         WHERE username = (?)
-           AND password_hash = (?);`
+         WHERE id = (?);`
 
     static readonly UPDATE_USER_EMAIL =
         `UPDATE Users
          SET email = COALESCE((?), email)
-         WHERE username = (?)
-           AND password_hash = (?);
+         WHERE id = (?);
         `
 
     static readonly DELETE_USER =
         `DELETE
          FROM Users
-         WHERE username = (?)
+         WHERE id = (?)
            AND password_hash = (?)
         ;`
 
@@ -29,12 +27,6 @@ export default class UserSql {
          FROM Users
          WHERE username = (?)
         `;
-
-    static readonly CHECK_USER_CREDENTIALS =
-        `SELECT password_hash
-         FROM Users
-         WHERE username = (?)
-         LIMIT 1; `
 
     static readonly GET_USER_PERMISSIONS =
         ` SELECT *

@@ -27,7 +27,14 @@ export const AddUserToSchoolSchema = z.object({
     schoolId: z.coerce.number().int().positive()
 });
 
+export const ChangePasswordSchema = z.object({
+    username: UsernameSchema,
+    oldPassword: PasswordSchema,
+    newPassword: PasswordSchema
+});
+
 export type LoginPayload = z.infer<typeof LoginSchema>;
 export type CreateUserPayload = z.infer<typeof CreateUserSchema>;
 export type UserPermissionPayload = z.infer<typeof UserPermissionSchema>;
 export type AddUserToSchoolPayload = z.infer<typeof AddUserToSchoolSchema>;
+export type ChangePasswordPayload = z.infer<typeof ChangePasswordSchema>;

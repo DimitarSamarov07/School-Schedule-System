@@ -2,6 +2,7 @@ import authenticatorMaster from "../Services/auth_services.ts";
 import Authenticator from "../Services/auth_services.ts";
 import {
     AddUserToSchoolSchema,
+    ChangePasswordSchema,
     CreateUserSchema,
     LoginSchema,
     UserPermissionSchema
@@ -26,6 +27,16 @@ export default class UserController {
 
         let token = authenticatorMaster.createJWT(userData);
         return res.cookie("AUTH_TOKEN", token).status(201).send();
+    }
+
+    public static async changePassword(req, res) {
+        const payload = ChangePasswordSchema.parse(req.body);
+        const changeResult = await Authenticator.changeUserPassword(payload);
+
+        if (!changeResult) {
+            return res.status(403).send({"error": "Invalid credentials."})
+        }
+        return res.status(200).send();
     }
 
     public static async logout(req, res) {

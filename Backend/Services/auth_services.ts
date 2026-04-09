@@ -11,6 +11,7 @@ import UserData from "../DTO/UserData.ts";
 import {SchoolService} from "./data/SchoolService.ts";
 import type {
     AddUserToSchoolPayload,
+    ChangePasswordPayload,
     CreateUserPayload,
     LoginPayload,
     UserPermissionPayload
@@ -64,7 +65,7 @@ class Authenticator {
         }
     }
 
-    static async getUserData(data: LoginPayload): Promise<UserData | null> {
+    static async getUserData(data: LoginPayload, shouldIncludeAccess = true): Promise<UserData | null> {
         const {username, password} = data;
         return await connectionPoolFactory(async (conn): Promise<UserData | null> => {
             const userEntries = await conn.query(UserSql.GET_USER_BY_USERNAME, [username]);
@@ -73,6 +74,9 @@ class Authenticator {
                 const user = User.convertFromDbModel(userEntries[0]);
                 let passwordMatch = await this.hashPasswordCompare(password, user.Password);
                 if (passwordMatch) {
+                    if (!shouldIncludeAccess) {
+                        return new UserData(user, []);
+                    }
                     if (user.IsSudo) {
                         let sudoList: SchoolMember[] = []
                         const allSchools = await SchoolService.getAllSchools();
@@ -99,6 +103,22 @@ class Authenticator {
             await conn.query(UserSql.CREATE_USER, [username, email, hashedPassword])
             return true;
         })
+    }
+
+    static async changeUserPassword(data: ChangePasswordPayload) {
+        let dataForUserData = {username: data.username, password: data.oldPassword}
+        let user = await this.getUserData(dataForUserData, false)
+        if (!user) {
+            return false;
+        }
+        let userObj = user.User;
+        let newHashedPassword = await this.hashPassword(data.newPassword);
+
+        return await connectionPoolFactory(async (conn) => {
+            await conn.query(UserSql.UPDATE_USER_PASS, [newHashedPassword, userObj.Id])
+            return true;
+        })
+
     }
 
 
