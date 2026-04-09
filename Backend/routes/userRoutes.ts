@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/register", UserController.register)
 router.post("/login", UserController.login)
 router.get("/logout", UserController.logout)
+router.post("/changePassword", UserController.changePassword)
 
 router.post("/promote", hasAdminAccessToSchool, UserController.promoteUserToAdmin);
 router.post("/demote", hasAdminAccessToSchool, UserController.demoteUserFromAdmin);
