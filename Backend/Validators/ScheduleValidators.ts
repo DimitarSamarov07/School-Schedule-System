@@ -13,12 +13,19 @@ export const CreateScheduleQuerySchema = BaseScheduleSchema.extend({
     date: z.iso.date()
 });
 
-export const BulkScheduleQuerySchema = z.object({
+export const BulkCreateScheduleQuerySchema = z.object({
     schoolId: z.coerce.number().int().positive(),
     startDate: z.iso.date("The date format required is YYYY-MM-DD"),
     endDate: z.iso.date("The date format required is YYYY-MM-DD"),
     dayOfWeek: z.number().int().min(1).max(7),
     schedules: z.array(BaseScheduleSchema).min(1).max(500)
+});
+
+export const BulkDeleteScheduleQuerySchema = z.object({
+    schoolId: z.coerce.number().int().positive(),
+    startDate: z.iso.date("The date format required is YYYY-MM-DD"),
+    endDate: z.iso.date("The date format required is YYYY-MM-DD"),
+    dayOfWeek: z.number().int().min(1).max(7).optional() // If no dayOfWeek is provided, delete all schedules for the entire week
 });
 
 export const UpdateScheduleQuerySchema = z.object({
@@ -56,7 +63,8 @@ export const ClassDateScheduleQuerySchema = z.object({
 });
 
 export type CreateSchedulePayload = z.infer<typeof CreateScheduleQuerySchema>;
-export type BulkSchedulePayload = z.infer<typeof BulkScheduleQuerySchema>;
+export type BulkCreateSchedulePayload = z.infer<typeof BulkCreateScheduleQuerySchema>;
+export type BulkDeleteSchedulePayload = z.infer<typeof BulkDeleteScheduleQuerySchema>;
 export type UpdateSchedulePayload = z.infer<typeof UpdateScheduleQuerySchema>;
 export type DateRangeScheduleQueryPayload = z.infer<typeof DateRangeScheduleQuerySchema>;
 export type DateAndTimeScheduleQueryPayload = z.infer<typeof DateAndTimeScheduleQuerySchema>;

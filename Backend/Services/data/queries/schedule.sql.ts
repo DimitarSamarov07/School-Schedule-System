@@ -54,6 +54,17 @@ export default class ScheduleSql {
     static readonly INSERT_BULK_INTO_SCHEDULE = `INSERT INTO Schedule (school_id, date, period_id, class_id, teacher_id, subject_id, room_id)
                                                  VALUES (?, ?, ?, ?, ?, ?, ?)`
 
+    static readonly DELETE_BULK_FROM_SCHEDULE = `DELETE
+                                                 FROM Schedule
+                                                 WHERE school_id = (?)
+                                                   AND date BETWEEN ? AND ?`
+    static readonly DELETE_BULK_FROM_SCHEDULE_WITH_WEEKDAY = `DELETE
+                                                              FROM Schedule
+                                                              WHERE school_id = (?)
+                                                                AND date BETWEEN ? AND ?
+                                                                AND (WEEKDAY(date)) = ?`
+
+
     static readonly UPDATE_SCHEDULE = `UPDATE Schedule
                                        SET date       = COALESCE((?), date),
                                            period_id  = COALESCE((?), period_id),

@@ -12,6 +12,7 @@ router.get('/byDateTimeAndSchool', hasAccessToSchool, scheduleController.getSche
 
 router.post('/', hasAdminAccessToSchool, scheduleController.createSchedule);
 router.post("/bulk", hasAdminAccessToSchool, scheduleController.bulkCreateSchedulesForRange)
+router.delete("/bulk", hasAdminAccessToSchool, scheduleController.bulkDeleteSchedulesForRange)
 
 router.put('/', hasAdminAccessToSchool, scheduleController.updateSchedule);
 router.delete('/', hasAdminAccessToSchool, scheduleController.deleteSchedule);
