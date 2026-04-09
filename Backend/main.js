@@ -68,6 +68,10 @@ export const globalErrorHandler = (
         });
     }
 
+    if (err.code === "ER_DUP_ENTRY") {
+        return res.status(409).json({error: "Duplicate entry detected."});
+    }
+
     // Custom Application Errors
     if (err.message && err.message.includes("Security Violation")) {
         return res.status(403).json({error: err.message});
