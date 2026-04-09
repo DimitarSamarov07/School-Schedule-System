@@ -7,7 +7,8 @@ import {HolidayService} from "./HolidayService.ts";
 import {SchoolService} from "./SchoolService.ts";
 
 import type {
-    BulkSchedulePayload,
+    BulkCreateSchedulePayload,
+    BulkDeleteSchedulePayload,
     ClassDateScheduleQueryPayload,
     CreateSchedulePayload,
     DateAndTimeScheduleQueryPayload,
@@ -27,7 +28,7 @@ export class ScheduleService {
         });
     }
 
-    public static async bulkCreateSchedules(data: BulkSchedulePayload) {
+    public static async bulkCreateSchedules(data: BulkCreateSchedulePayload) {
         let {schoolId, startDate, endDate, schedules, dayOfWeek} = data;
         await connectionPoolFactory(async (conn) => {
             for (const schedule of schedules) {
@@ -76,6 +77,19 @@ export class ScheduleService {
 
         await connectionPoolFactory(async (conn) => {
             await conn.batch(ScheduleSql.INSERT_BULK_INTO_SCHEDULE, valuesToInsert)
+        })
+    }
+
+    public static async bulkDeleteSchedules(data: BulkDeleteSchedulePayload) {
+        let {schoolId, startDate, endDate, dayOfWeek} = data;
+        await connectionPoolFactory(async (conn) => {
+            if (dayOfWeek) {
+                // MariaDB counts the days from 0 to 6. Remove 1 from the input to match the business logic
+                await conn.query(ScheduleSql.DELETE_BULK_FROM_SCHEDULE_WITH_WEEKDAY,
+                    [schoolId, startDate, endDate, dayOfWeek - 1])
+            } else {
+                await conn.query(ScheduleSql.DELETE_BULK_FROM_SCHEDULE, [schoolId, startDate, endDate])
+            }
         })
     }
 

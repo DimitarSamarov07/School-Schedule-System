@@ -1,6 +1,7 @@
 import {ScheduleService} from "../Services/data/ScheduleService.ts";
 import {
-    BulkScheduleQuerySchema,
+    BulkCreateScheduleQuerySchema,
+    BulkDeleteScheduleQuerySchema,
     ClassDateScheduleQuerySchema,
     CreateScheduleQuerySchema,
     DateAndTimeScheduleQuerySchema,
@@ -56,12 +57,22 @@ export const createSchedule = async (req, res) => {
 };
 
 export const bulkCreateSchedulesForRange = async (req, res) => {
-    const payload = BulkScheduleQuerySchema.parse({
+    const payload = BulkCreateScheduleQuerySchema.parse({
         ...req.query,
         ...req.body
     });
 
     await ScheduleService.bulkCreateSchedules(payload);
+    res.status(201).send(true);
+};
+
+export const bulkDeleteSchedulesForRange = async (req, res) => {
+    const payload = BulkDeleteScheduleQuerySchema.parse({
+        ...req.query,
+        ...req.body
+    });
+
+    await ScheduleService.bulkDeleteSchedules(payload);
     res.status(201).send(true);
 };
 
