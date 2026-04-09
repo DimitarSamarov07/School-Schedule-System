@@ -61,6 +61,7 @@ export const globalErrorHandler = (
     if (err instanceof ZodError) {
         return res.status(400).json({
             error: "Validation Error",
+            errorType: "validation",
             details: err.issues.map(e => ({
                 path: e.path.join('.'),
                 message: e.message
@@ -69,18 +70,19 @@ export const globalErrorHandler = (
     }
 
     if (err.code === "ER_DUP_ENTRY") {
-        return res.status(409).json({error: "Duplicate entry detected."});
+        return res.status(409).json({errorType: "sql", error: "Duplicate entry detected."});
     }
 
     // Custom Application Errors
     if (err.message && err.message.includes("Security Violation")) {
-        return res.status(403).json({error: err.message});
+        return res.status(403).json({errorType: "security", error: err.message});
     }
 
     // Catch All Other Server Errors
     console.error("[Unhandled Error]:", err);
     return res.status(500).json({
         error: "Internal Server Error",
+        errorType: "other",
         // Raw error messages will only be sent in development, not in production.
         message: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
