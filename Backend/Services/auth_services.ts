@@ -1,6 +1,6 @@
 import {env} from "node:process";
 import {promises as fs} from 'fs';
-import jwt from 'jsonwebtoken';
+import jwt, {type SignOptions} from 'jsonwebtoken';
 import 'dotenv/config'
 import bcrypt from "bcrypt";
 import {connectionPoolFactory} from "./db_service.ts";
@@ -40,12 +40,16 @@ class Authenticator {
     }
 
     static createJWT(userData: UserData): string {
+        let options: SignOptions = {algorithm: 'RS256'}
+        if (userData.isAdmin()) {
+            options.expiresIn = "1h";
+        }
         return jwt.sign({
             username: userData.User.Username,
             email: userData.User.Email,
             isSudo: userData.User.IsSudo,
             accessList: userData.AccessList
-        }, this.secretKey, {algorithm: 'RS256'});
+        }, this.secretKey, options);
     }
 
     static decodeJWT(token: string): {

@@ -9,4 +9,11 @@ export default class UserData {
         this.User = user;
         this.AccessList = accessList;
     }
+
+    isAdmin() {
+        if (this.User.IsSudo) {
+            return true;
+        }
+        return !!this.AccessList?.filter(x => x.IsAdmin);
+    }
 }
