@@ -104,17 +104,24 @@ app.get("/csrf-token", (req, res) => {
     return res.json({ csrfToken: token });
 });
 
+const apiRouter = express.Router();
 
 // Include user-defined routes
-app.use("/school", schoolRoutes);
-app.use("/class", classRoutes);
-app.use("/holiday", holidayRoutes);
-app.use("/period", periodRoutes);
-app.use("/room", roomRoutes);
-app.use("/subject", subjectRoutes);
-app.use("/schedule", scheduleRoutes);
-app.use("/teacher", teacherRoutes);
-app.use("/user", userRoutes);
+apiRouter.use("/school", schoolRoutes);
+apiRouter.use("/class", classRoutes);
+apiRouter.use("/holiday", holidayRoutes);
+apiRouter.use("/period", periodRoutes);
+apiRouter.use("/room", roomRoutes);
+apiRouter.use("/subject", subjectRoutes);
+apiRouter.use("/schedule", scheduleRoutes);
+apiRouter.use("/teacher", teacherRoutes);
+apiRouter.use("/user", userRoutes);
+
+app.use("/api", apiRouter);
+
+app.use((req, res, next) => {
+    res.status(404).json({error: "Page not found"});
+});
 
 app.use(globalErrorHandler);
 
