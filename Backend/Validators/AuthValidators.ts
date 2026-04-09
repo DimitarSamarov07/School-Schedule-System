@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 // Reusable parts
-const UsernameSchema = z.string().trim().min(3).max(50).regex(/^[a-zA-Z0-0._-]+$/,
+const UsernameSchema = z.string().trim().min(3).max(50).regex(/^[a-zA-Z0-9._-]+$/,
     "Usernames can only contain letters, numbers, dots, underscores, and hyphens");
 
 const PasswordSchema = z.string().min(8, "Password must be at least 8 characters long").max(100);
@@ -14,9 +14,7 @@ export const LoginSchema = z.object({
 export const CreateUserSchema = z.object({
     username: UsernameSchema,
     email: z.email("Invalid email address").max(255),
-    password: PasswordSchema,
-    schoolId: z.coerce.number().int().positive(),
-    isAdmin: z.boolean().default(false)
+    password: PasswordSchema
 });
 
 export const UserPermissionSchema = z.object({
