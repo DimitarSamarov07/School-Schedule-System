@@ -96,12 +96,12 @@ export default function AuthPage() {
 
         setIsLoading(true);
         try {
-            await register({
-                username:     regUsername,
-                email:    regEmail,
-                password: regPassword,
-                isAdmin: false,
-            });
+            await register(
+                regUsername,
+                regEmail,
+                regPassword,
+                false
+            );
             setRegisterSuccess(true);
         } catch (error: any) {
             console.error("Register Error:", error);
