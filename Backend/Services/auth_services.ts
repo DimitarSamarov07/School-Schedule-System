@@ -41,9 +41,9 @@ class Authenticator {
     }
 
     static createJWT(userData: UserData): string {
-        let options: SignOptions = {algorithm: 'RS256', expiresIn: '24h'}
+        let options: SignOptions = {algorithm: 'RS256', expiresIn: '1h'}
         if (userData.isAdmin()) {
-            options.expiresIn = "1h";
+            options.expiresIn = "10m";
         }
         return jwt.sign({
             username: userData.User.Username,
