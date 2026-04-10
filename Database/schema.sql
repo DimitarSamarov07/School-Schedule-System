@@ -131,3 +131,13 @@ CREATE TABLE IF NOT EXISTS `Schedule`
     -- 3. Class cannot be double booked
     UNIQUE KEY `unique_class_time` (`date`, `period_id`, `class_id`)
 );
+
+CREATE TABLE IF NOT EXISTS `RefreshTokens`
+(
+    token       VARCHAR(255) PRIMARY KEY,
+    user_id     INT      NOT NULL,
+    device_name VARCHAR(100),
+    expires_at  DATETIME NOT NULL,
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (`user_id`) REFERENCES Users (id) ON DELETE CASCADE
+);

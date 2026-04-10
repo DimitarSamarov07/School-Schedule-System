@@ -10,6 +10,7 @@ import roomRoutes from "./routes/roomRoutes.ts";
 import scheduleRoutes from "./routes/scheduleRoutes.ts";
 import teacherRoutes from "./routes/teacherRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import authRoutes from "./routes/authRoutes.ts";
 import subjectRoutes from "./routes/subjectRoutes.ts";
 import holidayRoutes from "./routes/holidayRoutes.ts";
 
@@ -116,6 +117,7 @@ apiRouter.use("/subject", subjectRoutes);
 apiRouter.use("/schedule", scheduleRoutes);
 apiRouter.use("/teacher", teacherRoutes);
 apiRouter.use("/user", userRoutes);
+apiRouter.use("/auth", authRoutes);
 
 app.use("/api", apiRouter);
 

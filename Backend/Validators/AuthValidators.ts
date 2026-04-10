@@ -8,7 +8,8 @@ const PasswordSchema = z.string().min(8, "Password must be at least 8 characters
 
 export const LoginSchema = z.object({
     username: UsernameSchema,
-    password: PasswordSchema
+    password: PasswordSchema,
+    deviceName: z.string().trim().min(3).max(255).optional()
 });
 
 export const CreateUserSchema = z.object({
@@ -33,8 +34,13 @@ export const ChangePasswordSchema = z.object({
     newPassword: PasswordSchema
 });
 
+export const RefreshSchema = z.object({
+    refreshToken: z.uuid()
+});
+
 export type LoginPayload = z.infer<typeof LoginSchema>;
 export type CreateUserPayload = z.infer<typeof CreateUserSchema>;
 export type UserPermissionPayload = z.infer<typeof UserPermissionSchema>;
 export type AddUserToSchoolPayload = z.infer<typeof AddUserToSchoolSchema>;
 export type ChangePasswordPayload = z.infer<typeof ChangePasswordSchema>;
+export type RefreshPayload = z.infer<typeof RefreshSchema>;
