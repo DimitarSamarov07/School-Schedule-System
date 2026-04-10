@@ -129,20 +129,5 @@ app.use(globalErrorHandler);
 
 let port = 1343;
 
-async function checkUserAuthenticationMiddleware(req, res, next) {
-    let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
-    if (AUTHENTICATION_ADMIN_TOKEN) {
-        let decoded = await authenticatorMaster.decodeJWT(AUTHENTICATION_ADMIN_TOKEN);
-        if (!decoded) {
-            return res.status(401).send("Authentication failure.")
-        } else {
-            req.username = decoded.username;
-            next();
-        }
-
-    }
-    return res.status(401).send("Authentication failure.")
-}
-
 await authenticatorMaster.initializeAuthenticator();
 app.listen(port, () => console.log(`App Listening on port ${port}`));
