@@ -1,10 +1,10 @@
 import {apiRequest} from "@/lib/api/client";
 import {ENDPOINTS} from "@/lib/constants";
 
-export const login: (username: string, password: string) => Promise<void> = (username: string, password: string) =>
+export const login: (username: string, password: string, deviceName: string) => Promise<void> = (username: string, password: string, deviceName: string) =>
     apiRequest(ENDPOINTS.LOGIN, {
         method: 'POST',
-        body: JSON.stringify({username, password}),
+        body: JSON.stringify({username, password, deviceName}),
     });
 export const register: (username: string,email: string, password: string, isAdmin: boolean) => Promise<void> = (username: string,email: string, password: string, isAdmin: boolean) =>
     apiRequest(ENDPOINTS.REGISTER, {

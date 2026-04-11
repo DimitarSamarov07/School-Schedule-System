@@ -1,16 +1,18 @@
 "use client";
 
-import {useState} from 'react';
-import {useRouter} from 'next/navigation';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Cookies from 'js-cookie';
+import { jwtDecode } from 'jwt-decode';
 import {
     Eye, EyeOff, GraduationCap, Loader2,
     Shield, UserPlus, User, Mail, Lock, CheckCircle2, XCircle
 } from 'lucide-react';
-import {login, register} from "@/lib/api/user";
-
+import { login, register } from "@/lib/api/user";
+import { invalidateCsrfToken, ensureCsrfToken } from "@/lib/api/client";
 /* ─── Password strength helper ───────────────────────────── */
-function getStrength(pw: string): { score: number; label: string; color: string } {
+function getStrength(pw: string) {
     let score = 0;
     if (pw.length >= 8)          score++;
     if (/[A-Z]/.test(pw))        score++;
@@ -31,9 +33,7 @@ function getStrength(pw: string): { score: number; label: string; color: string 
 function Req({ met, text }: { met: boolean; text: string }) {
     return (
         <span className={`flex items-center gap-1 text-xs ${met ? 'text-green-600' : 'text-gray-400'}`}>
-            {met
-                ? <CheckCircle2 className="w-3 h-3 shrink-0"/>
-                : <XCircle      className="w-3 h-3 shrink-0"/>}
+            {met ? <CheckCircle2 className="w-3 h-3 shrink-0"/> : <XCircle className="w-3 h-3 shrink-0"/>}
             {text}
         </span>
     );
@@ -52,9 +52,9 @@ export default function AuthPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     /* ── Register state ── */
-    const [regEmail,           setRegEmail]           = useState('');
-    const [regUsername,        setRegUsername]        = useState('');
-    const [regPassword,        setRegPassword]        = useState('');
+    const [regEmail,            setRegEmail]           = useState('');
+    const [regUsername,         setRegUsername]        = useState('');
+    const [regPassword,         setRegPassword]        = useState('');
     const [regConfirmPassword, setRegConfirmPassword] = useState('');
     const [showRegPassword,    setShowRegPassword]    = useState(false);
     const [showRegConfirm,     setShowRegConfirm]     = useState(false);
@@ -71,11 +71,48 @@ export default function AuthPage() {
         setIsLoading(true);
         setErrorMsg(null);
         try {
-            await login(username, password);
-            router.push('/dashboard');
+            const userAgent = typeof window !== 'undefined' ? navigator.userAgent : 'unknown';
+
+            // 1. Run the login request (Backend validates and sets AUTH_TOKEN cookie)
+            await login(username, password, userAgent);
+
+            // 2. SECURITY UPGRADE: Wipe the old "guest" CSRF token from memory
+            invalidateCsrfToken();
+
+            // 3. SECURITY UPGRADE: Instantly fetch and save the new authenticated CSRF token
+            await ensureCsrfToken();
+
+            // 4. Read the newly set JWT cookie to determine routing
+            const token = Cookies.get('AUTH_TOKEN');
+            if (token) {
+                // Decode the JWT
+                const decoded: any = jwtDecode(token);
+                if (decoded.accessList && decoded.accessList.length > 0) {
+                    router.push('/dashboard');
+                } else {
+                    router.push('/no-school');
+                }
+            } else {
+                // Fallback just in case the cookie isn't immediately readable by JS
+                router.push('/dashboard');
+            }
+
         } catch (error: any) {
             console.error("Login Error:", error);
-            setErrorMsg(error.message || "Неочаквана грешка. Опитайте отново.");
+
+            // Handle structured validation errors from the backend
+            if (error?.errorType === "validation" && Array.isArray(error?.details)) {
+                const combinedMessages = error.details.map((err: any) => err.message).join(" • ");
+                setErrorMsg(combinedMessages);
+            }
+            // Handle standard string errors from the backend
+            else if (error?.error && typeof error.error === "string") {
+                setErrorMsg(error.error);
+            }
+            // Fallback generic error message
+            else {
+                setErrorMsg(error?.message || "Грешни данни за вход. Опитайте отново.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -96,16 +133,19 @@ export default function AuthPage() {
 
         setIsLoading(true);
         try {
-            await register(
-                regUsername,
-                regEmail,
-                regPassword,
-                false
-            );
+            await register(regUsername, regEmail, regPassword, false);
             setRegisterSuccess(true);
         } catch (error: any) {
             console.error("Register Error:", error);
-            setErrorMsg(error.message || "Неочаквана грешка. Опитайте отново.");
+
+            if (error?.errorType === "validation" && Array.isArray(error?.details)) {
+                const combinedMessages = error.details.map((err: any) => err.message).join(" • ");
+                setErrorMsg(combinedMessages);
+            } else if (error?.error && typeof error.error === "string") {
+                setErrorMsg(error.error);
+            } else {
+                setErrorMsg(error?.message || "Неочаквана грешка. Опитайте отново.");
+            }
         } finally {
             setIsLoading(false);
         }
@@ -264,7 +304,6 @@ export default function AuthPage() {
                                         </div>
 
                                         <form onSubmit={handleRegister} className="space-y-4">
-                                            {/* Username */}
                                             <div className="space-y-1">
                                                 <label className="text-sm font-semibold text-gray-700">Потребителско име</label>
                                                 <div className="relative">
@@ -282,7 +321,6 @@ export default function AuthPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Email */}
                                             <div className="space-y-1">
                                                 <label className="text-sm font-semibold text-gray-700">Имейл адрес</label>
                                                 <div className="relative">
@@ -299,8 +337,6 @@ export default function AuthPage() {
                                                 </div>
                                             </div>
 
-
-                                            {/* Password */}
                                             <div className="space-y-1">
                                                 <label className="text-sm font-semibold text-gray-700">Парола</label>
                                                 <div className="relative">
@@ -324,7 +360,6 @@ export default function AuthPage() {
                                                     </button>
                                                 </div>
 
-                                                {/* Strength bar */}
                                                 {regPassword && (
                                                     <div className="space-y-1.5 pt-1">
                                                         <div className="flex gap-1">
@@ -355,7 +390,6 @@ export default function AuthPage() {
                                                 )}
                                             </div>
 
-                                            {/* Confirm Password */}
                                             <div className="space-y-1">
                                                 <label className="text-sm font-semibold text-gray-700">Потвърди паролата</label>
                                                 <div className="relative">

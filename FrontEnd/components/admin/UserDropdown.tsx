@@ -1,31 +1,50 @@
 "use client";
 
-import React, {useState} from 'react';
-import {ChevronDown, LogOut, Settings, User} from 'lucide-react';
-import {useCurrentSchool} from "@/providers/SchoolProvider";
-import {useRouter} from "next/navigation";
+import React, { useState, useEffect } from 'react';
+import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
+import { useCurrentSchool } from "@/providers/SchoolProvider";
+import { useRouter } from "next/navigation";
 import SettingsSidebar from "@/components/settings/Sidebar";
 import Header from "@/components/settings/Header";
-import {useSchoolUser} from "@/hooks/use-school-user";
+import { useSchoolUser } from "@/hooks/use-school-user";
 
 export default function UserDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const [showPromotion, setShowPromotion] = useState(false);
-    const {currentSchool,username, email} = useCurrentSchool();
-    const {users} = useSchoolUser(currentSchool.SchoolId)
+
+    // 1. Extract isLoading from the provider
+    const { currentSchool, username, email, isLoading } = useCurrentSchool();
     const router = useRouter();
-    const admins = users.filter(user => user.isAdmin);
 
+    // 2. Safe hook call (must be above early returns)
+    const { users } = useSchoolUser(currentSchool?.SchoolId);
 
+    // 3. The Smart Redirect
+    useEffect(() => {
+        // ONLY redirect if we are DONE loading, and we STILL don't have a school.
+        if (!isLoading && !currentSchool) {
+            router.replace('/no-school');
+        }
+    }, [currentSchool, isLoading, router]);
+
+    // 4. Early return: Wait for loading to finish, or hide if no school
+    if (isLoading || !currentSchool) {
+        return null;
+    }
+
+    const admins = (users || []).filter((user: any) => user.isAdmin);
 
     const handleLogout = async () => {
+        // Assuming you might want to call the logout API here eventually
         router.push("/auth");
     };
+
     const closeAll = () => {
         setIsOpen(false);
         setShowPromotion(false);
     };
 
+    const safeUsername = username || 'User';
 
     return (
         <div className="relative">
@@ -35,11 +54,11 @@ export default function UserDropdown() {
             >
                 <div
                     className="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white font-semibold text-sm">
-                    {username.split(' ').map((n: string[]) => n[0]).join('').toUpperCase()}
+                    {safeUsername.split(' ').map((n: string) => n[0]).join('').toUpperCase().substring(0, 2)}
                 </div>
                 <div className="text-left hidden sm:block">
                     <p className="text-xs text-slate-400 leading-none mb-1">Добре дошли,</p>
-                    <p className="text-sm font-medium leading-none text-white">{username}</p>
+                    <p className="text-sm font-medium leading-none text-white">{safeUsername}</p>
                 </div>
                 <ChevronDown size={16} className={`text-slate-400 transition-transform ${isOpen ? 'rotate-180' : ''}`}/>
             </button>
@@ -50,7 +69,7 @@ export default function UserDropdown() {
                     <div
                         className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-slate-200 py-2 z-20 text-slate-700 animate-in fade-in zoom-in duration-150">
                         <div className="px-4 py-2 border-b border-slate-100 mb-1">
-                            <p className="text-sm font-semibold text-slate-900">{username}</p>
+                            <p className="text-sm font-semibold text-slate-900">{safeUsername}</p>
                             <p className="text-xs text-slate-500">{email}</p>
                         </div>
                         <button
@@ -84,8 +103,7 @@ export default function UserDropdown() {
                             className="w-full max-w-5xl h-[90vh] bg-linear-to-br from-slate-50/80 to-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-slate-200/50 flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200">
                             <Header closeAll={closeAll}/>
                             <div className="flex flex-1 overflow-hidden">
-                                <SettingsSidebar totalUsers={users.length} totalAdmin={admins.length}/>
-
+                                <SettingsSidebar totalUsers={(users || []).length} totalAdmin={admins.length}/>
                             </div>
                         </div>
                     </div>

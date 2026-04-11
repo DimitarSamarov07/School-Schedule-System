@@ -1,24 +1,18 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { apiRequest, setCsrfToken } from '@/lib/api/client';
+
+import { useEffect } from 'react';
+import { ensureCsrfToken } from '@/lib/api/client';
 
 export function CsrfProvider({ children }: { children: React.ReactNode }) {
-    const [isReady, setIsReady] = useState(false);
 
     useEffect(() => {
-        const initCsrf = async () => {
-            try {
-                const data = await apiRequest<{ csrfToken: string }>('/csrf-token');
-
-                setCsrfToken(data.csrfToken);
-                setIsReady(true);
-            } catch (err) {
-                console.error("CSRF Init Failed:", err);
-            }
-        };
-        initCsrf();
+        // Fire the pre-fetch in the background.
+        // ensureCsrfToken is smart enough to bypass the cache and only fetch if needed!
+        ensureCsrfToken().catch(err => console.error("CSRF Pre-fetch failed:", err));
     }, []);
-    if (!isReady) return null;
 
+    // Remove the `if (!isReady) return null;`
+    // We want the app to load instantly. If an API request fires before the token arrives,
+    // client.ts will automatically pause the request and wait for it.
     return <>{children}</>;
 }

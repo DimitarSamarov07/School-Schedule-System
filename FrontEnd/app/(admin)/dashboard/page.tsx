@@ -7,7 +7,7 @@ import { useGradesManager } from '@/hooks/use-grades-manager';
 import { useTeacherManager } from '@/hooks/use-teachers-manager';
 import { useSubjectsManager } from '@/hooks/use-subjects-manager';
 import { usePeriodsManager } from '@/hooks/use-periods-manager';
-import { Building, Clock, GraduationCap, Palette, Users } from 'lucide-react';
+import { Building, Clock, GraduationCap, Palette, Users, AlertCircle } from 'lucide-react'; // Added AlertCircle
 import StatCard from '@/components/cards/StatCard';
 import moment from 'moment';
 import { apiRequest } from '@/lib/api/client';
@@ -23,8 +23,6 @@ export default function TimetablePage() {
     const { teacherList }   = useTeacherManager();
     const { subjectList }   = useSubjectsManager();
     const { timeList }      = usePeriodsManager();
-
-    const schoolId = currentSchool?.SchoolId;
 
     const [startDate] = useState(() => moment().startOf('isoWeek').format('YYYY-MM-DD'));
     const [endDate]   = useState(() => moment().endOf('isoWeek').format('YYYY-MM-DD'));
@@ -42,9 +40,13 @@ export default function TimetablePage() {
     useEffect(() => { gradeListRef.current = gradeList; }, [gradeList]);
 
     const loadSchedule = useCallback((silent = false) => {
+        // Safe access here, though we already guard against null currentSchool below
+        const schoolId = currentSchool?.SchoolId;
         const tl = timeListRef.current;
         const gl = gradeListRef.current;
+
         if (!schoolId || !tl.length || !gl.length) return;
+
         if (!silent) setLoading(true);
         apiRequest<ApiEntry[]>(
             `/schedule/betweenDates?schoolId=${schoolId}&startDate=${startDate}&endDate=${endDate}`
@@ -52,7 +54,7 @@ export default function TimetablePage() {
             .then(data => setSections(transformSchedule(data, tl, gl)))
             .catch(err => console.error('Failed to load schedule:', err))
             .finally(() => { if (!silent) setLoading(false); });
-    }, [schoolId, startDate, endDate]);
+    }, [currentSchool?.SchoolId, startDate, endDate]);
 
     useEffect(() => {
         if (timeList.length && gradeList.length && !didInitialLoad.current) {
@@ -64,6 +66,22 @@ export default function TimetablePage() {
     function openModal(config: ModalConfig = {}) {
         setModalConfig(config);
         setModalOpen(true);
+    }
+
+    // ─── NULL SCHOOL GUARD ──────────────────────────────────────────────
+    if (!currentSchool) {
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mb-4">
+                    <AlertCircle className="w-8 h-8" />
+                </div>
+                <h2 className="text-2xl font-bold text-slate-800 mb-2">Няма избрано училище</h2>
+                <p className="text-slate-500 max-w-md">
+                    За да видите и редактирате програмата, трябва да сте добавени към училище.
+                    Моля, свържете се с администратор или изберете училище от менюто.
+                </p>
+            </div>
+        );
     }
 
     if (loading) return <p className="p-6 text-gray-400">Зареждане...</p>;

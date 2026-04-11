@@ -8,23 +8,32 @@ const SchoolContext = createContext<any>(null);
 export const SchoolProvider = ({ children }: { children: React.ReactNode }) => {
     const [currentSchool, setCurrentSchool] = useState<any>(null);
     const [accessList, setAccessList] = useState([]);
-    const [username, setUsername] = useState([]);
-    const [email, setEmail] = useState([]);
+    const [username, setUsername] = useState('');
+    const [email, setEmail] = useState('');
     const [isSudo, setIsSudo] = useState(false);
+
+    // THE FIX: Add a loading state
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const token = Cookies.get('AUTH_TOKEN');
         if (token) {
-            const decoded: any = jwtDecode(token);
-            setAccessList(decoded.accessList);
-            setUsername(decoded.username);
-            setEmail(decoded.email);
-            setIsSudo(decoded.isSudo);
+            try {
+                const decoded: any = jwtDecode(token);
+                setAccessList(decoded.accessList || []);
+                setUsername(decoded.username || '');
+                setEmail(decoded.email || '');
+                setIsSudo(decoded.isSudo || false);
 
-            if (decoded.accessList?.length > 0) {
-                setCurrentSchool(decoded.accessList[0]);
+                if (decoded.accessList?.length > 0) {
+                    setCurrentSchool(decoded.accessList[0]);
+                }
+            } catch (err) {
+                console.error("Failed to decode token", err);
             }
         }
+        // Tell the app we are done reading the cookie!
+        setIsLoading(false);
     }, []);
 
     const switchSchool = (id: number) => {
@@ -33,7 +42,7 @@ export const SchoolProvider = ({ children }: { children: React.ReactNode }) => {
     };
 
     return (
-        <SchoolContext.Provider value={{ currentSchool, username, email, accessList, switchSchool, isSudo }}>
+        <SchoolContext.Provider value={{ currentSchool, username, email, accessList, switchSchool, isSudo, isLoading }}>
             {children}
         </SchoolContext.Provider>
     );
