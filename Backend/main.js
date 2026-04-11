@@ -28,15 +28,32 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'x-csrf-token', 'Authorization'],
     credentials: true
 }))
-const limiter = rateLimit({
-    windowMs: 15 * 1000,
-    max: 20,
-    message: "Too many requests from this IP, please try again after 15 minutes",
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipFailedRequests: false,
-    skipSuccessfulRequests: false,
+
+const keyGenerator = (req) => {
+    // If the Refresh token is available, use it
+    if (req.cookies.REFRESH_TOKEN) {
+        return req.cookies.REFRESH_TOKEN;
+    }
+
+    // 2. If no token (guest), fallback to IP.
+    return req.ip;
+}
+
+const standardLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    message: {error: "Too many requests. Try again later."},
+    keyGenerator: keyGenerator
 });
+
+const utilityLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {error: "Utility rate limit exceeded. Try again later."},
+    keyGenerator: keyGenerator
+});
+
+
 const csrfSecret = await authenticatorMaster.retrieveCSRFKey();
 
 const {
@@ -99,7 +116,6 @@ export const globalErrorHandler = (
 };
 
 
-
 //app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
@@ -107,27 +123,28 @@ app.use(doubleCsrfProtection);
 app.use(helmet()) // Enhances security
 
 
-app.set('trust proxy', 1);
-
-app.get("/csrf-token", (req, res) => {
-    const token = generateCsrfToken(req, res);
-    return res.json({ csrfToken: token });
-});
-
 const apiRouter = express.Router();
 
-// Include user-defined routes
-apiRouter.use("/school", schoolRoutes);
-apiRouter.use("/class", classRoutes);
-apiRouter.use("/holiday", holidayRoutes);
-apiRouter.use("/period", periodRoutes);
-apiRouter.use("/room", roomRoutes);
-apiRouter.use("/subject", subjectRoutes);
-apiRouter.use("/schedule", scheduleRoutes);
-apiRouter.use("/teacher", teacherRoutes);
-apiRouter.use("/user", userRoutes);
+// Guarded by individual limiters, see the route
 apiRouter.use("/auth", authRoutes);
-apiRouter.use("/assets", assetsRoutes)
+
+// Utility limiter
+apiRouter.use("/assets", utilityLimiter, assetsRoutes)
+app.get("/csrf-token", utilityLimiter, (req, res) => {
+    const token = generateCsrfToken(req, res);
+    return res.json({csrfToken: token});
+});
+
+// Standard limit for most routes
+apiRouter.use("/school", standardLimiter, schoolRoutes);
+apiRouter.use("/class", standardLimiter, classRoutes);
+apiRouter.use("/holiday", standardLimiter, holidayRoutes);
+apiRouter.use("/period", standardLimiter, periodRoutes);
+apiRouter.use("/room", standardLimiter, roomRoutes);
+apiRouter.use("/subject", standardLimiter, subjectRoutes);
+apiRouter.use("/schedule", standardLimiter, scheduleRoutes);
+apiRouter.use("/teacher", standardLimiter, teacherRoutes);
+apiRouter.use("/user", standardLimiter, userRoutes);
 
 app.use("/api", apiRouter);
 
