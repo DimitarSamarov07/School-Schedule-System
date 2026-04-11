@@ -88,6 +88,14 @@ export const globalErrorHandler = (
         });
     }
 
+    if (err instanceof SyntaxError && err.status === 400 && err.type === 'entity.parse.failed') {
+        return res.status(400).json({
+            error: "Bad Request",
+            errorType: "malformed_json",
+            message: "The server received invalid JSON. Please check your syntax."
+        });
+    }
+
     if (err.code === "ER_DUP_ENTRY") {
         return res.status(409).json({errorType: "sql", error: "Duplicate entry detected."});
     }
