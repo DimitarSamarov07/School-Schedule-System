@@ -123,13 +123,21 @@ export const globalErrorHandler = (
     });
 };
 
+const globalFailsafeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000, // (~1 request per second sustained for 15 mins)
+    message: {
+        error: "Critical traffic threshold reached. Connection temporarily blocked."
+    },
 
-//app.use(limiter)
+});
+
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
 app.use(doubleCsrfProtection);
 app.use(helmet()) // Enhances security
 
+app.use(globalFailsafeLimiter)
 
 const apiRouter = express.Router();
 
