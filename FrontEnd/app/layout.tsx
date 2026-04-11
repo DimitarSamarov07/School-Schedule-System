@@ -1,7 +1,7 @@
-import type {Metadata} from "next";
-import {Geist, Geist_Mono} from "next/font/google";
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "@/app/globals.css";
-import {SchoolProvider} from "@/providers/SchoolProvider";
+import { SchoolProvider } from "@/providers/SchoolProvider";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -25,14 +25,14 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
+        <body
+            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        >
+        {/* The Provider MUST be inside the body tag */}
         <SchoolProvider>
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
             {children}
-            </body>
         </SchoolProvider>
-
+        </body>
         </html>
     );
 }
