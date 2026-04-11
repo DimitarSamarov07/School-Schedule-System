@@ -1,9 +1,9 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
 import { Teacher } from "@/types/teacher";
 
 const teachersEndpoint = (schoolId: number) =>
-    `/teacher/all?schoolId=${schoolId}`;
+    `${ENDPOINTS.TEACHER.ALL}?schoolId=${schoolId}`;
 
 export const getTeachers = (schoolId: number): Promise<Teacher[]> =>
     apiRequest(teachersEndpoint(schoolId), { method: 'GET' });
@@ -14,7 +14,7 @@ export const createTeacher = async (
     email: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.TEACHER}?schoolId=${schoolId}`,
+        `${ENDPOINTS.TEACHER.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, email }) },
     );
     invalidateCache(teachersEndpoint(schoolId));
@@ -28,7 +28,7 @@ export const updateTeacher = async (
     email?: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.TEACHER}?schoolId=${schoolId}`,
+        `${ENDPOINTS.TEACHER.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -44,7 +44,7 @@ export const updateTeacher = async (
 
 export const deleteTeacher = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.TEACHER}?id=${id}&schoolId=${schoolId}`,
+        `${ENDPOINTS.TEACHER.PRIMARY}?id=${id}&schoolId=${schoolId}`,
         { method: 'DELETE' },
     );
     invalidateCache(teachersEndpoint(schoolId));

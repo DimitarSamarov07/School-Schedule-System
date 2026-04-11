@@ -2,30 +2,28 @@ import { apiRequest, ensureCsrfToken, invalidateCsrfToken } from "@/lib/api/clie
 import { ENDPOINTS } from "@/constants/endpoints";
 import Cookies from "js-cookie";
 
-// ─── STANDARD AUTH ENDPOINTS ───────────────────────────────────────────────────
 
 export const login = (username: string, password: string, deviceName: string): Promise<void> =>
-    apiRequest(ENDPOINTS.LOGIN, {
+    apiRequest(ENDPOINTS.AUTH.LOGIN, {
         method: 'POST',
         body: JSON.stringify({ username, password, deviceName }),
     });
 
 export const register = (username: string, email: string, password: string, isAdmin: boolean): Promise<void> =>
-    apiRequest(ENDPOINTS.REGISTER, {
+    apiRequest(ENDPOINTS.AUTH.REGISTER, {
         method: 'POST',
         body: JSON.stringify({ username, password, email, isAdmin }),
     });
 
 export const logout = (): Promise<void> =>
-    apiRequest(ENDPOINTS.LOGOUT, {
+    apiRequest(ENDPOINTS.AUTH.LOGOUT, {
         method: 'GET'
     });
 
-// ─── CSRF FETCH LOGIC ──────────────────────────────────────────────────────────
 
 export const getCSRFToken = (): Promise<{ csrfToken: string }> =>
     apiRequest<{ csrfToken: string }>(
-        `/csrf-token?t=${Date.now()}`,
+        ENDPOINTS.CSRF,
         {
             method: 'GET',
             headers: {
@@ -34,10 +32,9 @@ export const getCSRFToken = (): Promise<{ csrfToken: string }> =>
                 'Expires': '0'
             }
         },
-        0 // Force bypass of the memCache
+        0
     );
 
-// ─── TOKEN REFRESH LOGIC ───────────────────────────────────────────────────────
 
 // Holds the active refresh promise so multiple failed requests don't trigger multiple refreshes
 let refreshPromise: Promise<void> | null = null;
@@ -60,7 +57,7 @@ export async function performTokenRefresh(): Promise<void> {
                     method: 'POST',
                     body: JSON.stringify({ refreshToken })
                 },
-                0 // Bypass cache
+                0
             );
 
             const newAuthToken = data.token || data.accessToken;
@@ -72,7 +69,6 @@ export async function performTokenRefresh(): Promise<void> {
             }
 
         } finally {
-            // Clear the lock once the refresh is complete or fails
             refreshPromise = null;
         }
     })();

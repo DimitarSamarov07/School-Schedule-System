@@ -2,7 +2,7 @@
 
 import { FormEvent, useState } from 'react';
 import { useCurrentSchool } from '@/providers/SchoolProvider';
-import { inviteUserToSchool } from '@/lib/api/user';
+import { inviteUserToSchool } from '@/lib/api/schoolUser';
 import { UserPlus } from 'lucide-react';
 
 type Status = { type: 'success' | 'error'; message: string } | null;

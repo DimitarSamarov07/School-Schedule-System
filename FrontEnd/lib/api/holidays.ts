@@ -1,28 +1,28 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
 import { Holiday } from "@/types/holiday";
 
 const holidayEndpoint = (schoolId: number) =>
-    `${ENDPOINTS.HOLIDAY}/all?schoolId=${schoolId}`;
+    `${ENDPOINTS.HOLIDAY.ALL}?schoolId=${schoolId}`;
 
 export const getHoliday = (schoolId: number): Promise<Holiday[]> =>
     apiRequest(holidayEndpoint(schoolId), { method: 'GET' });
 
-export const createDate = async (
+export const createHoliday = async (
     schoolId: number,
     name: string,
     startDate: string,
     endDate: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.HOLIDAY}?schoolId=${schoolId}`,
+        `${ENDPOINTS.HOLIDAY.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, startDate, endDate }) },
     );
     invalidateCache(holidayEndpoint(schoolId));
     return result;
 };
 
-export const updateDate = async (
+export const updateHoliday = async (
     schoolId: number,
     id: number,
     name?: string,
@@ -30,7 +30,7 @@ export const updateDate = async (
     end?: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.HOLIDAY}?schoolId=${schoolId}`,
+        `${ENDPOINTS.HOLIDAY.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -45,9 +45,9 @@ export const updateDate = async (
     return result;
 };
 
-export const deleteDate = async (id: number, schoolId: number) => {
+export const deleteHoliday = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.HOLIDAY}?id=${id}&schoolId=${schoolId}`,
+        `${ENDPOINTS.HOLIDAY.PRIMARY}?id=${id}&schoolId=${schoolId}`,
         { method: 'DELETE' },
     );
     invalidateCache(holidayEndpoint(schoolId));

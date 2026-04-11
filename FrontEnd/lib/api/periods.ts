@@ -1,11 +1,11 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
-import { Time } from "@/types/time";
+import { Period } from "@/types/period";
 
 const periodsEndpoint = (schoolId: number) =>
-    `${ENDPOINTS.PERIOD}/all?schoolId=${schoolId}`;
+    `${ENDPOINTS.PERIOD.ALL}?schoolId=${schoolId}`;
 
-export const getPeriodsForSchool = (schoolId: number): Promise<Time[]> =>
+export const getPeriodsForSchool = (schoolId: number): Promise<Period[]> =>
     apiRequest(periodsEndpoint(schoolId), { method: 'GET' });
 
 export const createPeriod = async (
@@ -15,7 +15,7 @@ export const createPeriod = async (
     endTime: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.PERIOD}?schoolId=${schoolId}`,
+        `${ENDPOINTS.PERIOD.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, startTime, endTime }) },
     );
     invalidateCache(periodsEndpoint(schoolId));
@@ -30,7 +30,7 @@ export const updateTime = async (
     endTime?: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.PERIOD}?schoolId=${schoolId}`,
+        `${ENDPOINTS.PERIOD.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -47,7 +47,7 @@ export const updateTime = async (
 
 export const deletePeriod = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.PERIOD}?id=${id}&schoolId=${schoolId}`,
+        `${ENDPOINTS.PERIOD.PRIMARY}?id=${id}&schoolId=${schoolId}`,
         { method: 'DELETE' },
     );
     invalidateCache(periodsEndpoint(schoolId));

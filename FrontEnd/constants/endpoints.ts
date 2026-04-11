@@ -5,6 +5,7 @@ export const ENDPOINTS = {
     ASSETS: {
         BELL: `/assets/bell`,
     },
+    CSRF: `/csrf-token`,
     PERIOD: {
         CURRENT: `/period/current`,
         NEXT: `/period/next`,

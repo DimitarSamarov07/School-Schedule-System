@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
-import { getHoliday, createDate, deleteDate, updateDate } from "@/lib/api/dates";
+import { getHoliday, createHoliday, deleteHoliday, updateHoliday } from "@/lib/api/holidays";
 import { Holiday } from "@/types/holiday";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
@@ -56,7 +56,7 @@ export function useDatesManager() {
         const Start = start ?? formData.Start;
         const End = end ?? formData.End;
         try {
-            await createDate(schoolId, "Holiday", Start!, End!);
+            await createHoliday(schoolId, "Holiday", Start!, End!);
             await fetchDates(true);
             closeModal();
         } catch (error) {
@@ -69,7 +69,7 @@ export function useDatesManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!formData.id) return;
         try {
-            await updateDate(schoolId, Number(formData.id), formData.Name!, formData.Start!, formData.End!);
+            await updateHoliday(schoolId, Number(formData.id), formData.Name!, formData.Start!, formData.End!);
             await fetchDates(true);
             closeModal();
         } catch (error) {
@@ -82,7 +82,7 @@ export function useDatesManager() {
         if (!isAdmin) return alert("Unauthorized: Admin access required.");
         if (!selectedDate?.id) return;
         try {
-            await deleteDate(Number(selectedDate.id), schoolId);
+            await deleteHoliday(Number(selectedDate.id), schoolId);
             await fetchDates(true);
             closeModal();
         } catch (error) {

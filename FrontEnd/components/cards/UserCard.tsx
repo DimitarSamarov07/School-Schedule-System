@@ -2,7 +2,7 @@
 
 import React from "react";
 import { UserCardProps } from "@/components/cards/interfaces/UserCardInterfaces";
-import { removeUserFromSchool } from "@/lib/api/user";
+import { removeUserFromSchool } from "@/lib/api/schoolUser";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
 export const UserCard: React.FC<UserCardProps> = ({ user, onPromote, onDemote, onRemove }) => {

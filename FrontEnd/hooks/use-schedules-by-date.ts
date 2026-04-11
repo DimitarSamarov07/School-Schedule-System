@@ -1,6 +1,6 @@
 import useSWR from "swr";
 import fetcher from "@/lib/fetcher";
-import { BASE_URL, ENDPOINTS } from "@/lib/constants";
+import { BASE_URL, ENDPOINTS } from "@/constants/endpoints";
 
 export default function useSchedulesByDateAndSchool(schoolId: number, date: string) {
 

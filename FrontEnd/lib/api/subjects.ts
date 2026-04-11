@@ -1,9 +1,9 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
 import { Subject } from "@/types/subject";
 
 const subjectsEndpoint = (schoolId: number) =>
-    `${ENDPOINTS.SUBJECTS}/all?schoolId=${schoolId}`;
+    `${ENDPOINTS.SUBJECT.ALL}?schoolId=${schoolId}`;
 
 export const getSubjects = (schoolId: number): Promise<Subject[]> =>
     apiRequest(subjectsEndpoint(schoolId), { method: 'GET' });
@@ -14,7 +14,7 @@ export const createSubject = async (
     description: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.SUBJECTS}?schoolId=${schoolId}`,
+        `${ENDPOINTS.SUBJECT.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, description }) },
     );
     invalidateCache(subjectsEndpoint(schoolId));
@@ -28,7 +28,7 @@ export const updateSubject = async (
     description?: string,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.SUBJECTS}?schoolId=${schoolId}`,
+        `${ENDPOINTS.SUBJECT.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -44,7 +44,7 @@ export const updateSubject = async (
 
 export const deleteSubject = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.SUBJECTS}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
+        `${ENDPOINTS.SUBJECT.PRIMARY}?id=${id}&schoolId=${schoolId}`,
         { method: 'DELETE' },
     );
     invalidateCache(subjectsEndpoint(schoolId));

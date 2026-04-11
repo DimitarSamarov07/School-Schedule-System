@@ -1,28 +1,28 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
-import { Grade } from "@/types/grade";
+import { Class } from "@/types/class";
 
-const gradesEndpoint = (schoolId: number) =>
-    `${ENDPOINTS.CLASS}/all?schoolId=${schoolId}`;
+const classesEndpoint = (schoolId: number) =>
+    `${ENDPOINTS.CLASS.ALL}?schoolId=${schoolId}`;
 
-export const getGrades = (schoolId: number): Promise<Grade[]> =>
-    apiRequest(gradesEndpoint(schoolId), { method: 'GET' });
+export const getClasses = (schoolId: number): Promise<Class[]> =>
+    apiRequest(classesEndpoint(schoolId), { method: 'GET' });
 
-export const createGrade = async (
+export const createClass = async (
     schoolId: number,
     name: string,
     description: string,
     homeroomId: number,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.CLASS}?schoolId=${schoolId}`,
+        `${ENDPOINTS.CLASS.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, description, homeroomId }) },
     );
-    invalidateCache(gradesEndpoint(schoolId));
+    invalidateCache(classesEndpoint(schoolId));
     return result;
 };
 
-export const updateGrade = async (
+export const updateClass = async (
     schoolId: number,
     id: number,
     name?: string,
@@ -30,7 +30,7 @@ export const updateGrade = async (
     homeroomId?: number,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.CLASS}?schoolId=${schoolId}`,
+        `${ENDPOINTS.CLASS.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -41,15 +41,15 @@ export const updateGrade = async (
             }),
         },
     );
-    invalidateCache(gradesEndpoint(schoolId));
+    invalidateCache(classesEndpoint(schoolId));
     return result;
 };
 
 export const deleteGrade = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.CLASS}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
+        `${ENDPOINTS.CLASS.PRIMARY}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
         { method: 'DELETE' },
     );
-    invalidateCache(gradesEndpoint(schoolId));
+    invalidateCache(classesEndpoint(schoolId));
     return result;
 };

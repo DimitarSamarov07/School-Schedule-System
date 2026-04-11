@@ -1,6 +1,6 @@
 import {Room} from "@/types/room";
 
-export interface Grade {
+export interface Class {
     id: string ;
     Name: string;
     Description: string;

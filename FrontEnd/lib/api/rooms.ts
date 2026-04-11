@@ -1,9 +1,9 @@
-import { ENDPOINTS } from "@/lib/constants";
+import { ENDPOINTS } from "@/constants/endpoints";
 import { apiRequest, invalidateCache } from "@/lib/api/client";
 import { Room } from "@/types/room";
 
 const roomsEndpoint = (schoolId: number) =>
-    `${ENDPOINTS.ROOM}/all?schoolId=${schoolId}`;
+    `${ENDPOINTS.ROOM.ALL}?schoolId=${schoolId}`;
 
 export const getRooms = (schoolId: number): Promise<Room[]> =>
     apiRequest(roomsEndpoint(schoolId), { method: 'GET' });
@@ -15,7 +15,7 @@ export const createRoom = async (
     capacity: number,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.ROOM}?schoolId=${schoolId}`,
+        `${ENDPOINTS.ROOM.PRIMARY}?schoolId=${schoolId}`,
         { method: 'POST', body: JSON.stringify({ name, floor, capacity }) },
     );
     invalidateCache(roomsEndpoint(schoolId));
@@ -30,7 +30,7 @@ export const updateRoom = async (
     capacity?: number,
 ) => {
     const result = await apiRequest(
-        `${ENDPOINTS.ROOM}?schoolId=${schoolId}`,
+        `${ENDPOINTS.ROOM.PRIMARY}?schoolId=${schoolId}`,
         {
             method: 'PUT',
             body: JSON.stringify({
@@ -47,7 +47,7 @@ export const updateRoom = async (
 
 export const deleteRoom = async (id: number, schoolId: number) => {
     const result = await apiRequest(
-        `${ENDPOINTS.ROOM}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
+        `${ENDPOINTS.ROOM.PRIMARY}?id=${id}&schoolId=${schoolId}`, // fixed: && → &
         { method: 'DELETE' },
     );
     invalidateCache(roomsEndpoint(schoolId));

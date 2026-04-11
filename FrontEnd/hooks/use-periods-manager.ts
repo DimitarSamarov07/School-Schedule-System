@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createPeriod, deletePeriod, getPeriodsForSchool, updateTime } from "@/lib/api/periods";
-import { Time } from "@/types/time";
+import { Period } from "@/types/period";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 // ── Helper ────────────────────────────────────────────────────────────────────
 /** Ensures a time string is always HH:MM:SS.
@@ -22,12 +22,12 @@ export function usePeriodsManager() {
     const schoolId = currentSchool?.SchoolId;
     const isAdmin = !!currentSchool?.IsAdmin || isSudo;
 
-    const [timeList, setTimeList] = useState<Time[]>([]);
+    const [timeList, setTimeList] = useState<Period[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
     const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
-    const [formData, setFormData] = useState<Partial<Time>>({ Name: '', Start: '', End: '' });
-    const [selectedTime, setSelectedTime] = useState<Time | null>(null);
+    const [formData, setFormData] = useState<Partial<Period>>({ Name: '', Start: '', End: '' });
+    const [selectedTime, setSelectedTime] = useState<Period | null>(null);
 
     const fetchTimes = useCallback(async (skipLoadingState = false) => {
         if (!schoolId) return;
@@ -39,7 +39,7 @@ export function usePeriodsManager() {
                 return;
             }
             const trimSeconds = (t: string) => t?.slice(0, 5) ?? '';
-            const raw = Array.isArray(response) ? response as Time[] : response ? [response as Time] : [];
+            const raw = Array.isArray(response) ? response as Period[] : response ? [response as Period] : [];
             setTimeList(raw.map(time => ({
                 ...time,
                 Start: trimSeconds(time.Start),
@@ -116,7 +116,7 @@ export function usePeriodsManager() {
     };
 
     const setSelectedEntity = (entity: unknown) => {
-        const time = entity as Time | null;
+        const time = entity as Period | null;
         setSelectedTime(time);
         if (time) setFormData({ ...time, Name: time.Name || '', Start: time.Start || '', End: time.End || '' });
     };

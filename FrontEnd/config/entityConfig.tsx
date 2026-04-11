@@ -1,6 +1,6 @@
-import { Grade } from "@/types/grade";
+import { Class } from "@/types/class";
 import { Room } from "@/types/room";
-import { Time } from "@/types/time";
+import { Period } from "@/types/period";
 import {formatWorkweek} from "@/lib/utils";
 
 export const CLASS_CONFIG = {
@@ -136,7 +136,7 @@ export const PERIOD_CONFIG = {
         {
             key: "Start",
             label: "Начало",
-            render: (period: Time) => (
+            render: (period: Period) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
                     {period.Start}
                 </span>
@@ -145,7 +145,7 @@ export const PERIOD_CONFIG = {
         {
             key: "End",
             label: "Край",
-            render: (period: Time) => (
+            render: (period: Period) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
                     {period.End}
                 </span>

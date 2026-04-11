@@ -1,20 +1,20 @@
-import {ENDPOINTS} from "@/lib/constants";
+import {ENDPOINTS} from "@/constants/endpoints";
 import {apiRequest} from "@/lib/api/client";
 import {School} from "@/types/school";
 
 
 export const getSchools: () => Promise<School[]> = () =>
-    apiRequest(ENDPOINTS.SCHOOL+`/all`, {
+    apiRequest(ENDPOINTS.SCHOOL.ALL, {
         method: 'GET'
     });
 
 export const createSchool = (name: string, address: string, workWeekConfig: number[])=>
-    apiRequest(ENDPOINTS.SCHOOL, {
+    apiRequest(ENDPOINTS.SCHOOL.PRIMARY, {
         method: 'POST',
         body: JSON.stringify({name, address,workWeekConfig})
     });
 export const updateSchool = (schoolId: number,id: number, name?: string, address?: string, workWeekConfig?: number[]) =>
-    apiRequest(ENDPOINTS.ROOM+`?schoolId=${schoolId}`, {
+    apiRequest(ENDPOINTS.SCHOOL.PRIMARY+`?schoolId=${schoolId}`, {
         method: 'PUT',
         body: JSON.stringify({
             id,
@@ -24,7 +24,7 @@ export const updateSchool = (schoolId: number,id: number, name?: string, address
         }),
     });
 export const deleteSchool = (id: number, schoolId: number) =>
-    apiRequest(`${ENDPOINTS.SCHOOL}?id=${id}&&schoolId=${schoolId}`, {
+    apiRequest(`${ENDPOINTS.SCHOOL.PRIMARY}?id=${id}&&schoolId=${schoolId}`, {
         method: 'DELETE',
     });
 
