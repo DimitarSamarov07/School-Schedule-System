@@ -75,6 +75,14 @@ export const globalErrorHandler = (
         return res.status(409).json({errorType: "sql", error: "Duplicate entry detected."});
     }
 
+    if (err.code === "EBADCSRFTOKEN") {
+        return res.status(403).json({
+            error: "Invalid or missing CSRF token",
+            errorType: "security",
+            message: "The request was rejected for security reasons. Please refresh your CSRF token."
+        });
+    }
+
     // Custom Application Errors
     if (err.message && err.message.includes("Security Violation")) {
         return res.status(403).json({errorType: "security", error: err.message});
