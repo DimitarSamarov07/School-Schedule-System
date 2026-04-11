@@ -11,7 +11,7 @@ export function CsrfProvider({ children }: { children: React.ReactNode }) {
         ensureCsrfToken().catch(err => console.error("CSRF Pre-fetch failed:", err));
     }, []);
 
-    // Remove the `if (!isReady) return null;`
+    // Remove the `if (!isReady) return null`;
     // We want the app to load instantly. If an API request fires before the token arrives,
     // client.ts will automatically pause the request and wait for it.
     return <>{children}</>;

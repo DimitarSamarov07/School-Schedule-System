@@ -9,7 +9,7 @@ import {
     Eye, EyeOff, GraduationCap, Loader2,
     Shield, UserPlus, User, Mail, Lock, CheckCircle2, XCircle
 } from 'lucide-react';
-import { login, register } from "@/lib/api/user";
+import { login, register } from "@/lib/api/auth";
 import { invalidateCsrfToken, ensureCsrfToken } from "@/lib/api/client";
 /* ─── Password strength helper ───────────────────────────── */
 function getStrength(pw: string) {

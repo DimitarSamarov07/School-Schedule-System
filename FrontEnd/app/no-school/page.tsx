@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Building2, AlertCircle, RefreshCw, LogOut, Loader2, GraduationCap } from 'lucide-react';
-import { logout } from "@/lib/api/user";
+import { logout } from "@/lib/api/auth";
+import {performTokenRefresh} from "@/lib/api/auth";
 
 export default function NoSchoolWarningPage() {
     const router = useRouter();
@@ -12,8 +13,9 @@ export default function NoSchoolWarningPage() {
     const [isLoggingOut, setIsLoggingOut] = useState(false);
 
     // Handler to refresh the page/check status again
-    const handleRefresh = () => {
+    const handleRefresh = async () => {
         setIsRefreshing(true);
+        await performTokenRefresh()
         window.location.reload();
     };
 
@@ -30,22 +32,19 @@ export default function NoSchoolWarningPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-600 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-linear-to-br from-indigo-600 via-purple-500 to-pink-500 flex items-center justify-center p-4">
             <div className="w-full max-w-md text-slate-900">
 
-                {/* ── Logo ── */}
-                <Link href="/" className="flex items-center justify-center gap-2 text-white mb-6 group">
+                <Link href="/" className="flex items-center justify-center gap-3 text-white mb-4 group">
                     <GraduationCap className="w-10 h-10 transition-transform group-hover:scale-110"/>
                     <span className="font-bold text-3xl tracking-tight">EduSchedule</span>
                 </Link>
 
                 {/* ── Main Card ── */}
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden text-center p-8 relative">
+                <div className="bg-white rounded-3xl shadow-2xl overflow-hidden text-center p-10 relative">
 
-                    {/* ── Decorative top bar ── */}
                     <div className="absolute top-0 left-0 w-full h-1.5 bg-purple-500" />
 
-                    {/* ── Icon ── */}
                     <div className="flex justify-center mb-6">
                         <div className="relative">
                             <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center">

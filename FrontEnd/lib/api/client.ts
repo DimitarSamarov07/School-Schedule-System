@@ -1,5 +1,5 @@
-import { BASE_URL } from '@/lib/constants';
-import Cookies from 'js-cookie';
+import { BASE_URL } from '@/constants/endpoints';
+import { getCSRFToken, performTokenRefresh } from './auth';
 
 // ─── CSRF STATE ────────────────────────────────────────────────────────────────
 
@@ -24,33 +24,20 @@ export const invalidateCsrfToken = () => {
     csrfReadyPromise = makeCsrfGate();
 };
 
-// Autonomously fetches the CSRF token if it's missing
-// Autonomously fetches the CSRF token if it's missing
 export async function ensureCsrfToken() {
-    if (memoizedCsrfToken) return; // We already have it
+    if (memoizedCsrfToken) return;
 
     if (isFetchingCsrf) {
-        await csrfReadyPromise; // Another request is already fetching it, just wait
+        await csrfReadyPromise;
         return;
     }
 
     isFetchingCsrf = true;
     try {
-
-        const url = `/csrf-token?t=${Date.now()}`;
-
-        const res = await executeRequest<{csrfToken: string}>(url, {
-            method: 'GET',
-            headers: {
-                'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-                'Pragma': 'no-cache',
-                'Expires': '0'
-            }
-        }, false);
-
+        const res = await getCSRFToken();
         setCsrfToken(res.csrfToken);
     } catch (e) {
-        console.error("❌ Failed to fetch CSRF token", e);
+        console.error("Failed to fetch CSRF token", e);
     } finally {
         isFetchingCsrf = false;
     }
@@ -68,12 +55,12 @@ export function onCacheInvalidated(cb: InvalidationListener): () => void {
 
 // ─── IN-FLIGHT DEDUPLICATION ───────────────────────────────────────────────────
 
-const inFlight = new Map<string, Promise<any>>();
+const inFlight = new Map<string, Promise<unknown>>();
 
 // ─── RESPONSE CACHE ────────────────────────────────────────────────────────────
 
 interface CacheEntry {
-    data: any;
+    data: unknown;
     expiresAt: number;
 }
 
@@ -99,53 +86,14 @@ export function invalidateCacheAll() {
     invalidationListeners.forEach((cb) => cb('*'));
 }
 
-// ─── TOKEN REFRESH STATE ───────────────────────────────────────────────────────
-
-let refreshPromise: Promise<void> | null = null;
-
-async function performTokenRefresh(): Promise<void> {
-    try {
-        const refreshToken = Cookies.get('REFRESH_TOKEN');
-
-        if (!refreshToken) {
-            throw new Error("No refresh token found");
-        }
-
-        const res = await fetch(`${BASE_URL}/auth/refresh`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                ...(memoizedCsrfToken ? { 'x-csrf-token': memoizedCsrfToken } : {})
-            },
-            body: JSON.stringify({ refreshToken })
-        });
-
-        if (!res.ok) {
-            throw new Error("Refresh token expired or invalid");
-        }
-
-        const data = await res.json();
-        const newAuthToken = data.token || data.accessToken;
-
-        if (newAuthToken) {
-            Cookies.set('AUTH_TOKEN', newAuthToken);
-            invalidateCsrfToken();
-            await ensureCsrfToken();
-        }
-
-    } finally {
-        refreshPromise = null;
-    }
-}
-
 // ─── CORE API WRAPPER ──────────────────────────────────────────────────────────
 
-export async function apiRequest<T>(
+export async function apiRequest<T = unknown>(
     endpoint: string,
     options: RequestInit = {},
     cacheTTL = DEFAULT_TTL,
 ): Promise<T> {
-    const isCsrfHandshake = endpoint === '/csrf-token';
+    const isCsrfHandshake = endpoint.startsWith('/csrf-token');
     const isGet = !options.method || options.method.toUpperCase() === 'GET';
     const cacheKey = `${options.method?.toUpperCase() ?? 'GET'}:${endpoint}`;
 
@@ -192,6 +140,8 @@ async function executeRequest<T>(endpoint: string, options: RequestInit, isRetry
         if (!headers.has('Content-Type')) {
             headers.set('Content-Type', 'application/json');
         }
+
+        // Inject CSRF token from a local state
         if (memoizedCsrfToken) {
             headers.set('x-csrf-token', memoizedCsrfToken);
         }
@@ -206,29 +156,19 @@ async function executeRequest<T>(endpoint: string, options: RequestInit, isRetry
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-            // ─── 401 INTERCEPTOR ───
-            if ((response.status === 401 || response.status === 403) && !isRetry && endpoint !== '/user/refresh') {
-                if (!refreshPromise) {
-                    refreshPromise = performTokenRefresh();
-                }
-
+            // 401 Interceptor bypasses /auth/refresh to prevent loops
+            if ((response.status === 401 || response.status === 403) && !isRetry && endpoint !== '/auth/refresh') {
                 try {
-                    await refreshPromise;
+                    await performTokenRefresh();
                     return await executeRequest<T>(endpoint, options, true); // RETRY
                 } catch (refreshError) {
-                    // Redirect to login if the refresh fails completely
-                        // if (typeof window !== 'undefined') {
-                        //     window.location.href = '/auth';
-                        // }
                     throw { error: "Сесията изтече. Моля, влезте отново.", errorType: "auth" };
                 }
             }
 
-            const errorData = await response.json().catch(() => ({
+            throw await response.json().catch(() => ({
                 error: "Network error or invalid JSON response"
             }));
-
-            throw errorData;
         }
 
         const contentType = response.headers.get('content-type');
@@ -238,8 +178,9 @@ async function executeRequest<T>(endpoint: string, options: RequestInit, isRetry
 
         return {} as T;
 
-    } catch (error: any) {
+    } catch (error) {
         clearTimeout(timeoutId);
+        // @ts-expect-error - Catching AbortController timeout
         if (error.name === 'AbortError') {
             console.error(`[API] Timeout reaching ${endpoint}`);
         }

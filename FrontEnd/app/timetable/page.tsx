@@ -17,7 +17,6 @@ export default function Timetable() {
         setMounted(true);
     }, []);
 
-    // @ts-ignore
     const {timeData, timeError} = useRunningPeriod(1);
     const {nextTimeData, nextTimeError} = useNextPeriod(1);
 
