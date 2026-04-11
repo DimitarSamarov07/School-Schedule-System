@@ -13,6 +13,7 @@ import userRoutes from "./routes/userRoutes.ts";
 import authRoutes from "./routes/authRoutes.ts";
 import subjectRoutes from "./routes/subjectRoutes.ts";
 import holidayRoutes from "./routes/holidayRoutes.ts";
+import assetsRoutes from "./routes/assetsRoutes.ts";
 
 // Initializing Express App
 import {doubleCsrf} from "csrf-csrf";
@@ -118,6 +119,7 @@ apiRouter.use("/schedule", scheduleRoutes);
 apiRouter.use("/teacher", teacherRoutes);
 apiRouter.use("/user", userRoutes);
 apiRouter.use("/auth", authRoutes);
+apiRouter.use("/assets", assetsRoutes)
 
 app.use("/api", apiRouter);
 
