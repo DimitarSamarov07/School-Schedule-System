@@ -11,6 +11,7 @@ class Class {
     constructor(id: number, schoolId: number, name: string, description: string, room: Room) {
         this.Id = id;
         this.SchoolId = schoolId;
+        this.Description = description;
         this.Name = name;
         this.Room = room;
         this.HomeRoomId = room.Id;
