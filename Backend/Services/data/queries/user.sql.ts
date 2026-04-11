@@ -59,8 +59,8 @@ export default class UserSql {
          WHERE user_id = (?)
            AND school_id = (?);`
 
-    static readonly GET_USER_BY_ID: `SELECT *
-                                     FROM users
+    static readonly GET_USER_BY_ID = `SELECT *
+                                      FROM Users
                                      WHERE id = ?`;
 
     static readonly INSERT_REFRESH_TOKEN = `
