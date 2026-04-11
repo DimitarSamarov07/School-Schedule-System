@@ -50,7 +50,7 @@ const {
         path: "/",
         secure: false, // Set to true only in production (HTTPS)
     },
-    getSessionIdentifier: (req) => req.cookies.AUTH_TOKEN || "guest",
+    getSessionIdentifier: (req) => req.cookies.REFRESH_TOKEN || "guest",
 });
 
 export const globalErrorHandler = (
