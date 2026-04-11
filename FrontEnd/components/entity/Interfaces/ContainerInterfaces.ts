@@ -1,7 +1,7 @@
 import {ManagerProps, EntityConfig} from "@/types/entity";
 
 
-export interface ContainerProps {
-    manager: ManagerProps;
+export interface ContainerProps<TModal = string> {
+    manager: ManagerProps<TModal>;
     config: EntityConfig;
 }

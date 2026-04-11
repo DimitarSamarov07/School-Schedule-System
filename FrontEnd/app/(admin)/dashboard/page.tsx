@@ -7,7 +7,7 @@ import { useGradesManager } from '@/hooks/use-grades-manager';
 import { useTeacherManager } from '@/hooks/use-teachers-manager';
 import { useSubjectsManager } from '@/hooks/use-subjects-manager';
 import { usePeriodsManager } from '@/hooks/use-periods-manager';
-import { Building, Clock, GraduationCap, Palette, Users, AlertCircle } from 'lucide-react'; // Added AlertCircle
+import {Building, Clock, GraduationCap, Palette, Users, AlertCircle, Plus} from 'lucide-react'; // Added AlertCircle
 import StatCard from '@/components/cards/StatCard';
 import moment from 'moment';
 import { apiRequest } from '@/lib/api/client';
@@ -94,9 +94,7 @@ export default function TimetablePage() {
                     onClick={() => openModal()}
                     style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0.5rem 1.125rem', borderRadius: '0.625rem', background: '#6c3de6', color: '#fff', border: 'none', fontWeight: 600, fontSize: '1rem', cursor: 'pointer' }}
                 >
-                    <svg width="24" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                        <path d="M12 5v14M5 12h14"/>
-                    </svg>
+                    <Plus size={16}></Plus>
                     Добави часове
                 </button>
             </div>

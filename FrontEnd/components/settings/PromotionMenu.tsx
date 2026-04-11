@@ -60,7 +60,10 @@ export default function PromotionMenu({ schoolId }: PromotionMenuProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {filteredUsers.map((user) => (
-                    <UserCard key={user.id} user={user} onPromote={handlePromote} onDemote={handleDemote} />
+                    <UserCard key={user.id} user={user} onPromote={handlePromote} onDemote={handleDemote}
+                              onRemove={function (userId: number): void {
+                                  throw new Error("Function not implemented.");
+                              }} />
                 ))}
             </div>
 

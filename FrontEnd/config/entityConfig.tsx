@@ -2,8 +2,9 @@ import { Class } from "@/types/class";
 import { Room } from "@/types/room";
 import { Period } from "@/types/period";
 import {formatWorkweek} from "@/lib/utils";
+import {EntityConfig} from "@/types/entity";
 
-export const CLASS_CONFIG = {
+export const CLASS_CONFIG : EntityConfig = {
     title: "Класове и учебни зали",
     singular: "клас",
     listKey: "gradeList",
@@ -14,9 +15,9 @@ export const CLASS_CONFIG = {
         {
             key: "Room.Name",
             label: "Стая",
-            render: (grade: Grade) => (
+            render: (c: Class) => (
                 <span className="bg-purple-50 text-purple-500 px-4 py-2 rounded-xl font-bold text-sm border border-purple-100">
-                    {grade.Room?.Name || "Без стая"}
+                    {c.Room?.Name || "Без стая"}
                 </span>
             )
         },
@@ -35,9 +36,9 @@ export const CLASS_CONFIG = {
         },
         { key: "Description", label: "Специалност/забележки", type: "textarea", placeholder: "напр. Приложно програмиране" }
     ]
-};
+} as const;
 
-export const ROOM_CONFIG = {
+export const ROOM_CONFIG: EntityConfig = {
     title: "Стаи и учебни зали",
     singular: "стая",
     listKey: "roomsList",
@@ -68,7 +69,7 @@ export const ROOM_CONFIG = {
     ]
 };
 
-export const TEACHER_CONFIG = {
+export const TEACHER_CONFIG: EntityConfig = {
     title: "Учители",
     singular: "учител",
     listKey: "teacherList",
@@ -84,7 +85,7 @@ export const TEACHER_CONFIG = {
     ]
 };
 
-export const SUBJECT_CONFIG = {
+export const SUBJECT_CONFIG: EntityConfig= {
     title: "Предмети",
     singular: "предмет",
     listKey: "subjectList",
@@ -100,7 +101,7 @@ export const SUBJECT_CONFIG = {
     ]
 };
 
-export const SCHOOL_CONFIG = {
+export const SCHOOL_CONFIG: EntityConfig = {
     title: "Училища",
     singular: "училище",
     listKey: "schoolsList",
@@ -125,7 +126,7 @@ export const SCHOOL_CONFIG = {
     ]
 };
 
-export const PERIOD_CONFIG = {
+export const PERIOD_CONFIG: EntityConfig = {
     title: "Часове",
     singular: "час",
     listKey: "timeList",

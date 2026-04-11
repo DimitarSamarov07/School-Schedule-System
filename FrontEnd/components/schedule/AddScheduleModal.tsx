@@ -11,6 +11,10 @@ import { usePeriodsManager } from '@/hooks/use-periods-manager';
 import { bulkCreateSchedules } from '@/lib/api/schedule';
 import { DAYS, DAY_OPTIONS } from '@/constants/schedule';
 import { ModalField, inputStyle } from './ModalField';
+import {Subject} from "@/types/subject";
+import {Teacher} from "@/types/teacher";
+import {Room} from "@/types/room";
+import {Period} from "@/types/period";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 interface ScheduleEntry {
@@ -294,11 +298,11 @@ export function AddScheduleModal({ periodId, classId, dayIndex, onSave, onClose 
 interface EntryRowProps {
     index:       number;
     entry:       ScheduleEntry;
-    timeList:    Array<{ id: number; Name: string; Start?: string; End?: string }>;
-    gradeList:   Array<{ id: number; Name: string }>;
-    subjectList: Array<{ id: number; Name: string }>;
-    teacherList: Array<{ id: number; Name: string }>;
-    roomsList:   Array<{ id: number; Name: string }>;
+    timeList:    Array<Period>;
+    gradeList:   Array<Subject>;
+    subjectList: Array<Subject>;
+    teacherList: Array<Teacher>;
+    roomsList:   Array<Room>;
     canRemove:   boolean;
     onChange:    (patch: Partial<ScheduleEntry>) => void;
     onRemove:    () => void;

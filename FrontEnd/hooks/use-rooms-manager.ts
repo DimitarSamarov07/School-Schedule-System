@@ -5,6 +5,9 @@ import { getRooms, createRoom, updateRoom, deleteRoom } from "@/lib/api/rooms";
 import { Room } from "@/types/room";
 import { useCurrentSchool } from "@/providers/SchoolProvider";
 
+// 1. Export this specific union type so your page component can use it!
+export type RoomModalState = 'add' | 'edit' | 'delete';
+
 export function useRoomsManager() {
     const { currentSchool, isSudo } = useCurrentSchool();
     const schoolId = currentSchool?.SchoolId;
@@ -13,7 +16,8 @@ export function useRoomsManager() {
     const [roomsList, setRoomsList] = useState<Room[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [activeModal, setActiveModal] = useState<'add' | 'edit' | 'delete' | null>(null);
+    // 2. Apply the exported type to your state
+    const [activeModal, setActiveModal] = useState<RoomModalState | null>(null);
     const [formData, setFormData] = useState<Partial<Room>>({ Name: '', Capacity: 0, Floor: 0 });
     const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
 
@@ -39,7 +43,9 @@ export function useRoomsManager() {
         }
     }, [schoolId]);
 
-    useEffect(() => { fetchRooms(); }, [fetchRooms]);
+    useEffect(() => {
+        fetchRooms();
+    }, [fetchRooms]);
 
     useEffect(() => {
         if (!schoolId) return;
@@ -108,8 +114,6 @@ export function useRoomsManager() {
         isAdmin,
         activeModal,
         setActiveModal,
-        formData,
-        setFormData,
         selectedRoom,
         selectedEntity: selectedRoom,
         setSelectedEntity,
@@ -118,5 +122,10 @@ export function useRoomsManager() {
         handleDelete,
         closeModal,
         refresh: () => fetchRooms(true),
+
+        // 3. Cast the form data types to bridge your strict hook state
+        // with the loose Record<string, unknown> expected by ManagerProps
+        formData: formData as Record<string, unknown>,
+        setFormData: setFormData as React.Dispatch<React.SetStateAction<Record<string, unknown>>>,
     };
 }

@@ -29,11 +29,10 @@ export interface EntityConfig {
     formFields: FormFieldConfig[];
 }
 
-export interface ManagerProps {
-  isLoading: boolean;
-  activeModal?: string | null;
-
-  setActiveModal?: Dispatch<SetStateAction<string | null>>;
+export interface ManagerProps<TModal = string> {
+    isLoading: boolean;
+    activeModal?: TModal | null;
+    setActiveModal?: Dispatch<SetStateAction<TModal | null>>;
   closeModal?: () => void;
 
   openEditModal?: (item: unknown) => void;

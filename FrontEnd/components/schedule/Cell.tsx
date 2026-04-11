@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ApiEntry } from '@/types/schedule';
 import { getPalette } from '@/constants/schedule';
+import {Plus} from "lucide-react";
 
 interface CellProps {
     entry: ApiEntry | null;
@@ -20,9 +21,7 @@ export function Cell({ entry, onAdd }: CellProps) {
                 onMouseLeave={() => setHovered(false)}
                 style={{ borderRadius: '0.75rem', minHeight: 80, background: hovered ? '#f5f3ff' : '#f0f1f3', border: `1.5px dashed ${hovered ? '#6c3de6' : '#dde0e5'}`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4, cursor: 'pointer', transition: 'all 160ms ease', color: hovered ? '#6c3de6' : '#9ca3af', fontSize: '0.75rem', fontWeight: 500 }}
             >
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                    <path d="M12 5v14M5 12h14"/>
-                </svg>
+                <Plus></Plus>
                 Добави
             </div>
         );

@@ -7,7 +7,7 @@ import { EntityTable } from "./EntityTable";
 import { EntityModals } from "./EntityModals";
 import { ContainerProps } from "@/components/entity/Interfaces/ContainerInterfaces";
 
-export default function EntityListContainer({ manager, config }: ContainerProps) {
+export default function EntityListContainer<TModal = string>({ manager, config }: ContainerProps<TModal>) {
     const [searchTerm, setSearchTerm] = useState("");
 
     const rawList = manager[config.listKey];

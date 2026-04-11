@@ -5,20 +5,28 @@ import {Coffee, GraduationCap, User} from "lucide-react";
 import Link from "next/link";
 import {useNextPeriod, useRunningPeriod} from "@/hooks/use-running-time";
 import useSchedulesByDateTimeAndSchool from "@/hooks/use-schedules-by-date";
-import {useAutoScroll} from "@/hooks/use-auto-scroll"; // Add this import
+import {useAutoScroll} from "@/hooks/use-auto-scroll";
 import moment from "moment";
 import ScheduleCard from "@/components/cards/ScheduleCard";
 
+// 1. Define the shape of your time data
+export interface PeriodData {
+    label: string;
+    startTime: string;
+    endTime: string;
+}
+
 export default function Timetable() {
     const [mounted, setMounted] = useState(false);
-    const scrollRef = useRef<HTMLDivElement>(null); // Add scroll ref
+    const scrollRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const {timeData, timeError} = useRunningPeriod(1);
-    const {nextTimeData, nextTimeError} = useNextPeriod(1);
+    // 2. Cast the hook returns so TypeScript knows they aren't 'never'
+    const {timeData, timeError} = useRunningPeriod(1) as { timeData: PeriodData | null, timeError: unknown };
+    const {nextTimeData, nextTimeError} = useNextPeriod(1) as { nextTimeData: PeriodData | null, nextTimeError: unknown };
 
     const schoolId = 1;
     const date = moment().format("YYYY-MM-DD");
@@ -26,12 +34,12 @@ export default function Timetable() {
         schoolId,
         date
     );
-    // Auto-scroll hook - activates only when >4 cards
+
     useAutoScroll({
         scrollRef: scrollRef,
         data: scheduleData,
         mounted: mounted,
-        intervalMs: 6000 // Scroll every 6 seconds
+        intervalMs: 6000
     });
 
     if (!mounted) return <div className="p-8 text-slate-400">Initializing...</div>;
@@ -59,8 +67,7 @@ export default function Timetable() {
 
     return (
         <div className="min-h-screen bg-slate-50 font-sans overflow-x-hidden flex flex-col">
-            <div
-                className="w-full bg-linear-to-r from-[#8b5cf6] via-[#a855f7] to-[#ec4899] text-white p-12 relative text-center rounded-b-[3rem] shadow-xl">
+            <div className="w-full bg-linear-to-r from-[#8b5cf6] via-[#a855f7] to-[#ec4899] text-white p-12 relative text-center rounded-b-[3rem] shadow-xl">
                 <div className="absolute top-6 left-0 px-8 w-full flex items-center justify-between">
                     <Link href="/" className="flex items-center gap-2">
                         <GraduationCap className="w-8 h-8"/>
@@ -92,7 +99,6 @@ export default function Timetable() {
                     </p>
                 </header>
 
-                {/* Horizontal scrollable container with auto-scroll */}
                 <div
                     ref={scrollRef}
                     className="flex overflow-x-auto gap-6 pb-6 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-slate-100 w-full max-w-7xl"
