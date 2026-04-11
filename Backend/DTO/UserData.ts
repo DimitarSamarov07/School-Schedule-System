@@ -3,11 +3,13 @@ import type User from "../data_models/User.ts";
 
 export default class UserData {
     User: User;
-    AccessList: SchoolMember[]
+    AccessList: SchoolMember[];
+    deviceName: string;
 
-    constructor(user: User, accessList: SchoolMember[]) {
+    constructor(user: User, accessList: SchoolMember[], deviceName = "") {
         this.User = user;
         this.AccessList = accessList;
+        this.deviceName = deviceName;
     }
 
     isAdmin() {

@@ -58,4 +58,32 @@ export default class UserSql {
          FROM SchoolMembers
          WHERE user_id = (?)
            AND school_id = (?);`
+
+    static readonly GET_USER_BY_ID = `SELECT *
+                                      FROM Users
+                                     WHERE id = ?`;
+
+    static readonly INSERT_REFRESH_TOKEN = `
+        INSERT INTO RefreshTokens (token, user_id, device_name, expires_at)
+        VALUES (?, ?, ?, DATE_ADD(NOW(), INTERVAL 6 MONTH))
+    `;
+
+    static readonly GET_REFRESH_TOKEN = `
+        SELECT user_id
+        FROM RefreshTokens
+        WHERE token = ?
+          AND expires_at > NOW()
+    `;
+
+    static readonly DELETE_REFRESH_TOKEN = `
+        DELETE
+        FROM RefreshTokens
+        WHERE token = ?
+    `
+
+    static readonly DELETE_ALL_REFRESH_TOKENS_FOR_USER_ID = `
+        DELETE
+        FROM RefreshTokens
+        WHERE user_id = ?;
+    `
 }

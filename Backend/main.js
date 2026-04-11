@@ -10,8 +10,10 @@ import roomRoutes from "./routes/roomRoutes.ts";
 import scheduleRoutes from "./routes/scheduleRoutes.ts";
 import teacherRoutes from "./routes/teacherRoutes.ts";
 import userRoutes from "./routes/userRoutes.ts";
+import authRoutes from "./routes/authRoutes.ts";
 import subjectRoutes from "./routes/subjectRoutes.ts";
 import holidayRoutes from "./routes/holidayRoutes.ts";
+import assetsRoutes from "./routes/assetsRoutes.ts";
 
 // Initializing Express App
 import {doubleCsrf} from "csrf-csrf";
@@ -26,15 +28,32 @@ app.use(cors({
     allowedHeaders: ['Content-Type', 'x-csrf-token', 'Authorization'],
     credentials: true
 }))
-const limiter = rateLimit({
-    windowMs: 15 * 1000,
-    max: 20,
-    message: "Too many requests from this IP, please try again after 15 minutes",
-    standardHeaders: true,
-    legacyHeaders: false,
-    skipFailedRequests: false,
-    skipSuccessfulRequests: false,
+
+const keyGenerator = (req) => {
+    // If the Refresh token is available, use it
+    if (req.cookies.REFRESH_TOKEN) {
+        return req.cookies.REFRESH_TOKEN;
+    }
+
+    // 2. If no token (guest), fallback to IP.
+    return req.ip;
+}
+
+const standardLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 60,
+    message: {error: "Too many requests. Try again later."},
+    keyGenerator: keyGenerator
 });
+
+const utilityLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    max: 10,
+    message: {error: "Utility rate limit exceeded. Try again later."},
+    keyGenerator: keyGenerator
+});
+
+
 const csrfSecret = await authenticatorMaster.retrieveCSRFKey();
 
 const {
@@ -48,7 +67,7 @@ const {
         path: "/",
         secure: false, // Set to true only in production (HTTPS)
     },
-    getSessionIdentifier: (req) => req.cookies.AUTH_TOKEN || "guest",
+    getSessionIdentifier: (req) => req.cookies.REFRESH_TOKEN || "guest",
 });
 
 export const globalErrorHandler = (
@@ -69,8 +88,24 @@ export const globalErrorHandler = (
         });
     }
 
+    if (err instanceof SyntaxError && err.status === 400 && err.type === 'entity.parse.failed') {
+        return res.status(400).json({
+            error: "Bad Request",
+            errorType: "malformed_json",
+            message: "The server received invalid JSON. Please check your syntax."
+        });
+    }
+
     if (err.code === "ER_DUP_ENTRY") {
         return res.status(409).json({errorType: "sql", error: "Duplicate entry detected."});
+    }
+
+    if (err.code === "EBADCSRFTOKEN") {
+        return res.status(403).json({
+            error: "Invalid or missing CSRF token",
+            errorType: "security",
+            message: "The request was rejected for security reasons. Please refresh your CSRF token."
+        });
     }
 
     // Custom Application Errors
@@ -88,34 +123,44 @@ export const globalErrorHandler = (
     });
 };
 
+const globalFailsafeLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 1000, // (~1 request per second sustained for 15 mins)
+    message: {
+        error: "Critical traffic threshold reached. Connection temporarily blocked."
+    },
 
+});
 
-//app.use(limiter)
 app.use(cookieParser())
 app.use(express.json({limit: '10kb'}));
 app.use(doubleCsrfProtection);
 app.use(helmet()) // Enhances security
 
-
-app.set('trust proxy', 1);
-
-app.get("/csrf-token", (req, res) => {
-    const token = generateCsrfToken(req, res);
-    return res.json({ csrfToken: token });
-});
+app.use(globalFailsafeLimiter)
 
 const apiRouter = express.Router();
 
-// Include user-defined routes
-apiRouter.use("/school", schoolRoutes);
-apiRouter.use("/class", classRoutes);
-apiRouter.use("/holiday", holidayRoutes);
-apiRouter.use("/period", periodRoutes);
-apiRouter.use("/room", roomRoutes);
-apiRouter.use("/subject", subjectRoutes);
-apiRouter.use("/schedule", scheduleRoutes);
-apiRouter.use("/teacher", teacherRoutes);
-apiRouter.use("/user", userRoutes);
+// Guarded by individual limiters, see the route
+apiRouter.use("/auth", authRoutes);
+
+// Utility limiter
+apiRouter.use("/assets", utilityLimiter, assetsRoutes)
+app.get("/csrf-token", utilityLimiter, (req, res) => {
+    const token = generateCsrfToken(req, res);
+    return res.json({csrfToken: token});
+});
+
+// Standard limit for most routes
+apiRouter.use("/school", standardLimiter, schoolRoutes);
+apiRouter.use("/class", standardLimiter, classRoutes);
+apiRouter.use("/holiday", standardLimiter, holidayRoutes);
+apiRouter.use("/period", standardLimiter, periodRoutes);
+apiRouter.use("/room", standardLimiter, roomRoutes);
+apiRouter.use("/subject", standardLimiter, subjectRoutes);
+apiRouter.use("/schedule", standardLimiter, scheduleRoutes);
+apiRouter.use("/teacher", standardLimiter, teacherRoutes);
+apiRouter.use("/user", standardLimiter, userRoutes);
 
 app.use("/api", apiRouter);
 
@@ -126,21 +171,6 @@ app.use((req, res, next) => {
 app.use(globalErrorHandler);
 
 let port = 1343;
-
-async function checkUserAuthenticationMiddleware(req, res, next) {
-    let {AUTHENTICATION_ADMIN_TOKEN} = req.cookies;
-    if (AUTHENTICATION_ADMIN_TOKEN) {
-        let decoded = await authenticatorMaster.decodeJWT(AUTHENTICATION_ADMIN_TOKEN);
-        if (!decoded) {
-            return res.status(401).send("Authentication failure.")
-        } else {
-            req.username = decoded.username;
-            next();
-        }
-
-    }
-    return res.status(401).send("Authentication failure.")
-}
 
 await authenticatorMaster.initializeAuthenticator();
 app.listen(port, () => console.log(`App Listening on port ${port}`));

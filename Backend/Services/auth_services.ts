@@ -14,6 +14,7 @@ import type {
     ChangePasswordPayload,
     CreateUserPayload,
     LoginPayload,
+    RefreshPayload,
     UserPermissionPayload
 } from "../Validators/AuthValidators.ts";
 
@@ -40,9 +41,9 @@ class Authenticator {
     }
 
     static createJWT(userData: UserData): string {
-        let options: SignOptions = {algorithm: 'RS256'}
+        let options: SignOptions = {algorithm: 'RS256', expiresIn: '1h'}
         if (userData.isAdmin()) {
-            options.expiresIn = "1h";
+            options.expiresIn = "10m";
         }
         return jwt.sign({
             username: userData.User.Username,
@@ -69,17 +70,17 @@ class Authenticator {
         }
     }
 
-    static async getUserData(data: LoginPayload, shouldIncludeAccess = true): Promise<UserData | null> {
-        const {username, password} = data;
+    static async getUserData(data: LoginPayload, shouldIncludeAccess = true, shouldBypassPassword = false): Promise<UserData | null> {
+        const {username, password, deviceName} = data;
         return await connectionPoolFactory(async (conn): Promise<UserData | null> => {
             const userEntries = await conn.query(UserSql.GET_USER_BY_USERNAME, [username]);
 
             if (userEntries.length > 0) {
                 const user = User.convertFromDbModel(userEntries[0]);
                 let passwordMatch = await this.hashPasswordCompare(password, user.Password);
-                if (passwordMatch) {
+                if (passwordMatch || shouldBypassPassword) {
                     if (!shouldIncludeAccess) {
-                        return new UserData(user, []);
+                        return new UserData(user, [], deviceName);
                     }
                     if (user.IsSudo) {
                         let sudoList: SchoolMember[] = []
@@ -88,11 +89,11 @@ class Authenticator {
                             let member = new SchoolMember(school.Id, user.Id, true);
                             sudoList.push(member);
                         }
-                        return new UserData(user, sudoList);
+                        return new UserData(user, sudoList, deviceName);
                     }
                     const userAccessDbObjArr = await conn.query(UserSql.GET_USER_PERMISSIONS, [user.Id]);
                     const userAccessArr = userAccessDbObjArr.map((obj) => SchoolMember.convertFromDBModel(obj))
-                    return new UserData(user, userAccessArr);
+                    return new UserData(user, userAccessArr, deviceName);
                 }
             }
             return null;
@@ -120,9 +121,78 @@ class Authenticator {
 
         return await connectionPoolFactory(async (conn) => {
             await conn.query(UserSql.UPDATE_USER_PASS, [newHashedPassword, userObj.Id])
+            await conn.query(UserSql.DELETE_ALL_REFRESH_TOKENS_FOR_USER_ID, [userObj.Id])
+
             return true;
         })
 
+    }
+
+
+    static async createRefreshToken(userData: UserData): Promise<string> {
+        return await connectionPoolFactory(async (conn) => {
+            const userId = userData.User.Id;
+            let deviceName = userData.deviceName;
+            const refreshToken = crypto.randomUUID();
+
+            if (!deviceName) {
+                deviceName = "Unknown device";
+            }
+
+            await conn.query(UserSql.INSERT_REFRESH_TOKEN, [refreshToken, userId, deviceName]);
+            return refreshToken;
+        });
+    }
+
+    static async refreshJwtAccessToken(data: RefreshPayload): Promise<string> {
+        const {refreshToken} = data;
+        return await connectionPoolFactory(async (conn) => {
+            // Check if token exists and hasn't expired
+            const rows = await conn.query(UserSql.GET_REFRESH_TOKEN, [refreshToken]);
+
+            if (rows.length === 0) {
+                throw new Error("Security Violation: Invalid or expired refresh token.");
+            }
+
+            const userId = rows[0].user_id;
+
+            // Fetch the user's latest data to pack into the new JWT
+            const userEntries = await conn.query(UserSql.GET_USER_BY_ID, [userId]);
+            if (userEntries.length === 0) throw new Error("Security Violation: User not found.");
+
+            const user = User.convertFromDbModel(userEntries[0]);
+
+            // Re-build their access list
+            let accessList: SchoolMember[] = [];
+            if (user.IsSudo) {
+                const allSchools = await SchoolService.getAllSchools();
+                accessList = allSchools.map(school => new SchoolMember(school.Id, user.Id, true));
+            } else {
+                const userAccessDbObjArr = await conn.query(UserSql.GET_USER_PERMISSIONS, [user.Id]);
+                accessList = userAccessDbObjArr.map((obj: any) => SchoolMember.convertFromDBModel(obj));
+            }
+
+            const userData = new UserData(user, accessList);
+
+            // Issue the new JWT
+            return this.createJWT(userData);
+        });
+    }
+
+    static async revokeToken(refreshToken: string): Promise<void> {
+        await connectionPoolFactory(async (conn) => {
+            await conn.query(UserSql.DELETE_REFRESH_TOKEN, [refreshToken]);
+        });
+    }
+
+    static async revokeAllTokensForUser(data: LoginPayload, isSudo = false): Promise<void> {
+        const user = await this.getUserData(data, false, isSudo)
+        if (!user) {
+            throw new Error("Security violation: Invalid credentials.")
+        }
+        await connectionPoolFactory(async (conn) => {
+            await conn.query(UserSql.DELETE_ALL_REFRESH_TOKENS_FOR_USER_ID, [user.User.Id]);
+        });
     }
 
 
